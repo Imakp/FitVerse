@@ -1,3 +1,6 @@
+import { useState } from "react";
+import Navbar from "./Components/Navbar";
+import { Outlet } from "react-router";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { AuthProvider } from "./context/AuthContext";
 import Login from "./components/Login";
@@ -8,6 +11,11 @@ console.log("Client ID loaded:", GOOGLE_CLIENT_ID);
 
 function App() {
   return (
+    <>
+      <Navbar />
+      <Outlet />
+    </>
+  );
     <GoogleOAuthProvider
       clientId={GOOGLE_CLIENT_ID}
       onScriptLoadError={() => console.error("Google Script failed to load")}
