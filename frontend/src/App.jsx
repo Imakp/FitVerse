@@ -12,21 +12,21 @@ console.log("Client ID loaded:", GOOGLE_CLIENT_ID);
 function App() {
   return (
     <>
-      <Navbar />
-      <Outlet />
+      <GoogleOAuthProvider
+        clientId={GOOGLE_CLIENT_ID}
+        onScriptLoadError={() => console.error("Google Script failed to load")}
+      >
+        <AuthProvider>
+          <div className="min-h-screen bg-gray-100">
+            <Login />
+            <FitnessDashboard />
+
+            <Navbar />
+            <Outlet />
+          </div>
+        </AuthProvider>
+      </GoogleOAuthProvider>
     </>
-  );
-    <GoogleOAuthProvider
-      clientId={GOOGLE_CLIENT_ID}
-      onScriptLoadError={() => console.error("Google Script failed to load")}
-    >
-      <AuthProvider>
-        <div className="min-h-screen bg-gray-100">
-          <Login />
-          <FitnessDashboard />
-        </div>
-      </AuthProvider>
-    </GoogleOAuthProvider>
   );
 }
 
