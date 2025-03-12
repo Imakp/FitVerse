@@ -1,3 +1,4 @@
+// context/AuthContext.js
 import { createContext, useContext, useState, useEffect } from "react";
 import { useGoogleLogin } from "@react-oauth/google";
 import axios from "axios";
@@ -19,10 +20,13 @@ export const AuthProvider = ({ children }) => {
           }
         );
 
-        setUser({
+        const userData = {
           ...userInfo,
           access_token: response.access_token,
-        });
+        };
+
+        setUser(userData);
+        localStorage.setItem("user", JSON.stringify(userData));
       } catch (error) {
         console.error("Error fetching user info:", error);
       }
@@ -32,29 +36,28 @@ export const AuthProvider = ({ children }) => {
 
   const logout = () => {
     setUser(null);
+    localStorage.removeItem("user");
+    // You can add additional logout logic here if needed
+    // For example, revoking tokens or clearing other stored data
   };
 
   useEffect(() => {
     // Check if there's a stored user session
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
-      setUser(JSON.parse(storedUser));
+      try {
+        setUser(JSON.parse(storedUser));
+      } catch (error) {
+        console.error("Error parsing stored user data:", error);
+        localStorage.removeItem("user");
+      }
     }
     setLoading(false);
   }, []);
 
-  useEffect(() => {
-    // Store user data when it changes
-    if (user) {
-      localStorage.setItem("user", JSON.stringify(user));
-    } else {
-      localStorage.removeItem("user");
-    }
-  }, [user]);
-
   return (
     <AuthContext.Provider value={{ user, loading, login, logout }}>
-      {!loading && children}
+      {children}
     </AuthContext.Provider>
   );
 };

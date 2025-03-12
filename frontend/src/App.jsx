@@ -1,32 +1,55 @@
-import { useState } from "react";
+// App.jsx
+import { useEffect } from "react";
 import Navbar from "./Components/Navbar";
-import { Outlet } from "react-router";
+import { Outlet, Navigate, useNavigate } from "react-router-dom";
 import { GoogleOAuthProvider } from "@react-oauth/google";
-import { AuthProvider } from "./context/AuthContext";
-import Login from "./components/Login";
-import { FitnessDashboard } from "./components/FitnessDashboard";
+import { AuthProvider, useAuth } from "./context/AuthContext";
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 console.log("Client ID loaded:", GOOGLE_CLIENT_ID);
 
+// Protected route component
+const ProtectedRoute = ({ children }) => {
+  const { user, loading } = useAuth();
+  
+  if (loading) return <div>Loading...</div>;
+  
+  if (!user) {
+    return <Navigate to="/" replace />;
+  }
+  
+  return children;
+};
+
+// Authentication wrapper component
+const AuthWrapper = () => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  
+  useEffect(() => {
+    if (user) {
+      navigate('/dashboard');
+    }
+  }, [user, navigate]);
+  
+  return (
+    <div className="min-h-screen bg-gray-100">
+      <Navbar />
+      <Outlet />
+    </div>
+  );
+};
+
 function App() {
   return (
-    <>
-      <GoogleOAuthProvider
-        clientId={GOOGLE_CLIENT_ID}
-        onScriptLoadError={() => console.error("Google Script failed to load")}
-      >
-        <AuthProvider>
-          <div className="min-h-screen bg-gray-100">
-            <Login />
-            <FitnessDashboard />
-
-            <Navbar />
-            <Outlet />
-          </div>
-        </AuthProvider>
-      </GoogleOAuthProvider>
-    </>
+    <GoogleOAuthProvider
+      clientId={GOOGLE_CLIENT_ID}
+      onScriptLoadError={() => console.error("Google Script failed to load")}
+    >
+      <AuthProvider>
+        <AuthWrapper />
+      </AuthProvider>
+    </GoogleOAuthProvider>
   );
 }
 
