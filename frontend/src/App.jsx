@@ -11,13 +11,13 @@ console.log("Client ID loaded:", GOOGLE_CLIENT_ID);
 // Protected route component
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth();
-  
+
   if (loading) return <div>Loading...</div>;
-  
+
   if (!user) {
     return <Navigate to="/" replace />;
   }
-  
+
   return children;
 };
 
@@ -25,13 +25,13 @@ const ProtectedRoute = ({ children }) => {
 const AuthWrapper = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  
+
   useEffect(() => {
     if (user) {
-      navigate('/dashboard');
+      navigate("/dashboard");
     }
   }, [user, navigate]);
-  
+
   return (
     <div className="min-h-screen bg-gray-100">
       <Navbar />
