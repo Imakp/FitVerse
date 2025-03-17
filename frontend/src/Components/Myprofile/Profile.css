@@ -1,0 +1,115 @@
+.profile-container {
+    max-width: 600px;
+    margin: auto;
+    padding: 50px;
+
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  h2, h3 {
+    text-align: center;
+  }
+  
+  .profile-photo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  
+  .photo-placeholder {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: #ccc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    font-weight: bold;
+  }
+  
+  .change-photo {
+    margin-top: 10px;
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .personal-info, .connected-services {
+    margin-bottom: 20px;
+  }
+  
+  label {
+    display: block;
+    margin-top: 10px;
+    font-weight: bold;
+  }
+  
+  input {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  .save-btn {
+    width: 100%;
+    background: #007bff;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    margin-top: 10px;
+    cursor: pointer;
+  }
+  
+  .google-fit {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .connected {
+    color: green;
+  }
+  
+  .disconnected {
+    color: red;
+  }
+  
+  .manage-btn {
+    background: #ccc;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .delete-account {
+    width: 100%;
+    background: red;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    margin-top: 20px;
+    cursor: pointer;
+  }
+  
+  @media (max-width: 480px) {
+    .profile-container {
+      padding: 15px;
+    }
+  
+    input {
+      padding: 6px;
+    }
+  }
+  
