@@ -48,12 +48,13 @@ export default function Challenges() {
   const navigate = useNavigate();
 
   return (
-    <div className="flex flex-col md:flex-row h-screen bg-gray-50 p-4">
+    <div className="flex flex-col md:flex-row bg-white h-100">
       {/* Sidebar Component */}
       <Sidebar
         categories={categories}
         selectedCategory={selectedCategory}
         onSelect={setSelectedCategory}
+        className="h-full"
       />
 
       {/* Main Content */}
@@ -74,7 +75,7 @@ export default function Challenges() {
             {challenges[selectedCategory].map((challenge) => (
               <div
                 key={challenge.id}
-                className="bg-white p-4 rounded-lg shadow border border-gray-200 transition transform hover:scale-105"
+                className="bg-white p-4 rounded-lg shadow border border-gray-200 transition transform cursor-pointer"
               >
                 <div className="flex justify-between items-center">
                   <h3 className="text-lg font-medium text-gray-900">

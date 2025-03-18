@@ -68,7 +68,7 @@ const History = () => {
   };
 
   return (
-    <div className="  p-6   rounded-lg mx-7">
+    <div className="p-6 max-w-7xl mx-auto rounded-lg">
       <div className="flex justify-between items-center mb-6">
         <select
           value={dateRange}
