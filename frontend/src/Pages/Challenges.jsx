@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { FaRunning, FaWalking, FaTasks } from "react-icons/fa";
+import { FaRunning, FaWalking, FaTasks, FaHistory } from "react-icons/fa";
 import { useNavigate } from "react-router";
 import Sidebar from "../Components/Sidebar";
 
@@ -60,16 +60,22 @@ export default function Challenges() {
       <main className="flex-1 p-6">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-semibold text-gray-800">Challenges</h2>
-          <button
-            className="bg-blue-500 text-white px-4 py-2 rounded-md shadow-md hover:bg-blue-600 transition"
-            onClick={() => navigate("/leaderboard")}
-          >
-            Leaderboard
-          </button>
+          <div className="flex gap-4 items-center">
+            <span className="bg-blue-500 text-white px-4 py-2 rounded-full text-lg">
+              250 Coins
+            </span>
+            <button
+              className="bg-blue-500 text-white px-4 py-2 rounded-md shadow-md hover:bg-blue-600 transition"
+              onClick={() => navigate("/leaderboard")}
+            >
+              Leaderboard
+            </button>
+          </div>
         </div>
 
-        {/* Challenges List */}
-        {challenges[selectedCategory]?.length > 0 ? (
+        {selectedCategory === "History" ? (
+          <History />
+        ) : challenges[selectedCategory]?.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {challenges[selectedCategory].map((challenge) => (
               <div

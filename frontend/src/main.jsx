@@ -18,7 +18,7 @@ import Login from "./components/Login";
 import { FitnessDashboard } from "./components/FitnessDashboard";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import Leaderboard from "./Components/Leaderboard.jsx";
-import History from "./Pages/History.jsx";
+import Wallet from "./Pages/Wallet.jsx";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -37,8 +37,8 @@ const router = createBrowserRouter(
       <Route path="activity" element={<Activity />} />
       <Route path="challenges" element={<Challenges />} />
       <Route path="my-profile" element={<MyProfile />} />
+      <Route path="wallet" element={<Wallet />} />
       <Route path="leaderboard" element={<Leaderboard />} />
-      <Route path="history" element={<History />} />
     </Route>
   )
 );

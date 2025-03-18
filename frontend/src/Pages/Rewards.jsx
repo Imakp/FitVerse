@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import TransactionHistory from "../Components/TransactionHistory";
 
 const rewards = [
   {
@@ -92,7 +93,7 @@ const Rewards = () => {
             ))}
           </div>
         ) : (
-          <div className="text-center text-lg text-gray-500 mt-10">no more</div>
+          <TransactionHistory />
         )}
       </div>
     </div>
