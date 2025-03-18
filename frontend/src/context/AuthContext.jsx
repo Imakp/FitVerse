@@ -28,7 +28,9 @@ export const AuthProvider = ({ children }) => {
   // Fetch user session from backend
   const fetchUser = async () => {
     try {
-      const { data } = await axios.get(`${BACKEND_URL}/auth/user`, { withCredentials: true });
+      const { data } = await axios.get(`${BACKEND_URL}/auth/user`, {
+        withCredentials: true,
+      });
       setUser(data);
     } catch (error) {
       setUser(null);
