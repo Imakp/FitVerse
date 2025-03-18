@@ -148,7 +148,7 @@ export default function Activity() {
   const [timePeriod, setTimePeriod] = useState("Daily");
 
   return (
-    <div className="flex flex-col md:flex-row h-screen bg-gray-50 p-4">
+    <div className="flex flex-col md:flex-row bg-white">
       {/* Sidebar Component */}
       <Sidebar
         categories={categories}
@@ -157,32 +157,34 @@ export default function Activity() {
       />
 
       {/* Main Content */}
-      <main className="flex-1 p-6">
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-semibold text-gray-800">
-            Activity Analytics
-          </h2>
-        </div>
+      <main className="flex-1 p-4">
+        <div className="flex justify-between">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-2xl font-semibold text-gray-800">
+              Activity Analytics
+            </h2>
+          </div>
 
-        {/* Time Period Selector */}
-        <div className="flex space-x-4 mb-6">
-          {["Daily", "Weekly", "Monthly"].map((period) => (
-            <button
-              key={period}
-              className={`px-4 py-2 rounded ${
-                timePeriod === period
-                  ? "bg-blue-500 text-white"
-                  : "bg-gray-200 text-gray-700"
-              }`}
-              onClick={() => setTimePeriod(period)}
-            >
-              {period}
-            </button>
-          ))}
+          {/* Time Period Selector */}
+          <div className="flex gap-4 font-semibold mb-6">
+            {["Daily", "Weekly", "Monthly"].map((period) => (
+              <button
+                key={period}
+                className={`px-4 py-2 rounded ${
+                  timePeriod === period
+                    ? "bg-blue-500 text-white"
+                    : "bg-gray-200 text-gray-700"
+                }`}
+                onClick={() => setTimePeriod(period)}
+              >
+                {period}
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Bar Chart */}
-        <div className="bg-white rounded-lg p-6 shadow-md border border-gray-200">
+        <div className="bg-white rounded-md p-6 border border-gray-200">
           <ResponsiveContainer width="100%" height={400}>
             <BarChart data={activityData[activeCategory][timePeriod]}>
               <CartesianGrid strokeDasharray="3 3" />

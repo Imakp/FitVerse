@@ -167,5 +167,12 @@ const fetchFitnessData = async (tokens, range) => {
     const heartRateData = await fetchHeartRateData(auth, startTimeMillis, endTimeMillis);
     
     // Calculate summary statistics
-    const summary = calculateSummary(stepsData, heart)
-  }};
+    const summary = calculateSummary(stepsData, heartRateData);
+    
+    return summary; // Return the summary
+  } catch (error) {
+    console.error("Error fetching fitness data:", error);
+    return null; // Return null in case of error
+  }
+};
+

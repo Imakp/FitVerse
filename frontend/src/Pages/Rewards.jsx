@@ -40,13 +40,13 @@ const Rewards = () => {
   const [activeTab, setActiveTab] = useState("rewards"); // State to track active tab
 
   return (
-    <div className="flex flex-col items-center justify-center p-4">
+    <div className="flex flex-col items-center bg-white justify-center p-4">
       <div className="w-full max-w-6xl">
         {/* Navbar Section */}
-        <div className="flex justify-between items-center mb-6">
-          <div className="flex space-x-6 border-b pb-2">
+        <div className="flex justify-between items-center">
+          <div className="flex space-x-6 pb-2 mb-6">
             <h1
-              className={`text-xl font-bold cursor-pointer ${
+              className={`text-xl border-b pb-2 font-bold cursor-pointer ${
                 activeTab === "rewards" ? "  text-blue-600" : "text-gray-600"
               }`}
               onClick={() => setActiveTab("rewards")}
@@ -54,7 +54,7 @@ const Rewards = () => {
               Rewards Catalog
             </h1>
             <h1
-              className={`text-xl font-bold cursor-pointer ${
+              className={`text-xl font-bold pb-2 border-b cursor-pointer ${
                 activeTab === "history" ? " text-blue-600" : "text-gray-600"
               }`}
               onClick={() => setActiveTab("history")}

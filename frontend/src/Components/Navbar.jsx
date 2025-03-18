@@ -31,10 +31,10 @@ export default function Navbar() {
   const handleNavLinkClick = () => setIsMobileMenuOpen(false);
 
   return (
-    <nav className="bg-white shadow-md">
+    <nav className="bg-gray-50 border-b shadow-sm">
       <div className="container mx-auto px-6 py-4 flex justify-between items-center">
         {/* Logo */}
-        <h1 className="text-3xl font-bold">FitVerse</h1>
+        <h1 className="text-xl font-bold">FITVERSE</h1>
 
         {/* Mobile Menu Toggle */}
         <button
@@ -50,17 +50,19 @@ export default function Navbar() {
             isMobileMenuOpen ? "block" : "hidden lg:flex"
           }`}
         >
-          {["dashboard", "activity", "challenges", "rewards","wallet"].map((item) => (
-            <li key={item}>
-              <NavLink
-                to={`/${item}`}
-                className="block py-2 text-gray-700 hover:text-blue-500"
-                onClick={handleNavLinkClick}
-              >
-                {item.charAt(0).toUpperCase() + item.slice(1)}
-              </NavLink>
-            </li>
-          ))}
+          {["dashboard", "activity", "challenges", "rewards", "wallet"].map(
+            (item) => (
+              <li key={item}>
+                <NavLink
+                  to={`/${item}`}
+                  className="block py-2 text-gray-700 hover:text-blue-500"
+                  onClick={handleNavLinkClick}
+                >
+                  {item.charAt(0).toUpperCase() + item.slice(1)}
+                </NavLink>
+              </li>
+            )
+          )}
 
           {/* Profile Dropdown */}
           <li className="relative dropdown flex items-center space-x-2">

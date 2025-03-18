@@ -33,7 +33,7 @@ export default function Leaderboard() {
   const [selectedCategory, setSelectedCategory] = useState("Global");
 
   return (
-    <div className="flex flex-col md:flex-row h-screen bg-gray-50 p-4">
+    <div className="flex flex-col md:flex-row h-screen bg-white">
       {/* Sidebar Component */}
       <Sidebar
         categories={categories}
@@ -42,7 +42,7 @@ export default function Leaderboard() {
       />
 
       {/* Main Content */}
-      <main className="flex-1 p-6 bg-white shadow-md rounded-lg border border-gray-200">
+      <main className="flex-1 p-6 bg-white">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-semibold">
             {selectedCategory} Leaderboard
