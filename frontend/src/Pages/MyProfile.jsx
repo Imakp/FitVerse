@@ -6,7 +6,6 @@ import { useNavigate } from "react-router-dom";
 const MyProfile = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-
   const handleLogout = () => {
     logout();
     navigate("/");
@@ -26,35 +25,35 @@ const MyProfile = () => {
             className="h-24 w-24 rounded-full mx-auto border-4 border-white"
           />
         </div>
-        
+
         <div className="p-6">
           <h1 className="text-2xl font-bold text-center mb-6">{user.name}</h1>
-          
+
           <div className="space-y-4">
             <div className="border-b pb-2">
               <p className="text-gray-500 text-sm">Email</p>
               <p className="font-medium">{user.email}</p>
             </div>
-            
+
             {user.given_name && (
               <div className="border-b pb-2">
                 <p className="text-gray-500 text-sm">First Name</p>
                 <p className="font-medium">{user.given_name}</p>
               </div>
             )}
-            
+
             {user.family_name && (
               <div className="border-b pb-2">
                 <p className="text-gray-500 text-sm">Last Name</p>
                 <p className="font-medium">{user.family_name}</p>
               </div>
             )}
-            
+
             <div className="border-b pb-2">
               <p className="text-gray-500 text-sm">Google ID</p>
               <p className="font-medium">{user.sub}</p>
             </div>
-            
+
             <div className="pt-4">
               <button
                 onClick={handleLogout}

@@ -17,37 +17,28 @@ import MyProfile from "./Pages/MyProfile.jsx";
 import Login from "./components/Login";
 import { FitnessDashboard } from "./components/FitnessDashboard";
 import { ProtectedRoute } from "./components/ProtectedRoute";
+import Leaderboard from "./Components/Leaderboard.jsx";
+import History from "./Pages/History.jsx";
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<App />}>
       <Route index element={<Login />} />
-      <Route path="dashboard" element={
-        <ProtectedRoute>
-          <FitnessDashboard />
-          <DashBoard />
-        </ProtectedRoute>
-      } />
-      <Route path="rewards" element={
-        <ProtectedRoute>
-          <Rewards />
-        </ProtectedRoute>
-      } />
-      <Route path="activity" element={
-        <ProtectedRoute>
-          <Activity />
-        </ProtectedRoute>
-      } />
-      <Route path="challenges" element={
-        <ProtectedRoute>
-          <Challenges />
-        </ProtectedRoute>
-      } />
-      <Route path="my-profile" element={
-        <ProtectedRoute>
-          <MyProfile />
-        </ProtectedRoute>
-      } />
+      <Route
+        path="dashboard"
+        element={
+          <>
+            {/* <FitnessDashboard /> */}
+            <DashBoard />
+          </>
+        }
+      />
+      <Route path="rewards" element={<Rewards />} />
+      <Route path="activity" element={<Activity />} />
+      <Route path="challenges" element={<Challenges />} />
+      <Route path="my-profile" element={<MyProfile />} />
+      <Route path="leaderboard" element={<Leaderboard />} />
+      <Route path="history" element={<History />} />
     </Route>
   )
 );
