@@ -26,7 +26,7 @@ const Dashboard = () => {
   ];
 
   return (
-    <div className="flex flex-col items-center py-12">
+    <div className="flex bg-white flex-col items-center py-12">
       {/* Welcome Section */}
       <div className="text-center mb-8">
         <h1 className="text-5xl font-extrabold flex items-center gap-3">
@@ -42,7 +42,7 @@ const Dashboard = () => {
         {metrics.map((metric, index) => (
           <div
             key={index}
-            className="flex flex-col items-center p-6 bg-white border border-gray-300 rounded-2xl shadow-md transform transition duration-300 hover:scale-105"
+            className="flex flex-col items-center p-6 bg-gray-50 rounded-2xl shadow-md transform transition duration-300 hover:scale-105"
           >
             {metric.icon}
             <h3 className="text-lg font-semibold mt-3">{metric.name}</h3>

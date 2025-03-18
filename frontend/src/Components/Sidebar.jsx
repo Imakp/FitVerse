@@ -2,7 +2,7 @@ import PropTypes from "prop-types";
 
 export default function Sidebar({ categories, selectedCategory, onSelect }) {
   return (
-    <aside className="w-64 p-4 bg-white shadow-md rounded-lg border border-gray-200">
+    <aside className="w-64 p-4 bg-white border-e h-[calc(100vh-5rem)] border-gray-200">
       <div className="space-y-2">
         {categories.map((category) => (
           <button
