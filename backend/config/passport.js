@@ -3,29 +3,15 @@ const GoogleStrategy = require("passport-google-oauth20").Strategy;
 const User = require("../models/user");
 require("dotenv").config();
 
-// Serialize user for the session
-passport.serializeUser((user, done) => {
-  done(null, user.id);
-});
-
-// Deserialize user from the session
-passport.deserializeUser(async (id, done) => {
-  try {
-    const user = await User.findById(id);
-    done(null, user);
-  } catch (err) {
-    done(err, null);
-  }
-});
 
 passport.use(
   new GoogleStrategy(
     {
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL: process.env.GOOGLE_CALLBACK_URL,
+      callbackURL: "http://localhost:3000/auth/google/callback", // Make sure this matches Google Console
     },
-    async (accessToken, refreshToken, profile, done) => {
+    async (accessToken, refreshToken, profile, done)  => {
       try {
         let user = await User.findOne({ oauthId: profile.id });
 
@@ -36,22 +22,10 @@ passport.use(
             name: profile.displayName,
             email: profile.emails[0].value,
             profilePicture: profile.photos[0].value,
-            googleTokens: {
-              accessToken,
-              refreshToken,
-              scope: profile._json.scope,
-            },
           });
-        } else {
-          // Update tokens
-          user.googleTokens = {
-            accessToken,
-            refreshToken,
-            scope: profile._json.scope,
-          };
+          await user.save();
         }
 
-        await user.save();
         done(null, user);
       } catch (err) {
         done(err, null);
@@ -59,3 +33,14 @@ passport.use(
     }
   )
 );
+
+// Serialize user
+passport.serializeUser((user, done) => {
+  done(null, user.id);
+});
+
+// Deserialize user
+passport.deserializeUser(async (id, done) => {
+  const user = await User.findById(id);
+  done(null, user);
+});
