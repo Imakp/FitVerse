@@ -1,18 +1,23 @@
-import { NavLink } from "react-router-dom";
+// todo: remove navbar in login page.
+import { Navigate, NavLink, replace, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { FaUserCircle, FaBars, FaTimes } from "react-icons/fa";
 import { useAuth } from "../context/AuthContext";
 
 export default function Navbar() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { user, logout } = useAuth();
   // Example User Data
   console.log(user);
 
+  // todo: when logged out fix navbar.
+  // todo: fix logout functionality
+
   const handleLogout = () => {
     logout();
-    navigate("/");
+    navigate("/", { replace: "true" });
   };
 
   // Close dropdown when clicking outside

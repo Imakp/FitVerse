@@ -1,4 +1,4 @@
-// main.jsx
+// todo: frontend integration and remove hardcoded values
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
@@ -28,11 +28,14 @@ const router = createBrowserRouter(
         path="dashboard"
         element={
           <>
-            {/* <FitnessDashboard /> */}
             <DashBoard />
           </>
         }
       />
+
+      {/* todo: protected route on rewards, activity, challenges, wallet until and unless
+      google fit not connected */}
+
       <Route path="rewards" element={<Rewards />} />
       <Route path="activity" element={<Activity />} />
       <Route path="challenges" element={<Challenges />} />

@@ -1,3 +1,5 @@
+// todo: recreate dashboard
+// todo: modal connect to google fit redirects to fitness dashboard
 import React from "react";
 import { FaWalking, FaHeartbeat, FaBed, FaLungs } from "react-icons/fa";
 
