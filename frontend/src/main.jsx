@@ -18,7 +18,7 @@ import Login from "./components/Login";
 import { FitnessDashboard } from "./components/FitnessDashboard";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import Leaderboard from "./Components/Leaderboard.jsx";
-import History from "./Pages/History.jsx";
+// import History from "./Pages/History.jsx";
 
 const router = createBrowserRouter(
   createRoutesFromElements(

@@ -6,6 +6,9 @@ require("./config/passport"); // Passport config
 const session = require("express-session");
 const passport = require("passport");
 const cors = require("cors");
+const userRoutes = require("./routes/userRoutes");
+const transactionRoutes = require("./routes/transactionsRoutes");
+const rewardRoutes = require("./routes/rewardRoutes");
 
 dotenv.config();
 
@@ -14,6 +17,8 @@ const port = process.env.PORT || 3000;
 const morgan = require("morgan");
 
 connectDB();
+
+app.use(express.json()); // Required to parse JSON request body
 
 app.use(
   cors({
@@ -41,6 +46,9 @@ app.use(passport.session());
 
 // Routes
 app.use("/auth", authRoutes);
+app.use("/api/users", userRoutes);
+app.use("/api/transactions", transactionRoutes);
+app.use("/api/rewards", rewardRoutes);
 
 app.get("/", (req, res) => {
   res.send("Hello World!");

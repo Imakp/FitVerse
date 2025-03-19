@@ -5,7 +5,11 @@ const userSchema = new mongoose.Schema({
   oauthId: { type: String, required: true }, // Unique ID from OAuth provider
   email: { type: String, required: true, unique: true },
   name: { type: String },
-  profilePicture: { type: String }
-});
+  profilePicture: { type: String },
+  wallet: {
+    balance: { type: Number, default: 0 }, // User's coin balance
+    transactions: [{ type: mongoose.Schema.Types.ObjectId, ref: "Transaction" }]
+}
+}, { timestamps: true });
 
 module.exports = mongoose.model("User", userSchema);
