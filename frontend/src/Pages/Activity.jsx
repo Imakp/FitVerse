@@ -1,3 +1,4 @@
+// todo: keep steps and heart rate only and integrate their graph. daily, weekly and monthly
 import React, { useState } from "react";
 import {
   FiMoon,
@@ -136,15 +137,15 @@ const activityData = {
 };
 
 const categories = [
-  { name: "Sleep", icon: <FiMoon /> },
   { name: "Steps", icon: <FiTrendingUp /> },
+  { name: "Sleep", icon: <FiMoon /> },
   { name: "Heart Rate", icon: <FiHeart /> },
   { name: "SpO₂", icon: <FiActivity /> },
   { name: "Running", icon: <FiZap /> },
 ];
 
 export default function Activity() {
-  const [activeCategory, setActiveCategory] = useState("Sleep");
+  const [activeCategory, setActiveCategory] = useState("Steps");
   const [timePeriod, setTimePeriod] = useState("Daily");
 
   return (

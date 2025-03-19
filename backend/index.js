@@ -11,8 +11,7 @@ dotenv.config();
 
 const app = express();
 const port = process.env.PORT || 3000;
-const morgan = require('morgan');
-
+const morgan = require("morgan");
 
 connectDB();
 
@@ -23,9 +22,8 @@ app.use(
   })
 );
 
-
 // Use morgan middleware to log HTTP requests
-app.use(morgan('dev'));
+app.use(morgan("dev"));
 
 // Session setup
 app.use(

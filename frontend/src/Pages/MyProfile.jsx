@@ -1,3 +1,4 @@
+// todo: setting redesign
 import React, { useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
@@ -49,7 +50,7 @@ const MyProfile = () => {
           <div className="max-w-md mx-auto bg-white rounded-lg shadow-md overflow-hidden">
             <div className="bg-blue-500 p-4 text-center">
               <img
-                src={displayUser.picture}
+                src={displayUser.profilePicture}
                 alt="Profile"
                 className="h-24 w-24 rounded-full mx-auto border-4 border-white"
               />
@@ -75,10 +76,6 @@ const MyProfile = () => {
                     <p className="font-medium">{displayUser.family_name}</p>
                   </div>
                 )}
-                <div className="border-b pb-2">
-                  <p className="text-gray-500 text-sm">Google ID</p>
-                  <p className="font-medium">{displayUser.sub}</p>
-                </div>
               </div>
             </div>
           </div>
