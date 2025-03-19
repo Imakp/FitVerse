@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import * as XLSX from "xlsx";
+// import * as XLSX from "xlsx";
 import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 
 const Wallet = () => {
@@ -86,9 +86,9 @@ const Wallet = () => {
           ))}
         </select>
         <div className="flex gap-4 items-center">
-          <span className="bg-blue-500 text-white px-4 py-2 rounded-full text-lg">
+          {/* <span className="bg-blue-500 text-white px-4 py-2 rounded-full text-lg">
             250 Coins
-          </span>
+          </span> */}
           <button
             onClick={downloadReport}
             className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
