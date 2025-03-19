@@ -138,10 +138,10 @@ const activityData = {
 
 const categories = [
   { name: "Steps", icon: <FiTrendingUp /> },
-  { name: "Sleep", icon: <FiMoon /> },
+  // { name: "Sleep", icon: <FiMoon /> },
   { name: "Heart Rate", icon: <FiHeart /> },
-  { name: "SpO₂", icon: <FiActivity /> },
-  { name: "Running", icon: <FiZap /> },
+  // { name: "SpO₂", icon: <FiActivity /> },
+  // { name: "Running", icon: <FiZap /> },
 ];
 
 export default function Activity() {
@@ -185,7 +185,7 @@ export default function Activity() {
         </div>
 
         {/* Bar Chart */}
-        <div className="bg-white rounded-md p-6 border border-gray-200">
+        <div className="bg-white rounded-md p-6 border border-gray-200 ">
           <ResponsiveContainer width="100%" height={400}>
             <BarChart data={activityData[activeCategory][timePeriod]}>
               <CartesianGrid strokeDasharray="3 3" />

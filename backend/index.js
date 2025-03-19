@@ -18,6 +18,7 @@ connectDB();
 app.use(
   cors({
     origin: "http://localhost:5173", // Replace with process.env.CLIENT_URL in production
+    methods: 'GET,POST,PUT,DELETE,OPTIONS',
     credentials: true, // Allow cookies
   })
 );

@@ -4,6 +4,8 @@ const passport = require("passport");
 const router = express.Router();
 const CLIENT_URL = process.env.CLIENT_URL || "http://localhost:5173"; // Default frontend URL
 
+//Enable CORS for auth routes
+
 // Google Authentication Route
 router.get(
   "/google",
@@ -26,13 +28,13 @@ router.get("/google/callback", (req, res, next) => {
 // Get User Info (Session-based authentication)
 router.get("/user", (req, res) => {
   if (req.isAuthenticated()) {
-    res.json(req.user); // Return user info
+    res.json(req.user);
   } else {
     res.status(401).json({ message: "Unauthorized" });
   }
 });
 
-// Logout Route
+// Fix CORS issue during logout
 router.get("/logout", (req, res, next) => {
   req.logout((err) => {
     if (err) return next(err);
@@ -40,8 +42,8 @@ router.get("/logout", (req, res, next) => {
     req.session.destroy((error) => {
       if (error) return res.status(500).json({ message: "Logout failed" });
 
-      res.clearCookie("connect.sid"); // Clear session cookie
-      res.redirect(CLIENT_URL);
+      res.clearCookie("connect.sid", { path: "/" });
+      res.status(200).json({ message: "Logged out successfully" }); // ✅ Send JSON response
     });
   });
 });

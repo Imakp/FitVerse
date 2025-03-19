@@ -32,12 +32,11 @@ const MyProfile = () => {
     email: "johndoe@example.com",
     given_name: "John",
     family_name: "Doe",
-    picture: "https://via.placeholder.com/150",
+    profilePicture: "https://via.placeholder.com/150",
     sub: "1234567890",
   };
 
   const displayUser = user && Object.keys(user).length > 0 ? user : dummyUser;
-
   return (
     <div className="flex bg-gray-100 min-h-screen">
       <Sidebar
