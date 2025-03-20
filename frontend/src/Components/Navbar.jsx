@@ -82,11 +82,11 @@ export default function Navbar() {
       label: "Dashboard",
       icon: <MdDashboard className="mr-2" />,
     },
-    {
-      path: "activity",
-      label: "Activity",
-      icon: <MdDirectionsRun className="mr-2" />,
-    },
+    // {
+    //   path: "activity",
+    //   label: "Activity",
+    //   icon: <MdDirectionsRun className="mr-2" />,
+    // },
     {
       path: "challenges",
       label: "Challenges",
@@ -127,19 +127,17 @@ export default function Navbar() {
             isMobileMenuOpen ? "block" : "hidden lg:flex"
           }`}
         >
-          {["dashboard", "activity", "challenges", "rewards", "wallet"].map(
-            (item) => (
-              <li key={item}>
-                <NavLink
-                  to={`/${item}`}
-                  className="block py-2 text-gray-700 hover:text-blue-500"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  {item.charAt(0).toUpperCase() + item.slice(1)}
-                </NavLink>
-              </li>
-            )
-          )}
+          {navItems.map((item) => (
+            <li key={item.path}>
+              <NavLink
+                to={`/${item.path}`}
+                className="block py-2 text-gray-700 hover:text-blue-500"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                {item.path.charAt(0).toUpperCase() + item.path.slice(1)}
+              </NavLink>
+            </li>
+          ))}
         </ul>
 
         {/* Wallet Balance & Profile */}
@@ -151,7 +149,9 @@ export default function Navbar() {
           >
             <div className="ml-2">
               <div className="flex items-center justify-center">
-              <p className="text-lg text-green-600">💰 {balance ?? 0} Coins</p>
+                <p className="text-lg text-green-600">
+                  💰 {balance ?? 0} Coins
+                </p>
               </div>
             </div>
           </button>

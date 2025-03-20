@@ -45,16 +45,11 @@ const AuthWrapper = () => {
           element={
             <>
               <FitnessDashboard />
-              <DashBoard />
+              {/* <DashBoard /> */}
             </>
           }
         />
-        <Route
-          path="/wallet"
-          element={
-            <Wallet/>
-          }
-        />
+        <Route path="/wallet" element={<Wallet />} />
         {/* Protected Routes */}
         <Route
           path="/rewards"
