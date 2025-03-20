@@ -33,59 +33,47 @@ export default function Leaderboard() {
   const [selectedCategory, setSelectedCategory] = useState("Global");
 
   return (
-    <div className="flex flex-col md:flex-row h-screen bg-white">
-      {/* Sidebar Component */}
+    <div className="flex flex-col md:flex-row h-screen bg-gray-100">
       <Sidebar
         categories={categories}
         selectedCategory={selectedCategory}
         onSelect={setSelectedCategory}
       />
 
-      {/* Main Content */}
-      <main className="flex-1 p-6 bg-white">
+      <main className="flex-1 p-6 bg-white shadow-lg rounded-lg">
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-semibold">
+          <h2 className="text-3xl font-bold text-gray-800">
             {selectedCategory} Leaderboard
           </h2>
-          {/* Invite Friends Button */}
-          <button className="px-6 py-3 bg-green-500 text-white font-medium rounded-md hover:bg-green-600 transition">
+          <button className="px-6 py-3 bg-green-600 text-white font-semibold rounded-lg shadow-md hover:bg-green-700 transition">
             Invite Friends
           </button>
         </div>
 
-        {/* Full-Width Table */}
-        <div className="overflow-auto">
-          <table className="w-full border-collapse border border-gray-300">
+        <div className="overflow-hidden rounded-lg border border-gray-300 shadow-md">
+          <table className="w-full text-sm">
             <thead>
-              <tr className="bg-gray-100 ">
-                <th className="border border-gray-300 px-4 py-3 text-left">
-                  Rank
-                </th>
-                <th className="border border-gray-300 px-4 py-3 text-center">
-                  User
-                </th>
-                <th className="border border-gray-300 px-4 py-3 text-center">
-                  Fitness Score
-                </th>
+              <tr className="bg-blue-100 text-gray-700">
+                <th className="px-4 py-3 text-left">Rank</th>
+                <th className="px-4 py-3 text-center">User</th>
+                <th className="px-4 py-3 text-center">Fitness Score</th>
               </tr>
             </thead>
             <tbody>
-              {leaderboardDataMap[selectedCategory].map((user) => (
+              {leaderboardDataMap[selectedCategory].map((user, index) => (
                 <tr
                   key={user.rank}
-                  className={`border border-gray-300 ${
+                  className={`border-t ${
                     user.name.includes("You")
                       ? "bg-yellow-100 font-semibold"
-                      : ""
-                  }`}
+                      : index % 2 === 0
+                      ? "bg-gray-50"
+                      : "bg-white"
+                  } hover:bg-gray-200 transition`}
                 >
-                  <td className="border border-gray-300 px-4 py-3 text-left">
-                    {user.rank}
-                  </td>
-                  <td className="border border-gray-300 px-4 py-3">
-                    {user.name}
-                  </td>
-                  <td className="border border-gray-300 px-4 py-3">
+                  <td className="px-4 py-3 text-left">{user.rank}</td>
+                  <td className="px-4 py-3 text-center">{user.name}</td>
+                  <td className="px-4 py-3 text-center font-bold text-blue-600">
                     {user.score}
                   </td>
                 </tr>

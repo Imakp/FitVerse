@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-// import * as XLSX from "xlsx";
+//import * as XLSX from "xlsx";
 import { FiChevronLeft, FiChevronRight } from "react-icons/fi";
 
 const Wallet = () => {
@@ -65,15 +65,15 @@ const Wallet = () => {
   };
 
   return (
-    <div className="max-w-7xl mt-4 sm:p-6 mx-auto bg-white rounded-lg ">
-      <div className="flex flex-col sm:flex-row justify-between items-center mb-4">
+    <div className="max-w-5xl mt-6 sm:p-6 mx-auto bg-white rounded-xl p-6">
+      <div className="flex flex-col sm:flex-row justify-between items-center mb-6">
         <select
           value={dateRange}
           onChange={(e) => {
             setDateRange(e.target.value);
             setCurrentPage(1);
           }}
-          className="p-2 border rounded-md w-full sm:w-auto mb-2 sm:mb-0"
+          className="p-3 border rounded-lg w-full sm:w-auto shadow-sm focus:ring-2 focus:ring-blue-500"
         >
           {[
             "Last 30 Days",
@@ -85,39 +85,36 @@ const Wallet = () => {
             <option key={month}>{month}</option>
           ))}
         </select>
-        <div className="flex gap-4 items-center">
-          {/* <span className="bg-blue-500 text-white px-4 py-2 rounded-full text-lg">
-            250 Coins
-          </span> */}
-          <button
-            onClick={downloadReport}
-            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-          >
-            Download Report
-          </button>
-        </div>
+        <button
+          onClick={downloadReport}
+          className="px-5 py-3 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition"
+        >
+          Download Report
+        </button>
       </div>
 
-      <div className="overflow-x-auto">
-        <table className="w-full border border-gray-300 rounded-lg text-sm">
+      <div className="overflow-hidden rounded-lg border border-gray-300 shadow-md">
+        <table className="w-full text-sm">
           <thead>
-            <tr className="bg-gray-100 text-gray-700">
-              <th className="px-4 py-2 text-left">Date</th>
-              <th className="px-4 py-2 text-left">Activity Type</th>
-              <th className="px-4 py-2 text-left">Duration/Count</th>
-              <th className="px-4 py-2 text-left">Coins Earned</th>
+            <tr className="bg-blue-100 text-gray-700">
+              <th className="px-4 py-3 text-left">Date</th>
+              <th className="px-4 py-3 text-left">Activity Type</th>
+              <th className="px-4 py-3 text-left">Duration/Count</th>
+              <th className="px-4 py-3 text-left">Coins Earned</th>
             </tr>
           </thead>
           <tbody>
             {paginatedActivities.map((activity, index) => (
               <tr
                 key={index}
-                className="border-t border-gray-300 hover:bg-gray-50"
+                className={`border-t ${
+                  index % 2 === 0 ? "bg-gray-50" : "bg-white"
+                } hover:bg-gray-100`}
               >
-                <td className="px-4 py-2">{activity.date}</td>
-                <td className="px-4 py-2">{activity.type}</td>
-                <td className="px-4 py-2">{activity.duration}</td>
-                <td className="px-4 py-2 font-semibold text-blue-600">
+                <td className="px-4 py-3">{activity.date}</td>
+                <td className="px-4 py-3">{activity.type}</td>
+                <td className="px-4 py-3">{activity.duration}</td>
+                <td className="px-4 py-3 font-semibold text-blue-600">
                   {activity.coins}
                 </td>
               </tr>
@@ -126,11 +123,11 @@ const Wallet = () => {
         </table>
       </div>
 
-      <div className="flex justify-center items-center space-x-2 mt-4">
+      <div className="flex justify-center items-center space-x-2 mt-6">
         <button
           onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
           disabled={currentPage === 1}
-          className={`p-2 rounded-md border ${
+          className={`p-3 rounded-lg border shadow-sm ${
             currentPage === 1
               ? "bg-gray-200 cursor-not-allowed"
               : "hover:bg-gray-300"
@@ -141,7 +138,7 @@ const Wallet = () => {
         {[...Array(totalPages)].map((_, index) => (
           <button
             key={index}
-            className={`px-3 py-1 rounded-md border ${
+            className={`px-4 py-2 rounded-lg border shadow-sm ${
               currentPage === index + 1
                 ? "bg-blue-600 text-white"
                 : "hover:bg-gray-200"
@@ -156,7 +153,7 @@ const Wallet = () => {
             setCurrentPage((prev) => Math.min(prev + 1, totalPages))
           }
           disabled={currentPage === totalPages}
-          className={`p-2 rounded-md border ${
+          className={`p-3 rounded-lg border shadow-sm ${
             currentPage === totalPages
               ? "bg-gray-200 cursor-not-allowed"
               : "hover:bg-gray-300"
