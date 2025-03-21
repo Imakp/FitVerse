@@ -12,6 +12,7 @@ import { FitnessDashboard } from "./components/FitnessDashboard";
 import { useAuth } from "./context/AuthContext";
 import Leaderboard from "./Components/Leaderboard.jsx";
 import Wallet from "./Pages/Wallet.jsx";
+import FitnessChallenges from "./Pages/Challenges.jsx";
 
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth();
@@ -71,7 +72,8 @@ const AuthWrapper = () => {
           path="/challenges"
           element={
             <ProtectedRoute>
-              <Challenges />
+              {/* <Challenges /> */}
+              <FitnessChallenges />
             </ProtectedRoute>
           }
         />
