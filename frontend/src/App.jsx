@@ -1,5 +1,5 @@
 // App.jsx
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Route, Routes, Navigate, useNavigate } from "react-router-dom";
 import Navbar from "./Components/Navbar";
 import DashBoard from "./Pages/DashBoard.jsx";
@@ -30,6 +30,8 @@ const AuthWrapper = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
 
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
   useEffect(() => {
     if (user) {
       navigate("/dashboard");
@@ -38,62 +40,73 @@ const AuthWrapper = () => {
 
   return (
     <div className="min-h-screen">
-      <Navbar />
-      <Routes>
-        <Route path="/" element={<Login />} />
-        <Route
-          path="/dashboard"
-          element={
-            <>
-              <FitnessDashboard />
-              {/* <DashBoard /> */}
-            </>
-          }
+      <Navbar
+        isMobileMenuOpen={isMobileMenuOpen}
+        setIsMobileMenuOpen={setIsMobileMenuOpen}
+      />
+      <div className="transition-all duration-300">
+        <Routes>
+          <Route path="/" element={<Login />} />
+          <Route
+            path="/dashboard"
+            element={
+              <>
+                <FitnessDashboard />
+                {/* <DashBoard /> */}
+              </>
+            }
+          />
+          <Route path="/wallet" element={<Wallet />} />
+          {/* Protected Routes */}
+          <Route
+            path="/rewards"
+            element={
+              <ProtectedRoute>
+                <Rewards />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/activity"
+            element={
+              <ProtectedRoute>
+                <Activity />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/challenges"
+            element={
+              <ProtectedRoute>
+                {/* <Challenges /> */}
+                <FitnessChallenges />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/my-profile"
+            element={
+              <ProtectedRoute>
+                <MyProfile />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/leaderboard"
+            element={
+              <ProtectedRoute>
+                <Leaderboard />
+              </ProtectedRoute>
+            }
+          />
+        </Routes>
+      </div>
+      {isMobileMenuOpen && (
+        <div
+          className="fixed inset-0 z-30 backdrop-blur-sm bg-black/20"
+          aria-hidden="true"
         />
-        <Route path="/wallet" element={<Wallet />} />
-        {/* Protected Routes */}
-        <Route
-          path="/rewards"
-          element={
-            <ProtectedRoute>
-              <Rewards />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/activity"
-          element={
-            <ProtectedRoute>
-              <Activity />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/challenges"
-          element={
-            <ProtectedRoute>
-              {/* <Challenges /> */}
-              <FitnessChallenges />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/my-profile"
-          element={
-            <ProtectedRoute>
-              <MyProfile />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/leaderboard"
-          element={
-            <ProtectedRoute>
-              <Leaderboard />
-            </ProtectedRoute>
-          }
-        />
-      </Routes>
+      )}
     </div>
   );
 };
