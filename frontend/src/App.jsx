@@ -7,7 +7,7 @@ import Rewards from "./Pages/Rewards.jsx";
 import Activity from "./Pages/Activity.jsx";
 import Challenges from "./Pages/Challenges.jsx";
 import MyProfile from "./Pages/MyProfile.jsx";
-import Login from "./components/Login";
+import Login from "./Components/Login.jsx";
 import { FitnessDashboard } from "./components/FitnessDashboard";
 import { useAuth } from "./context/AuthContext";
 import Leaderboard from "./Components/Leaderboard.jsx";
