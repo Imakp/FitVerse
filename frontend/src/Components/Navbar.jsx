@@ -64,21 +64,16 @@ export default function Navbar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isMobileMenuOpen]);
 
-  // NEW: Add window resize event listener to close mobile menu above 425px
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth > 425 && isMobileMenuOpen) {
+      if (window.innerWidth > 768 && isMobileMenuOpen) {
         setIsMobileMenuOpen(false);
       }
     };
 
-    // Initial check on component mount
     handleResize();
-
-    // Add event listener for window resize
     window.addEventListener("resize", handleResize);
 
-    // Cleanup function
     return () => {
       window.removeEventListener("resize", handleResize);
     };
