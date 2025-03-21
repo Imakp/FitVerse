@@ -132,8 +132,9 @@ export default function Navbar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
         <div className="flex justify-between items-center">
           {/* Logo */}
           <NavLink to="/dashboard" className="flex items-center">
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              FITVERSE
+            <h1 className="text-3xl font-bold">
+              <span className="text-gray-800">Fit</span>
+              <span className="text-blue-600">Verse</span>
             </h1>
           </NavLink>
 
