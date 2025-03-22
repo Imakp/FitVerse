@@ -1,14 +1,3 @@
-/**
- * Configuration for different fitness metrics
- * @type {Array<{
- *   name: string,
- *   dataType: string,
- *   dataSourceId: string,
- *   color: string,
- *   formatter: function,
- *   unit: string
- * }>}
- */
 export const FITNESS_METRICS = [
   {
     name: "Steps",
