@@ -11,3 +11,7 @@
 *::-webkit-scrollbar {
   display: none; /* Safari and Chrome */
 }
+
+*{
+  font-family: 'Geist', 'sans-serif';
+}
