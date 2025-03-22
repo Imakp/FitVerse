@@ -390,7 +390,7 @@ export const FitnessDashboard = () => {
               )}
             </div>
 
-            <div className="mt-4 md:mt-0 flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
+            {/* <div className="mt-4 md:mt-0 flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
               {isAuthenticated ? (
                 <button
                   onClick={signOut}
@@ -432,7 +432,7 @@ export const FitnessDashboard = () => {
                   <span>Connect Google Fit</span>
                 </button>
               )}
-            </div>
+            </div> */}
           </div>
         </header>
 

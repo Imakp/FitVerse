@@ -11,6 +11,7 @@ import { useAuth } from "./context/AuthContext";
 import Leaderboard from "./Components/Leaderboard.jsx";
 import Wallet from "./pages/Wallet.jsx";
 import FitnessChallenges from "./pages/Challenges.jsx";
+import LandingPage from "./Pages/LandingPage.jsx";
 
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth();
@@ -45,6 +46,7 @@ const AuthWrapper = () => {
       <div className="transition-all duration-300">
         <Routes>
           <Route path="/" element={<Login />} />
+          <Route path="/landing" element={<LandingPage />} />
           <Route
             path="/dashboard"
             element={
