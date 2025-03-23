@@ -9,6 +9,8 @@ const cors = require("cors");
 const userRoutes = require("./routes/userRoutes");
 const transactionRoutes = require("./routes/transactionsRoutes");
 const rewardRoutes = require("./routes/rewardRoutes");
+const challengeRoutes = require("./routes/challenge");
+const fitnessRoutes = require("./routes/fitnessRoutes"); 
 
 dotenv.config();
 
@@ -50,6 +52,9 @@ app.use("/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/transactions", transactionRoutes);
 app.use("/api/rewards", rewardRoutes);
+app.use("/api/challenges", challengeRoutes);
+app.use("/api/fitness", fitnessRoutes);
+
 
 app.get("/", (req, res) => {
   res.send("Hello World!");
