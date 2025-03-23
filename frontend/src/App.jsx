@@ -8,12 +8,11 @@ import Activity from "./Pages/Activity.jsx";
 import Challenges from "./Pages/Challenges.jsx";
 import MyProfile from "./Pages/MyProfile.jsx";
 import Login from "./components/Login";
-import { FitnessDashboard } from "./components/FitnessDashboard.jsx";
+import { FitnessDashboard } from "./components/FitnessDashboard";
 import { useAuth } from "./context/AuthContext";
 import Leaderboard from "./Components/Leaderboard.jsx";
 import Wallet from "./Pages/Wallet.jsx";
 import FitnessChallenges from "./Pages/Challenges.jsx";
-import Challenges2 from "./Pages/Challenges2.jsx";
 
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth();
@@ -48,6 +47,7 @@ const AuthWrapper = () => {
       <div className="transition-all duration-300">
         <Routes>
           <Route path="/" element={<Login />} />
+          <Route path="/landing" element={<LandingPage />} />
           <Route
             path="/dashboard"
             element={
