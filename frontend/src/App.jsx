@@ -8,11 +8,12 @@ import Activity from "./Pages/Activity.jsx";
 import Challenges from "./Pages/Challenges.jsx";
 import MyProfile from "./Pages/MyProfile.jsx";
 import Login from "./components/Login";
-import { FitnessDashboard } from "./components/FitnessDashboard";
+import { FitnessDashboard } from "./components/FitnessDashboard.jsx";
 import { useAuth } from "./context/AuthContext";
 import Leaderboard from "./Components/Leaderboard.jsx";
 import Wallet from "./Pages/Wallet.jsx";
 import FitnessChallenges from "./Pages/Challenges.jsx";
+import Challenges2 from "./Pages/Challenges2.jsx";
 
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth();
@@ -79,7 +80,8 @@ const AuthWrapper = () => {
             element={
               <ProtectedRoute>
                 {/* <Challenges /> */}
-                <FitnessChallenges />
+                {/* <FitnessChallenges /> */}
+                <Challenges2/>
               </ProtectedRoute>
             }
           />
