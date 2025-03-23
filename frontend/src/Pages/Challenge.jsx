@@ -3,7 +3,7 @@ import axios from "axios";
 import { useGoogleFit } from "../hooks/useGoogleFit";
 import { useAuth } from "../context/AuthContext";
 
-export default function Challenges2() {
+export default function Challenge() {
   const { isAuthenticated, fetchFitnessData } = useGoogleFit();
   const { user } = useAuth();
 
