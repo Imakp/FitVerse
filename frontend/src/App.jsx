@@ -11,7 +11,7 @@ import Login from "./components/Login";
 import { FitnessDashboard } from "./Components/FitnessDashboard.jsx";
 import { useAuth } from "./context/AuthContext";
 import Leaderboard from "./Components/Leaderboard.jsx";
-import Wallet from "./Pages/Wallet.jsx";
+// import Wallet from "./Pages/Wallet.jsx";
 // import FitnessChallenges from "./Pages/Challenges.jsx";
 import LandingPage from "./Pages/LandingPage.jsx";
 import Challenge from "./Pages/Challenge.jsx";
@@ -59,7 +59,7 @@ const AuthWrapper = () => {
               </>
             }
           />
-          <Route path="/wallet" element={<Wallet />} />
+          {/* <Route path="/wallet" element={<Wallet />} /> */}
           {/* Protected Routes */}
           <Route
             path="/rewards"
@@ -83,7 +83,7 @@ const AuthWrapper = () => {
               <ProtectedRoute>
                 {/* <Challenges /> */}
                 {/* <FitnessChallenges /> */}
-                <Challenge/>
+                <Challenge />
               </ProtectedRoute>
             }
           />
