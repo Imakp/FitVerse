@@ -2,16 +2,19 @@
 import { useEffect, useState } from "react";
 import { Route, Routes, Navigate, useNavigate } from "react-router-dom";
 import Navbar from "./Components/Navbar";
-import Rewards from "./pages/Rewards.jsx";
-import Activity from "./pages/Activity.jsx";
-import MyProfile from "./pages/MyProfile.jsx";
-import Login from "./Components/Login.jsx";
-import { FitnessDashboard } from "./components/FitnessDashboard";
+// import DashBoard from "./Pages/DashBoard.jsx";
+import Rewards from "./Pages/Rewards.jsx";
+import Activity from "./Pages/Activity.jsx";
+// import Challenges from "./Pages/Challenges.jsx";
+import MyProfile from "./Pages/MyProfile.jsx";
+import Login from "./components/Login";
+import { FitnessDashboard } from "./Components/FitnessDashboard.jsx";
 import { useAuth } from "./context/AuthContext";
 import Leaderboard from "./Components/Leaderboard.jsx";
-import Wallet from "./pages/Wallet.jsx";
-import FitnessChallenges from "./pages/Challenges.jsx";
+// import Wallet from "./Pages/Wallet.jsx";
+// import FitnessChallenges from "./Pages/Challenges.jsx";
 import LandingPage from "./Pages/LandingPage.jsx";
+import Challenge from "./Pages/Challenge.jsx";
 
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth();
@@ -56,7 +59,7 @@ const AuthWrapper = () => {
               </>
             }
           />
-          <Route path="/wallet" element={<Wallet />} />
+          {/* <Route path="/wallet" element={<Wallet />} /> */}
           {/* Protected Routes */}
           <Route
             path="/rewards"
@@ -79,7 +82,8 @@ const AuthWrapper = () => {
             element={
               <ProtectedRoute>
                 {/* <Challenges /> */}
-                <FitnessChallenges />
+                {/* <FitnessChallenges /> */}
+                <Challenge />
               </ProtectedRoute>
             }
           />

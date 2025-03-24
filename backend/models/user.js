@@ -6,6 +6,12 @@ const userSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   name: { type: String },
   profilePicture: { type: String },
+  fitnessData: {
+    stepCount: { type: Number, default: 0 },
+    activeMinutes: { type: Number, default: 0 },
+    caloriesBurned: { type: Number, default: 0 },
+  },
+  redeemedChallenges: [{ type: mongoose.Schema.Types.ObjectId, ref: "Challenge" }],
   wallet: {
     balance: { type: Number, default: 0 }, // User's coin balance
     transactions: [{ type: mongoose.Schema.Types.ObjectId, ref: "Transaction" }]
