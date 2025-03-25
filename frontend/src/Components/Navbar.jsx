@@ -32,9 +32,10 @@ export default function Navbar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
   useEffect(() => {
     const fetchBalance = async () => {
       if (!user || !user._id) return;
+      console.log(user);
 
       try {
-        const response = await axios.getBalance(
+        const response = await axios.get(
           `http://localhost:3000/api/users/balance/${user._id}`
         );
         setBalance(response.data.balance);
@@ -194,17 +195,12 @@ export default function Navbar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
                     className="flex items-center space-x-2 focus:outline-none group"
                   >
                     <div className="w-10 h-10 rounded-full overflow-hidden ring-2 ring-gray-200 group-hover:ring-blue-300 transition-all duration-200">
-                      {user?.profilePicture ? (
-                        <img
-                          src={user.profilePicture}
-                          alt="Profile"
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <div className="w-full h-full bg-gray-100 flex items-center justify-center">
-                          <FaUserCircle size={24} className="text-gray-400" />
-                        </div>
-                      )}
+                      <img
+                        src={user?.profilePicture}
+                        alt="Profile"
+                        className="w-10 h-10 rounded-full"
+                        onError={(e) => (e.target.src = "/default-profile.png")}
+                      />
                     </div>
                   </button>
 
