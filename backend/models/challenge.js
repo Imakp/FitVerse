@@ -1,12 +1,13 @@
 const mongoose = require("mongoose");
 
 const ChallengeSchema = new mongoose.Schema({
-  title: String,
-  description: String,
-  metric: String, // e.g., "stepCount", "activeMinutes", "caloriesBurned"
-  target: Number,
-  unit: String, // e.g., "steps", "minutes", "kcal"
-  reward: Number,
-});
+  title: { type: String, required: true },
+  description: { type: String, required: true },
+  metric: { type: String, required: true, index: true }, // e.g., "stepCount", "activeMinutes"
+  target: { type: Number, required: true },
+  redeemed: { type: Boolean, default: false, index: true },
+  unit: { type: String, required: true }, // e.g., "steps", "minutes"
+  reward: { type: Number, required: true },
+}, { timestamps: true });
 
 module.exports = mongoose.model("Challenge", ChallengeSchema);

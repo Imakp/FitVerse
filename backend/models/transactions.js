@@ -12,6 +12,7 @@ const TransactionSchema = new mongoose.Schema(
     challengeId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Challenge",
+      redeemed: null,
       default: null,
     }, // Track challenge rewards
     reference: { type: String }, // Reason (e.g., "Completed Task", "Bought Item")
