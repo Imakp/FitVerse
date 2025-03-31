@@ -1,16 +1,16 @@
 // App.jsx
 import { useEffect, useState } from "react";
 import { Route, Routes, Navigate, useNavigate } from "react-router-dom";
-import Navbar from "./Components/layout/Navbar.jsx"; // Updated path
-import RewardsPage from "./Components/rewards/RewardsPage.jsx"; // Updated path and name
-import ActivityPage from "./Components/activity/ActivityPage.jsx"; // Updated path and name
-import ProfilePage from "./Components/profile/ProfilePage.jsx"; // Updated path and name
-import LoginPage from "./Components/auth/LoginPage.jsx"; // Updated path and name
-import { FitnessDashboard } from "./Components/dashboard/FitnessDashboard.jsx"; // Updated path
+import Navbar from "./Components/layout/Navbar.jsx";
+import RewardsPage from "./Components/rewards/RewardsPage.jsx";
+import ActivityPage from "./Components/activity/ActivityPage.jsx";
+import ProfilePage from "./Components/profile/ProfilePage.jsx";
+import LoginPage from "./Components/auth/LoginPage.jsx";
+import { FitnessDashboard } from "./Components/dashboard/FitnessDashboard.jsx";
 import { useAuth } from "./context/AuthContext";
-import Leaderboard from "./Components/leaderboard/Leaderboard.jsx"; // Updated path
-import LandingPage from "./Components/landing/LandingPage.jsx"; // Updated path
-import ChallengePage from "./Components/challenges/ChallengePage.jsx"; // Updated path and name (assuming user moved it)
+import Leaderboard from "./Components/leaderboard/Leaderboard.jsx";
+import LandingPage from "./Components/landing/LandingPage.jsx";
+import ChallengePage from "./Components/challenges/ChallengePage.jsx";
 
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth();
@@ -18,23 +18,14 @@ const ProtectedRoute = ({ children }) => {
   if (loading) return <div>Loading...</div>;
 
   if (!user) {
-    return <Navigate to="/" replace />;
+    return <Navigate to="/login" replace />;
   }
 
   return children;
 };
 
 const AuthWrapper = () => {
-  const { user } = useAuth();
-  const navigate = useNavigate();
-
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
-  useEffect(() => {
-    if (user) {
-      navigate("/dashboard");
-    }
-  }, [user, navigate]);
 
   return (
     <div className="min-h-screen">
@@ -42,21 +33,20 @@ const AuthWrapper = () => {
         isMobileMenuOpen={isMobileMenuOpen}
         setIsMobileMenuOpen={setIsMobileMenuOpen}
       />
-  <div className="transition-all duration-300">
-    <Routes>
-      <Route path="/" element={<LoginPage />} />
-      <Route path="/landing" element={<LandingPage />} />
-      <Route
+      <div className="transition-all duration-300">
+        <Routes>
+          {/* Landing page is now the default route */}
+          <Route path="/" element={<LandingPage />} />
+          {/* Login page route */}
+          <Route path="/login" element={<LoginPage />} />
+          <Route
             path="/dashboard"
             element={
               <>
                 <FitnessDashboard />
-                {/* <DashBoard /> */}
               </>
             }
           />
-          {/* <Route path="/wallet" element={<Wallet />} /> */}
-          {/* Protected Routes */}
           <Route
             path="/rewards"
             element={

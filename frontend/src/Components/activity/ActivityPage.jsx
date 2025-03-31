@@ -15,10 +15,11 @@ import {
   Area,
 } from "recharts";
 import { motion, AnimatePresence } from "framer-motion";
-import { Download, 
-  TrendingUp, 
-  Activity, 
-  Target, 
+import {
+  Download,
+  TrendingUp,
+  Activity,
+  Target,
   Award,
   BarChart2,
   LineChart as LineChartIcon,
@@ -26,7 +27,7 @@ import { Download,
   ChevronRight,
   ChevronLeft,
   AlertCircle,
-  RefreshCw
+  RefreshCw,
 } from "lucide-react";
 
 // Import the same FITNESS_METRICS constant from the original file
@@ -125,7 +126,9 @@ const MetricChart = ({ data, metric, timeRange }) => {
           <div className="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
             <TrendingUp className="h-8 w-8 text-gray-400" />
           </div>
-          <p className="text-gray-500">No data available for this time period</p>
+          <p className="text-gray-500">
+            No data available for this time period
+          </p>
         </div>
       </motion.div>
     );
@@ -142,13 +145,17 @@ const MetricChart = ({ data, metric, timeRange }) => {
       whileHover={{ scale: 1.02 }}
       className="bg-white rounded-xl shadow-lg p-6 relative overflow-hidden"
     >
-      <div className="absolute top-0 right-0 w-32 h-32 bg-opacity-10 rounded-full transform translate-x-16 -translate-y-16"
-           style={{ backgroundColor: metric.color }}></div>
-      
+      <div
+        className="absolute top-0 right-0 w-32 h-32 bg-opacity-10 rounded-full transform translate-x-16 -translate-y-16"
+        style={{ backgroundColor: metric.color }}
+      ></div>
+
       <div className="flex items-center justify-between mb-4 relative z-10">
         <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 rounded-full flex items-center justify-center"
-               style={{ backgroundColor: `${metric.color}20` }}>
+          <div
+            className="w-10 h-10 rounded-full flex items-center justify-center"
+            style={{ backgroundColor: `${metric.color}20` }}
+          >
             <span className="text-xl">{metric.icon}</span>
           </div>
           <h3 className="text-lg font-medium text-gray-800">
@@ -157,7 +164,7 @@ const MetricChart = ({ data, metric, timeRange }) => {
         </div>
         <TrendingUp className="h-5 w-5" style={{ color: metric.color }} />
       </div>
-      
+
       <div className="relative z-10">
         <ResponsiveContainer width="100%" height={250}>
           {metric.name === "Steps" ? (
@@ -177,10 +184,10 @@ const MetricChart = ({ data, metric, timeRange }) => {
                 formatter={(value) => [`${value} ${metric.unit}`, metric.name]}
                 labelFormatter={(label) => formatDate(label)}
                 contentStyle={{
-                  backgroundColor: 'white',
-                  border: 'none',
-                  borderRadius: '8px',
-                  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                  backgroundColor: "white",
+                  border: "none",
+                  borderRadius: "8px",
+                  boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
                 }}
               />
               <Bar
@@ -207,10 +214,10 @@ const MetricChart = ({ data, metric, timeRange }) => {
                 formatter={(value) => [`${value} ${metric.unit}`, metric.name]}
                 labelFormatter={(label) => formatDate(label)}
                 contentStyle={{
-                  backgroundColor: 'white',
-                  border: 'none',
-                  borderRadius: '8px',
-                  boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                  backgroundColor: "white",
+                  border: "none",
+                  borderRadius: "8px",
+                  boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
                 }}
               />
               <Line
@@ -256,17 +263,19 @@ const ExportData = ({ metricsData }) => {
   const handleExport = () => {
     const data = Object.entries(metricsData).map(([metric, values]) => ({
       metric,
-      data: values.map(v => ({
+      data: values.map((v) => ({
         date: v.date.toISOString(),
-        value: v.value
-      }))
+        value: v.value,
+      })),
     }));
 
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const blob = new Blob([JSON.stringify(data, null, 2)], {
+      type: "application/json",
+    });
     const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
+    const a = document.createElement("a");
     a.href = url;
-    a.download = `fitness-data-${new Date().toISOString().split('T')[0]}.json`;
+    a.download = `fitness-data-${new Date().toISOString().split("T")[0]}.json`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -287,14 +296,9 @@ const ExportData = ({ metricsData }) => {
 };
 
 export const ActivityPage = () => {
-  const {
-    isAuthenticated,
-    error,
-    signIn,
-    userProfile,
-    fetchFitnessData
-  } = useGoogleFit();
-  
+  const { isAuthenticated, error, signIn, userProfile, fetchFitnessData } =
+    useGoogleFit();
+
   const [loading, setLoading] = useState(false);
   const [metricsData, setMetricsData] = useState({});
   const [fetchError, setFetchError] = useState(null);
@@ -302,22 +306,23 @@ export const ActivityPage = () => {
   const [activeCategory, setActiveCategory] = useState("all");
 
   // Filter metrics based on active category
-  const filteredMetrics = activeCategory === "all"
-    ? FITNESS_METRICS
-    : FITNESS_METRICS.filter(metric => 
-        metric.name.toLowerCase().includes(activeCategory)
-      );
+  const filteredMetrics =
+    activeCategory === "all"
+      ? FITNESS_METRICS
+      : FITNESS_METRICS.filter((metric) =>
+          metric.name.toLowerCase().includes(activeCategory)
+        );
 
   const fetchAllMetrics = async () => {
     if (!isAuthenticated) return;
-    
+
     setLoading(true);
     setFetchError(null);
-    
+
     try {
       const now = new Date();
       let startDate;
-      
+
       switch (timeRange) {
         case "month":
           startDate = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
@@ -328,9 +333,9 @@ export const ActivityPage = () => {
         default: // week
           startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
       }
-      
+
       const results = {};
-      
+
       for (const metric of FITNESS_METRICS) {
         try {
           const data = await fetchFitnessData(
@@ -339,25 +344,26 @@ export const ActivityPage = () => {
             startDate,
             now
           );
-          
+
           if (!data?.bucket) {
             console.warn(`No data returned for ${metric.name}`);
             continue;
           }
-          
+
           const processedData = data.bucket
             .map((bucket) => {
               const point = bucket.dataset?.[0]?.point?.[0];
               if (!point) return null;
-              
-              const value = point.value?.[0]?.intVal || point.value?.[0]?.fpVal || 0;
+
+              const value =
+                point.value?.[0]?.intVal || point.value?.[0]?.fpVal || 0;
               return {
                 date: new Date(parseInt(bucket.startTimeMillis)),
                 value: metric.formatter(value),
               };
             })
             .filter(Boolean);
-            
+
           if (processedData.length > 0) {
             results[metric.name] = processedData;
           }
@@ -365,7 +371,7 @@ export const ActivityPage = () => {
           console.error(`Error fetching ${metric.name}:`, err);
         }
       }
-      
+
       if (Object.keys(results).length === 0) {
         setFetchError("No fitness data available for the selected time range.");
       } else {
@@ -378,17 +384,17 @@ export const ActivityPage = () => {
       setLoading(false);
     }
   };
-  
+
   useEffect(() => {
     if (isAuthenticated) {
       fetchAllMetrics();
     }
   }, [isAuthenticated, timeRange]);
-  
+
   // Calculate total metrics for summary cards
   const calculateTotals = () => {
     const totals = {};
-    
+
     FITNESS_METRICS.forEach((metric) => {
       const data = metricsData[metric.name];
       if (data && data.length > 0) {
@@ -396,16 +402,16 @@ export const ActivityPage = () => {
         data.forEach((item) => {
           total += item.value;
         });
-        
+
         totals[metric.name] = total;
       } else {
         totals[metric.name] = 0;
       }
     });
-    
+
     return totals;
   };
-  
+
   const totals = calculateTotals();
 
   return (
@@ -440,7 +446,7 @@ export const ActivityPage = () => {
                 </motion.div>
               )}
             </div>
-            
+
             {!isAuthenticated && (
               <motion.div
                 initial={{ opacity: 0, x: 20 }}
@@ -473,7 +479,7 @@ export const ActivityPage = () => {
             )}
           </div>
         </motion.header>
-        
+
         {/* Main Content */}
         <main>
           {!isAuthenticated ? (
@@ -483,7 +489,7 @@ export const ActivityPage = () => {
               className="bg-white rounded-xl shadow-lg p-8 text-center relative overflow-hidden"
             >
               <div className="absolute top-0 right-0 w-64 h-64 bg-blue-100 rounded-full transform translate-x-32 -translate-y-32"></div>
-              
+
               <div className="relative z-10">
                 <div className="mx-auto h-24 w-24 mb-6 bg-blue-100 rounded-full flex items-center justify-center">
                   <svg
@@ -504,7 +510,8 @@ export const ActivityPage = () => {
                   Connect to Google Fit
                 </h2>
                 <p className="text-gray-600 mb-6 max-w-md mx-auto">
-                  Connect your Google Fit account to view your activity metrics and track your progress.
+                  Connect your Google Fit account to view your activity metrics
+                  and track your progress.
                 </p>
                 <motion.button
                   whileHover={{ scale: 1.05 }}
@@ -529,7 +536,11 @@ export const ActivityPage = () => {
                 <div className="flex justify-center items-center py-20">
                   <motion.div
                     animate={{ rotate: 360 }}
-                    transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                    transition={{
+                      duration: 1,
+                      repeat: Infinity,
+                      ease: "linear",
+                    }}
                     className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full"
                   ></motion.div>
                 </div>
@@ -560,24 +571,27 @@ export const ActivityPage = () => {
                       </motion.div>
                     )}
                   </AnimatePresence>
-                  
+
                   {/* Category Navbar */}
                   <CategoryNavbar
                     activeCategory={activeCategory}
                     setActiveCategory={setActiveCategory}
                   />
-                  
+
                   {/* Time Range Selector */}
                   <div className="flex justify-between items-center">
                     <h2 className="text-xl font-semibold text-gray-800">
                       Activity Trends
                     </h2>
                     <div className="flex items-center space-x-4">
-                      <TimeRangeSelector timeRange={timeRange} setTimeRange={setTimeRange} />
+                      <TimeRangeSelector
+                        timeRange={timeRange}
+                        setTimeRange={setTimeRange}
+                      />
                       <ExportData metricsData={metricsData} />
                     </div>
                   </div>
-                  
+
                   {/* Charts */}
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <AnimatePresence mode="wait">
@@ -598,7 +612,7 @@ export const ActivityPage = () => {
                       ))}
                     </AnimatePresence>
                   </div>
-                  
+
                   {/* Combined Chart */}
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
@@ -606,7 +620,7 @@ export const ActivityPage = () => {
                     className="bg-white rounded-xl shadow-lg p-6 relative overflow-hidden"
                   >
                     <div className="absolute top-0 right-0 w-32 h-32 bg-purple-100 rounded-full transform translate-x-16 -translate-y-16"></div>
-                    
+
                     <div className="relative z-10">
                       <h3 className="text-lg font-medium text-gray-800 mb-4">
                         Combined Activity Overview
@@ -615,7 +629,10 @@ export const ActivityPage = () => {
                         <LineChart
                           margin={{ top: 5, right: 20, left: 0, bottom: 5 }}
                         >
-                          <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                          <CartesianGrid
+                            strokeDasharray="3 3"
+                            vertical={false}
+                          />
                           <XAxis
                             dataKey="date"
                             tickFormatter={formatDate}
@@ -626,38 +643,44 @@ export const ActivityPage = () => {
                           <Tooltip
                             labelFormatter={(label) => formatDate(label)}
                             contentStyle={{
-                              backgroundColor: 'white',
-                              border: 'none',
-                              borderRadius: '8px',
-                              boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                              backgroundColor: "white",
+                              border: "none",
+                              borderRadius: "8px",
+                              boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
                             }}
                           />
                           <Legend />
-                          
-                          {Object.entries(metricsData).map(([metricName, data]) => {
-                            const metric = FITNESS_METRICS.find(m => m.name === metricName);
-                            if (!metric) return null;
-                            
-                            return (
-                              <Line
-                                key={metricName}
-                                yAxisId={metricName === "Steps" ? "left" : "right"}
-                                type="monotone"
-                                data={data}
-                                dataKey="value"
-                                name={`${metricName} (${metric.unit})`}
-                                stroke={metric.color}
-                                strokeWidth={2}
-                                dot={{ r: 3 }}
-                                activeDot={{ r: 6 }}
-                              />
-                            );
-                          })}
+
+                          {Object.entries(metricsData).map(
+                            ([metricName, data]) => {
+                              const metric = FITNESS_METRICS.find(
+                                (m) => m.name === metricName
+                              );
+                              if (!metric) return null;
+
+                              return (
+                                <Line
+                                  key={metricName}
+                                  yAxisId={
+                                    metricName === "Steps" ? "left" : "right"
+                                  }
+                                  type="monotone"
+                                  data={data}
+                                  dataKey="value"
+                                  name={`${metricName} (${metric.unit})`}
+                                  stroke={metric.color}
+                                  strokeWidth={2}
+                                  dot={{ r: 3 }}
+                                  activeDot={{ r: 6 }}
+                                />
+                              );
+                            }
+                          )}
                         </LineChart>
                       </ResponsiveContainer>
                     </div>
                   </motion.div>
-                  
+
                   {/* Refresh Button */}
                   <div className="flex justify-center mt-8">
                     <motion.button

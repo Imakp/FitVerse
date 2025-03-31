@@ -27,12 +27,12 @@ export default function Navbar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
   const [balance, setBalance] = useState(null);
   const [error, setError] = useState(null);
 
-  // Hide Navbar on Login Page
-  if (location.pathname === "/login") return null;
-
   useEffect(() => {
+    if (!user || !user._id || location.pathname === "/login") {
+      if (!user || location.pathname === "/login") setBalance(null);
+      return;
+    }
     const fetchBalance = async () => {
-      if (!user || !user._id) return;
       console.log(user);
 
       try {
@@ -46,10 +46,11 @@ export default function Navbar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
     };
 
     fetchBalance();
-  }, [user?._id, spendCoins]);
+  }, [user, location.pathname, spendCoins]);
 
-  // Listen for balance updates
   useEffect(() => {
+    if (!user || location.pathname === "/login") return;
+
     const handleBalanceUpdate = (event) => {
       setBalance(event.detail.balance);
     };
@@ -58,9 +59,8 @@ export default function Navbar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
     return () => {
       window.removeEventListener("balanceUpdated", handleBalanceUpdate);
     };
-  }, []);
+  }, [user, location.pathname]);
 
-  // Close dropdown and mobile menu when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -79,7 +79,7 @@ export default function Navbar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
 
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [isMobileMenuOpen]);
+  }, [isMobileMenuOpen, setIsMobileMenuOpen]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -96,12 +96,13 @@ export default function Navbar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
     };
   }, [isMobileMenuOpen, setIsMobileMenuOpen]);
 
-  // Close mobile menu on route change
   useEffect(() => {
+    if (location.pathname === "/login") return;
     setIsMobileMenuOpen(false);
-  }, [location.pathname]);
+  }, [location.pathname, setIsMobileMenuOpen]);
 
-  if (!user) return null; // Hide navbar if not logged in
+  if (location.pathname === "/login") return null;
+  if (!user) return null;
 
   const navItems = [
     {

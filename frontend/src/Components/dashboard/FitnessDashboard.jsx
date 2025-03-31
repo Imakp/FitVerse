@@ -16,7 +16,15 @@ import {
   Bar,
 } from "recharts";
 import { motion, AnimatePresence } from "framer-motion";
-import { Download, TrendingUp, Activity, Target, Award, RefreshCw, AlertCircle } from "lucide-react";
+import {
+  Download,
+  TrendingUp,
+  Activity,
+  Target,
+  Award,
+  RefreshCw,
+  AlertCircle,
+} from "lucide-react";
 
 const FITNESS_METRICS = [
   {
@@ -60,9 +68,18 @@ const FITNESS_METRICS = [
   },
 ];
 
-const MetricCard = ({ title, value, unit, icon, color, description, goal, progress }) => {
+const MetricCard = ({
+  title,
+  value,
+  unit,
+  icon,
+  color,
+  description,
+  goal,
+  progress,
+}) => {
   const percentage = Math.min((value / goal) * 100, 100);
-  
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -71,26 +88,32 @@ const MetricCard = ({ title, value, unit, icon, color, description, goal, progre
       className="bg-white rounded-xl shadow-lg p-6 flex flex-col border-t-4 relative overflow-hidden"
       style={{ borderColor: color }}
     >
-      <div className="absolute top-0 right-0 w-32 h-32 bg-opacity-10 rounded-full transform translate-x-16 -translate-y-16"
-           style={{ backgroundColor: color }}></div>
-      
+      <div
+        className="absolute top-0 right-0 w-32 h-32 bg-opacity-10 rounded-full transform translate-x-16 -translate-y-16"
+        style={{ backgroundColor: color }}
+      ></div>
+
       <div className="flex justify-between items-start relative z-10">
         <span className="text-4xl">{icon}</span>
         <span className="text-sm text-gray-500 font-medium uppercase tracking-wider">
           {title}
         </span>
       </div>
-      
+
       <div className="mt-4 relative z-10">
         <div className="flex items-baseline">
-          <span className="text-4xl font-bold bg-clip-text text-transparent"
-               style={{ backgroundImage: `linear-gradient(to right, ${color}, ${color}80)` }}>
+          <span
+            className="text-4xl font-bold bg-clip-text text-transparent"
+            style={{
+              backgroundImage: `linear-gradient(to right, ${color}, ${color}80)`,
+            }}
+          >
             {value.toLocaleString()}
           </span>
           <span className="ml-1 text-lg text-gray-500">{unit}</span>
         </div>
         <p className="text-sm text-gray-600 mt-2">{description}</p>
-        
+
         <div className="mt-4">
           <div className="flex justify-between text-sm text-gray-500 mb-1">
             <span>Daily Goal Progress</span>
@@ -123,7 +146,9 @@ const ActivityStreak = ({ data }) => {
         <h3 className="text-lg font-medium text-gray-800 mb-4 relative z-10">
           Activity Streak
         </h3>
-        <p className="text-gray-500 relative z-10">No activity data available</p>
+        <p className="text-gray-500 relative z-10">
+          No activity data available
+        </p>
       </motion.div>
     );
   }
@@ -132,21 +157,25 @@ const ActivityStreak = ({ data }) => {
   const stepsData = [...data.Steps].sort(
     (a, b) => new Date(a.date) - new Date(b.date)
   );
-  
+
   let currentStreak = 0;
   const today = new Date();
   today.setHours(0, 0, 0, 0);
-  
+
   // Start from yesterday since today's data might not be complete
   const yesterday = new Date(today);
   yesterday.setDate(yesterday.getDate() - 1);
-  
+
   for (let i = stepsData.length - 1; i >= 0; i--) {
     const date = new Date(stepsData[i].date);
     date.setHours(0, 0, 0, 0);
-    
-    if (date.getTime() === yesterday.getTime() - currentStreak * 24 * 60 * 60 * 1000) {
-      if (stepsData[i].value >= 1000) { // Only count days with at least 1000 steps
+
+    if (
+      date.getTime() ===
+      yesterday.getTime() - currentStreak * 24 * 60 * 60 * 1000
+    ) {
+      if (stepsData[i].value >= 1000) {
+        // Only count days with at least 1000 steps
         currentStreak++;
       } else {
         break;
@@ -155,7 +184,7 @@ const ActivityStreak = ({ data }) => {
       break;
     }
   }
-  
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -164,12 +193,12 @@ const ActivityStreak = ({ data }) => {
       className="bg-white rounded-xl shadow-lg p-6 relative overflow-hidden"
     >
       <div className="absolute top-0 right-0 w-32 h-32 bg-blue-100 rounded-full transform translate-x-16 -translate-y-16"></div>
-      
+
       <div className="flex items-center justify-between mb-4 relative z-10">
         <h3 className="text-lg font-medium text-gray-800">Activity Streak</h3>
         <Award className="h-6 w-6 text-yellow-500" />
       </div>
-      
+
       <div className="flex items-center space-x-4 relative z-10">
         <motion.div
           initial={{ scale: 0 }}
@@ -200,7 +229,9 @@ const WeeklyProgress = ({ data }) => {
         <h3 className="text-lg font-medium text-gray-800 mb-4 relative z-10">
           This Week's Progress
         </h3>
-        <p className="text-gray-500 relative z-10">No data available for this week</p>
+        <p className="text-gray-500 relative z-10">
+          No data available for this week
+        </p>
       </motion.div>
     );
   }
@@ -210,33 +241,35 @@ const WeeklyProgress = ({ data }) => {
   today.setHours(0, 0, 0, 0);
   const yesterday = new Date(today);
   yesterday.setDate(yesterday.getDate() - 1);
-  
+
   // Calculate start of week (7 days before yesterday)
   const startOfWeek = new Date(yesterday);
   startOfWeek.setDate(yesterday.getDate() - 6);
   startOfWeek.setHours(0, 0, 0, 0);
 
-  const weeklyData = Object.keys(data).map(metricName => {
-    const metric = FITNESS_METRICS.find(m => m.name === metricName);
+  const weeklyData = Object.keys(data).map((metricName) => {
+    const metric = FITNESS_METRICS.find((m) => m.name === metricName);
     const weekData = data[metricName]
-      .filter(item => {
+      .filter((item) => {
         const itemDate = new Date(item.date);
         itemDate.setHours(0, 0, 0, 0);
         return itemDate >= startOfWeek && itemDate <= yesterday;
       })
-      .map(item => ({
+      .map((item) => ({
         ...item,
-        name: new Date(item.date).toLocaleDateString('en-US', { weekday: 'short' })
+        name: new Date(item.date).toLocaleDateString("en-US", {
+          weekday: "short",
+        }),
       }));
-    
+
     // Sort data by date to ensure correct order
     weekData.sort((a, b) => new Date(a.date) - new Date(b.date));
-    
+
     return {
       name: metricName,
       data: weekData,
       color: metric?.color || "#000",
-      unit: metric?.unit || ""
+      unit: metric?.unit || "",
     };
   });
 
@@ -248,13 +281,13 @@ const WeeklyProgress = ({ data }) => {
       className="bg-white rounded-xl shadow-lg p-6 relative overflow-hidden"
     >
       <div className="absolute top-0 right-0 w-32 h-32 bg-purple-100 rounded-full transform translate-x-16 -translate-y-16"></div>
-      
+
       <h3 className="text-lg font-medium text-gray-800 mb-4 relative z-10">
         This Week's Progress
       </h3>
-      
+
       <div className="space-y-6 relative z-10">
-        {weeklyData.map(metric => (
+        {weeklyData.map((metric) => (
           <motion.div
             key={metric.name}
             initial={{ opacity: 0, x: -20 }}
@@ -272,20 +305,29 @@ const WeeklyProgress = ({ data }) => {
                 margin={{ top: 5, right: 0, left: 0, bottom: 5 }}
               >
                 <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                <XAxis 
-                  dataKey="name" 
+                <XAxis
+                  dataKey="name"
                   tick={{ fontSize: 12 }}
                   interval={0} // Show all ticks
                 />
                 <YAxis hide />
                 <Tooltip
-                  formatter={(value) => [`${value} ${metric.unit}`, metric.name]}
-                  labelFormatter={(label) => new Date(label).toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}
+                  formatter={(value) => [
+                    `${value} ${metric.unit}`,
+                    metric.name,
+                  ]}
+                  labelFormatter={(label) =>
+                    new Date(label).toLocaleDateString("en-US", {
+                      weekday: "long",
+                      month: "short",
+                      day: "numeric",
+                    })
+                  }
                 />
-                <Area 
-                  type="monotone" 
-                  dataKey="value" 
-                  stroke={metric.color} 
+                <Area
+                  type="monotone"
+                  dataKey="value"
+                  stroke={metric.color}
                   fill={metric.color}
                   fillOpacity={0.2}
                 />
@@ -300,7 +342,7 @@ const WeeklyProgress = ({ data }) => {
 
 const AchievementCard = ({ title, progress, goal, icon, color }) => {
   const percentage = Math.min(Math.round((progress / goal) * 100), 100);
-  
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -308,11 +350,13 @@ const AchievementCard = ({ title, progress, goal, icon, color }) => {
       whileHover={{ scale: 1.02 }}
       className="bg-white rounded-xl shadow-lg p-4 relative overflow-hidden"
     >
-      <div className="absolute top-0 right-0 w-24 h-24 bg-opacity-10 rounded-full transform translate-x-12 -translate-y-12"
-           style={{ backgroundColor: color }}></div>
-      
+      <div
+        className="absolute top-0 right-0 w-24 h-24 bg-opacity-10 rounded-full transform translate-x-12 -translate-y-12"
+        style={{ backgroundColor: color }}
+      ></div>
+
       <div className="flex items-center mb-2 relative z-10">
-        <div 
+        <div
           className="w-10 h-10 rounded-full flex items-center justify-center mr-3"
           style={{ backgroundColor: `${color}20` }}
         >
@@ -320,7 +364,7 @@ const AchievementCard = ({ title, progress, goal, icon, color }) => {
         </div>
         <h4 className="font-medium text-gray-800">{title}</h4>
       </div>
-      
+
       <div className="mt-3 relative z-10">
         <div className="flex justify-between text-sm mb-1">
           <span className="font-medium">{progress.toLocaleString()}</span>
@@ -350,7 +394,7 @@ export const FitnessDashboard = () => {
     userProfile,
     accessToken,
   } = useGoogleFit();
-  
+
   const [loading, setLoading] = useState(false);
   const [metricsData, setMetricsData] = useState({});
   const [timeRange, setTimeRange] = useState("week");
@@ -359,11 +403,11 @@ export const FitnessDashboard = () => {
   const fetchAllMetrics = async () => {
     setLoading(true);
     setFetchError(null);
-    
+
     try {
       const now = new Date();
       let startDate;
-      
+
       switch (timeRange) {
         case "month":
           startDate = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
@@ -374,7 +418,7 @@ export const FitnessDashboard = () => {
         default: // week
           startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
       }
-      
+
       // First verify access to Fitness API
       try {
         await axios.get(`${FITNESS_API_BASE_URL}/dataSources`, {
@@ -389,10 +433,10 @@ export const FitnessDashboard = () => {
         }
         throw err;
       }
-      
+
       const results = {};
       const errors = [];
-      
+
       for (const metric of FITNESS_METRICS) {
         try {
           const data = await fetchFitnessData(
@@ -401,25 +445,26 @@ export const FitnessDashboard = () => {
             startDate,
             now
           );
-          
+
           if (!data?.bucket) {
             console.warn(`No data returned for ${metric.name}`);
             continue;
           }
-          
+
           const processedData = data.bucket
             .map((bucket) => {
               const point = bucket.dataset?.[0]?.point?.[0];
               if (!point) return null;
-              
-              const value = point.value?.[0]?.intVal || point.value?.[0]?.fpVal || 0;
+
+              const value =
+                point.value?.[0]?.intVal || point.value?.[0]?.fpVal || 0;
               return {
                 date: new Date(parseInt(bucket.startTimeMillis)),
                 value: metric.formatter(value),
               };
             })
             .filter(Boolean);
-            
+
           if (processedData.length > 0) {
             results[metric.name] = processedData;
           }
@@ -429,16 +474,16 @@ export const FitnessDashboard = () => {
           results[metric.name] = [];
         }
       }
-      
+
       if (errors.length > 0) {
         setFetchError(
           "Some data couldn't be loaded. Please ensure you've granted all required permissions:\n" +
-          "1. Go to Google Account Settings (https://myaccount.google.com/permissions)\n" +
-          "2. Remove FitVerse app permissions\n" +
-          "3. Log out and log in again to re-grant permissions"
+            "1. Go to Google Account Settings (https://myaccount.google.com/permissions)\n" +
+            "2. Remove FitVerse app permissions\n" +
+            "3. Log out and log in again to re-grant permissions"
         );
       }
-      
+
       if (Object.keys(results).length === 0) {
         setFetchError("No fitness data available for the selected time range.");
       } else {
@@ -451,35 +496,35 @@ export const FitnessDashboard = () => {
       setLoading(false);
     }
   };
-  
+
   useEffect(() => {
     if (isAuthenticated) {
       fetchAllMetrics();
     }
   }, [isAuthenticated, timeRange]);
-  
+
   // Calculate summary metrics
   const calculateSummaryMetrics = () => {
     const summaries = {};
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    
+
     FITNESS_METRICS.forEach((metric) => {
       const data = metricsData[metric.name];
       if (data && data.length > 0) {
         // Filter data up to yesterday
-        const filteredData = data.filter(item => {
+        const filteredData = data.filter((item) => {
           const itemDate = new Date(item.date);
           itemDate.setHours(0, 0, 0, 0);
           return itemDate < today;
         });
-        
+
         if (filteredData.length > 0) {
           let total = 0;
           filteredData.forEach((item) => {
             total += item.value;
           });
-          
+
           if (metric.name === "Steps" || metric.name === "Calories") {
             summaries[metric.name] = total;
           } else {
@@ -493,37 +538,40 @@ export const FitnessDashboard = () => {
         summaries[metric.name] = 0;
       }
     });
-    
+
     return summaries;
   };
-  
+
   // Calculate yesterday's data for daily goals
   const calculateYesterdayData = () => {
     const yesterdayData = {};
     const yesterday = new Date();
     yesterday.setDate(yesterday.getDate() - 1);
     yesterday.setHours(0, 0, 0, 0);
-    
+
     FITNESS_METRICS.forEach((metric) => {
       const data = metricsData[metric.name];
       if (data && data.length > 0) {
         // Find all data points for yesterday
-        const yesterdayMetrics = data.filter(item => {
+        const yesterdayMetrics = data.filter((item) => {
           const itemDate = new Date(item.date);
           itemDate.setHours(0, 0, 0, 0);
           return itemDate.getTime() === yesterday.getTime();
         });
-        
+
         // Sum up all values for yesterday
-        yesterdayData[metric.name] = yesterdayMetrics.reduce((sum, item) => sum + item.value, 0);
+        yesterdayData[metric.name] = yesterdayMetrics.reduce(
+          (sum, item) => sum + item.value,
+          0
+        );
       } else {
         yesterdayData[metric.name] = 0;
       }
     });
-    
+
     return yesterdayData;
   };
-  
+
   const summaryMetrics = calculateSummaryMetrics();
   const yesterdayData = calculateYesterdayData();
 
@@ -589,8 +637,8 @@ export const FitnessDashboard = () => {
                 </motion.div>
               )}
             </div>
-            
-            <div className="mt-4 md:mt-0 flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
+
+            {/* <div className="mt-4 md:mt-0 flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
               {isAuthenticated ? (
                 <motion.button
                   whileHover={{ scale: 1.05 }}
@@ -636,10 +684,10 @@ export const FitnessDashboard = () => {
                   <span>Connect Google Fit</span>
                 </motion.button>
               )}
-            </div>
+            </div> */}
           </div>
         </header>
-        
+
         {/* Main Content */}
         <main>
           {!isAuthenticated ? (
@@ -649,7 +697,7 @@ export const FitnessDashboard = () => {
               className="bg-white rounded-xl shadow-lg p-8 text-center relative overflow-hidden"
             >
               <div className="absolute top-0 right-0 w-64 h-64 bg-blue-100 rounded-full transform translate-x-32 -translate-y-32"></div>
-              
+
               <div className="relative z-10">
                 <div className="mx-auto h-24 w-24 mb-6 bg-blue-100 rounded-full flex items-center justify-center">
                   <svg
@@ -670,7 +718,8 @@ export const FitnessDashboard = () => {
                   Connect to Google Fit
                 </h2>
                 <p className="text-gray-600 mb-6 max-w-md mx-auto">
-                  Connect your Google Fit account to view your fitness metrics and track your progress over time.
+                  Connect your Google Fit account to view your fitness metrics
+                  and track your progress over time.
                 </p>
                 <motion.button
                   whileHover={{ scale: 1.05 }}
@@ -695,7 +744,11 @@ export const FitnessDashboard = () => {
                 <div className="flex justify-center items-center py-20">
                   <motion.div
                     animate={{ rotate: 360 }}
-                    transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                    transition={{
+                      duration: 1,
+                      repeat: Infinity,
+                      ease: "linear",
+                    }}
                     className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full"
                   ></motion.div>
                 </div>
@@ -719,7 +772,9 @@ export const FitnessDashboard = () => {
                               Attention needed
                             </h3>
                             <div className="mt-2 text-sm text-yellow-700">
-                              <p className="whitespace-pre-line">{fetchError}</p>
+                              <p className="whitespace-pre-line">
+                                {fetchError}
+                              </p>
                               {fetchError.includes("permissions") && (
                                 <div className="mt-3 flex flex-wrap gap-3">
                                   <a
@@ -744,7 +799,7 @@ export const FitnessDashboard = () => {
                       </motion.div>
                     )}
                   </AnimatePresence>
-                  
+
                   {/* Summary Cards */}
                   <div>
                     <h2 className="text-xl font-semibold text-gray-800 mb-4">
@@ -776,7 +831,7 @@ export const FitnessDashboard = () => {
                       ))}
                     </div>
                   </div>
-                  
+
                   {/* Activity Overview */}
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div className="md:col-span-2">
@@ -788,7 +843,7 @@ export const FitnessDashboard = () => {
                         <WeeklyProgress data={metricsData} />
                       </div>
                     </div>
-                    
+
                     <div>
                       <h2 className="text-xl font-semibold text-gray-800 mb-4">
                         Yesterday's Goals
@@ -807,7 +862,7 @@ export const FitnessDashboard = () => {
                       </div>
                     </div>
                   </div>
-                  
+
                   {/* Refresh Button */}
                   <div className="flex justify-center mt-8">
                     <motion.button

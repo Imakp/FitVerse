@@ -61,7 +61,7 @@ const LandingPage = () => {
             Testimonials
           </a>
           <Link
-            to="/"
+            to="/login" // Updated link to point to the login page
             className="bg-gradient-to-br from-purple-500 to-blue-600 text-white px-6 py-2 rounded-full font-medium transition-colors"
           >
             Login
@@ -101,7 +101,9 @@ const LandingPage = () => {
               Complete fitness challenges, track your progress with Google Fit,
               and earn exciting rewards. Your dedication deserves recognition!
             </p>
-            <Link to="/">
+            <Link to="/login">
+              {" "}
+              {/* Updated link to point to the login page */}
               <motion.button
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.98 }}
