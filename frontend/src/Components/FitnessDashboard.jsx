@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useGoogleFit, FITNESS_API_BASE_URL } from "../../hooks/useGoogleFit";
+import { useGoogleFit, FITNESS_API_BASE_URL } from "../hooks/useGoogleFit";
 import axios from "axios";
 import {
   LineChart,

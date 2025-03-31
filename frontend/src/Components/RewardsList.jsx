@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import RewardCard from "./RewardCard";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "../context/AuthContext";
 import axios from "axios";
 
 const RewardsList = ({ rewards: initialRewards }) => {

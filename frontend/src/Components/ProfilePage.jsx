@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { useAuth } from "../../context/AuthContext";
-import { useGoogleFit } from "../../hooks/useGoogleFit";
-import Sidebar from "../layout/Sidebar";
+import { useAuth } from "../context/AuthContext";
+import { useGoogleFit } from "../hooks/useGoogleFit";
+import Sidebar from "./Sidebar";
 import {
   User,
   Settings as SettingsIcon,
@@ -13,8 +13,8 @@ import {
   Coins,
   Loader2,
 } from "lucide-react";
-import Setting from "../settings/Setting";
-import Help from "../help/Help";
+import Setting from "./Setting";
+import Help from "./Help";
 import { motion } from "framer-motion";
 import axios from "axios";
 import { toast } from "react-toastify";

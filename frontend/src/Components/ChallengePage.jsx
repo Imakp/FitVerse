@@ -6,8 +6,8 @@ import React, {
   useRef,
 } from "react";
 import axios from "axios";
-import { useGoogleFit } from "../../hooks/useGoogleFit";
-import { useAuth } from "../../context/AuthContext";
+import { useGoogleFit } from "../hooks/useGoogleFit";
+import { useAuth } from "../context/AuthContext";
 import { motion } from "framer-motion";
 import { Target, CheckCircle, Award, Coins, Clock } from "lucide-react";
 

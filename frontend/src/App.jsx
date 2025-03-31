@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
 import { Route, Routes, Navigate, useNavigate } from "react-router-dom";
-import Navbar from "./Components/layout/Navbar.jsx";
-import RewardsPage from "./Components/rewards/RewardsPage.jsx";
-import ActivityPage from "./Components/activity/ActivityPage.jsx";
-import ProfilePage from "./Components/profile/ProfilePage.jsx";
-import LoginPage from "./Components/auth/LoginPage.jsx";
-import { FitnessDashboard } from "./Components/dashboard/FitnessDashboard.jsx";
+import Navbar from "./Components/Navbar.jsx";
+import RewardsPage from "./Components/RewardsPage.jsx";
+import ActivityPage from "./Components/ActivityPage.jsx";
+import ProfilePage from "./Components/ProfilePage.jsx";
+import LoginPage from "./Components/LoginPage.jsx";
+import { FitnessDashboard } from "./Components/FitnessDashboard.jsx";
 import { useAuth } from "./context/AuthContext";
-import LandingPage from "./Components/landing/LandingPage.jsx";
-import ChallengePage from "./Components/challenges/ChallengePage.jsx";
+import LandingPage from "./Components/LandingPage.jsx";
+import ChallengePage from "./Components/ChallengePage.jsx";
 
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth();

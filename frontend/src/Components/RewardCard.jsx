@@ -1,7 +1,7 @@
 // components/RewardCard.js
 import React, { useState } from "react";
-import { useAuth } from "../../context/AuthContext";
-import { spendCoins } from "../../api/rewardsApi";
+import { useAuth } from "../context/AuthContext";
+import { spendCoins } from "../api/rewardsApi";
 import { toast } from "react-toastify";
 import { motion } from "framer-motion";
 import { Coins, Gift, Check, Loader2 } from "lucide-react";

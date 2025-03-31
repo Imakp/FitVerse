@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import RewardsList from "./RewardsList";
-import { fetchRewards } from "../../api/rewardsApi";
+import { fetchRewards } from "../api/rewardsApi";
 import { motion } from "framer-motion";
 import { Gift } from "lucide-react";
 
