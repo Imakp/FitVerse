@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useGoogleFit, FITNESS_API_BASE_URL } from "../hooks/useGoogleFit";
 import axios from "axios";
-import StepCountContainer from "./StepCountContainer";
 import {
   LineChart,
   Line,
@@ -10,10 +9,14 @@ import {
   CartesianGrid,
   Tooltip,
   Legend,
+  AreaChart,
+  Area,
   ResponsiveContainer,
   BarChart,
   Bar,
 } from "recharts";
+import { motion, AnimatePresence } from "framer-motion";
+import { Download, TrendingUp, Activity, Target, Award, RefreshCw, AlertCircle } from "lucide-react";
 
 const FITNESS_METRICS = [
   {
@@ -26,6 +29,8 @@ const FITNESS_METRICS = [
     unit: "steps",
     icon: "👟",
     description: "Total steps taken",
+    goal: 10000,
+    gradient: "from-green-500 to-green-600",
   },
   {
     name: "Active Minutes",
@@ -35,8 +40,10 @@ const FITNESS_METRICS = [
     color: "#2196F3",
     formatter: (value) => Math.round(value),
     unit: "min",
-    icon: "⏱️",
+    icon: "⏱",
     description: "Time spent being physically active",
+    goal: 30,
+    gradient: "from-blue-500 to-blue-600",
   },
   {
     name: "Calories",
@@ -48,133 +55,288 @@ const FITNESS_METRICS = [
     unit: "kcal",
     icon: "🔥",
     description: "Total calories burned",
+    goal: 2500,
+    gradient: "from-orange-500 to-orange-600",
   },
 ];
 
-const formatDate = (date) => {
-  return new Date(date).toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-  });
-};
-
-const TimeRangeSelector = ({ timeRange, setTimeRange }) => {
+const MetricCard = ({ title, value, unit, icon, color, description, goal, progress }) => {
+  const percentage = Math.min((value / goal) * 100, 100);
+  
   return (
-    <div className="flex items-center space-x-2 bg-gray-100 p-1 rounded-lg">
-      {["week", "month", "year"].map((range) => (
-        <button
-          key={range}
-          onClick={() => setTimeRange(range)}
-          className={`px-4 py-2 rounded-md transition-all ${
-            timeRange === range
-              ? "bg-white shadow-md text-blue-600 font-medium"
-              : "text-gray-600 hover:bg-gray-200"
-          }`}
-        >
-          {range.charAt(0).toUpperCase() + range.slice(1)}
-        </button>
-      ))}
-    </div>
-  );
-};
-
-const MetricCard = ({ title, value, unit, icon, color, description }) => {
-  return (
-    <div
-      className="bg-white rounded-xl shadow-md p-6 flex flex-col border-t-4"
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      whileHover={{ scale: 1.02 }}
+      className="bg-white rounded-xl shadow-lg p-6 flex flex-col border-t-4 relative overflow-hidden"
       style={{ borderColor: color }}
     >
-      <div className="flex justify-between items-start">
+      <div className="absolute top-0 right-0 w-32 h-32 bg-opacity-10 rounded-full transform translate-x-16 -translate-y-16"
+           style={{ backgroundColor: color }}></div>
+      
+      <div className="flex justify-between items-start relative z-10">
         <span className="text-4xl">{icon}</span>
-        <span className="text-sm text-gray-500 font-medium uppercase">
+        <span className="text-sm text-gray-500 font-medium uppercase tracking-wider">
           {title}
         </span>
       </div>
-      <div className="mt-4">
+      
+      <div className="mt-4 relative z-10">
         <div className="flex items-baseline">
-          <span className="text-3xl font-bold">{value}</span>
+          <span className="text-4xl font-bold bg-clip-text text-transparent"
+               style={{ backgroundImage: `linear-gradient(to right, ${color}, ${color}80)` }}>
+            {value.toLocaleString()}
+          </span>
           <span className="ml-1 text-lg text-gray-500">{unit}</span>
         </div>
         <p className="text-sm text-gray-600 mt-2">{description}</p>
+        
+        <div className="mt-4">
+          <div className="flex justify-between text-sm text-gray-500 mb-1">
+            <span>Daily Goal Progress</span>
+            <span>{Math.round(percentage)}%</span>
+          </div>
+          <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+            <motion.div
+              initial={{ width: 0 }}
+              animate={{ width: `${percentage}%` }}
+              transition={{ duration: 1, ease: "easeOut" }}
+              className="h-2 rounded-full transition-all duration-500"
+              style={{ backgroundColor: color }}
+            ></motion.div>
+          </div>
+        </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 
-const MetricChart = ({ data, metric, timeRange }) => {
-  if (!data || data.length === 0) {
+const ActivityStreak = ({ data }) => {
+  if (!data || !data.Steps || data.Steps.length === 0) {
     return (
-      <div className="bg-gray-50 rounded-lg p-6 flex items-center justify-center h-64">
-        <p className="text-gray-500">No data available for this time period</p>
-      </div>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="bg-white rounded-xl shadow-lg p-6 relative overflow-hidden"
+      >
+        <div className="absolute top-0 right-0 w-32 h-32 bg-blue-100 rounded-full transform translate-x-16 -translate-y-16"></div>
+        <h3 className="text-lg font-medium text-gray-800 mb-4 relative z-10">
+          Activity Streak
+        </h3>
+        <p className="text-gray-500 relative z-10">No activity data available</p>
+      </motion.div>
     );
   }
 
-  // Create an interval appropriate for the time range
-  let interval = 1;
-  if (timeRange === "month") interval = 3;
-  if (timeRange === "year") interval = 30;
+  // Calculate the current streak
+  const stepsData = [...data.Steps].sort(
+    (a, b) => new Date(a.date) - new Date(b.date)
+  );
+  
+  let currentStreak = 0;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  
+  // Start from yesterday since today's data might not be complete
+  const yesterday = new Date(today);
+  yesterday.setDate(yesterday.getDate() - 1);
+  
+  for (let i = stepsData.length - 1; i >= 0; i--) {
+    const date = new Date(stepsData[i].date);
+    date.setHours(0, 0, 0, 0);
+    
+    if (date.getTime() === yesterday.getTime() - currentStreak * 24 * 60 * 60 * 1000) {
+      if (stepsData[i].value >= 1000) { // Only count days with at least 1000 steps
+        currentStreak++;
+      } else {
+        break;
+      }
+    } else {
+      break;
+    }
+  }
+  
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      whileHover={{ scale: 1.02 }}
+      className="bg-white rounded-xl shadow-lg p-6 relative overflow-hidden"
+    >
+      <div className="absolute top-0 right-0 w-32 h-32 bg-blue-100 rounded-full transform translate-x-16 -translate-y-16"></div>
+      
+      <div className="flex items-center justify-between mb-4 relative z-10">
+        <h3 className="text-lg font-medium text-gray-800">Activity Streak</h3>
+        <Award className="h-6 w-6 text-yellow-500" />
+      </div>
+      
+      <div className="flex items-center space-x-4 relative z-10">
+        <motion.div
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          transition={{ type: "spring", stiffness: 200, damping: 10 }}
+          className="text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-blue-600"
+        >
+          {currentStreak}
+        </motion.div>
+        <div className="text-gray-600">
+          <p className="text-sm font-medium">Current Streak</p>
+          <p className="text-xs">days with 1000+ steps</p>
+        </div>
+      </div>
+    </motion.div>
+  );
+};
+
+const WeeklyProgress = ({ data }) => {
+  if (!data || !data.Steps || data.Steps.length === 0) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="bg-white rounded-xl shadow-lg p-6 relative overflow-hidden"
+      >
+        <div className="absolute top-0 right-0 w-32 h-32 bg-purple-100 rounded-full transform translate-x-16 -translate-y-16"></div>
+        <h3 className="text-lg font-medium text-gray-800 mb-4 relative z-10">
+          This Week's Progress
+        </h3>
+        <p className="text-gray-500 relative z-10">No data available for this week</p>
+      </motion.div>
+    );
+  }
+
+  // Get yesterday's date as the end date
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const yesterday = new Date(today);
+  yesterday.setDate(yesterday.getDate() - 1);
+  
+  // Calculate start of week (7 days before yesterday)
+  const startOfWeek = new Date(yesterday);
+  startOfWeek.setDate(yesterday.getDate() - 6);
+  startOfWeek.setHours(0, 0, 0, 0);
+
+  const weeklyData = Object.keys(data).map(metricName => {
+    const metric = FITNESS_METRICS.find(m => m.name === metricName);
+    const weekData = data[metricName]
+      .filter(item => {
+        const itemDate = new Date(item.date);
+        itemDate.setHours(0, 0, 0, 0);
+        return itemDate >= startOfWeek && itemDate <= yesterday;
+      })
+      .map(item => ({
+        ...item,
+        name: new Date(item.date).toLocaleDateString('en-US', { weekday: 'short' })
+      }));
+    
+    // Sort data by date to ensure correct order
+    weekData.sort((a, b) => new Date(a.date) - new Date(b.date));
+    
+    return {
+      name: metricName,
+      data: weekData,
+      color: metric?.color || "#000",
+      unit: metric?.unit || ""
+    };
+  });
 
   return (
-    <div className="bg-white rounded-xl shadow-md p-6">
-      <h3 className="text-lg font-medium text-gray-800 mb-4">
-        {metric.name} Over Time
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      whileHover={{ scale: 1.02 }}
+      className="bg-white rounded-xl shadow-lg p-6 relative overflow-hidden"
+    >
+      <div className="absolute top-0 right-0 w-32 h-32 bg-purple-100 rounded-full transform translate-x-16 -translate-y-16"></div>
+      
+      <h3 className="text-lg font-medium text-gray-800 mb-4 relative z-10">
+        This Week's Progress
       </h3>
-      <ResponsiveContainer width="100%" height={250}>
-        {metric.name === "Steps" ? (
-          <BarChart
-            data={data}
-            margin={{ top: 5, right: 20, left: 0, bottom: 5 }}
+      
+      <div className="space-y-6 relative z-10">
+        {weeklyData.map(metric => (
+          <motion.div
+            key={metric.name}
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.2 }}
+            className="mt-4"
           >
-            <CartesianGrid strokeDasharray="3 3" vertical={false} />
-            <XAxis
-              dataKey="date"
-              tickFormatter={formatDate}
-              interval={interval}
-              tick={{ fontSize: 12 }}
-            />
-            <YAxis />
-            <Tooltip
-              formatter={(value) => [`${value} ${metric.unit}`, metric.name]}
-              labelFormatter={(label) => formatDate(label)}
-            />
-            <Bar
-              dataKey="value"
-              fill={metric.color}
-              name={metric.name}
-              radius={[4, 4, 0, 0]}
-            />
-          </BarChart>
-        ) : (
-          <LineChart
-            data={data}
-            margin={{ top: 5, right: 20, left: 0, bottom: 5 }}
-          >
-            <CartesianGrid strokeDasharray="3 3" vertical={false} />
-            <XAxis
-              dataKey="date"
-              tickFormatter={formatDate}
-              interval={interval}
-              tick={{ fontSize: 12 }}
-            />
-            <YAxis />
-            <Tooltip
-              formatter={(value) => [`${value} ${metric.unit}`, metric.name]}
-              labelFormatter={(label) => formatDate(label)}
-            />
-            <Line
-              type="monotone"
-              dataKey="value"
-              stroke={metric.color}
-              strokeWidth={2}
-              dot={{ r: 3 }}
-              activeDot={{ r: 6 }}
-              name={metric.name}
-            />
-          </LineChart>
-        )}
-      </ResponsiveContainer>
-    </div>
+            <div className="flex items-center justify-between mb-2">
+              <span className="font-medium text-gray-700">{metric.name}</span>
+              <span className="text-sm text-gray-500">{metric.unit}</span>
+            </div>
+            <ResponsiveContainer width="100%" height={120}>
+              <AreaChart
+                data={metric.data}
+                margin={{ top: 5, right: 0, left: 0, bottom: 5 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                <XAxis 
+                  dataKey="name" 
+                  tick={{ fontSize: 12 }}
+                  interval={0} // Show all ticks
+                />
+                <YAxis hide />
+                <Tooltip
+                  formatter={(value) => [`${value} ${metric.unit}`, metric.name]}
+                  labelFormatter={(label) => new Date(label).toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}
+                />
+                <Area 
+                  type="monotone" 
+                  dataKey="value" 
+                  stroke={metric.color} 
+                  fill={metric.color}
+                  fillOpacity={0.2}
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+          </motion.div>
+        ))}
+      </div>
+    </motion.div>
+  );
+};
+
+const AchievementCard = ({ title, progress, goal, icon, color }) => {
+  const percentage = Math.min(Math.round((progress / goal) * 100), 100);
+  
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      whileHover={{ scale: 1.02 }}
+      className="bg-white rounded-xl shadow-lg p-4 relative overflow-hidden"
+    >
+      <div className="absolute top-0 right-0 w-24 h-24 bg-opacity-10 rounded-full transform translate-x-12 -translate-y-12"
+           style={{ backgroundColor: color }}></div>
+      
+      <div className="flex items-center mb-2 relative z-10">
+        <div 
+          className="w-10 h-10 rounded-full flex items-center justify-center mr-3"
+          style={{ backgroundColor: `${color}20` }}
+        >
+          <span className="text-xl">{icon}</span>
+        </div>
+        <h4 className="font-medium text-gray-800">{title}</h4>
+      </div>
+      
+      <div className="mt-3 relative z-10">
+        <div className="flex justify-between text-sm mb-1">
+          <span className="font-medium">{progress.toLocaleString()}</span>
+          <span className="text-gray-500">{goal.toLocaleString()}</span>
+        </div>
+        <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+          <motion.div
+            initial={{ width: 0 }}
+            animate={{ width: `${percentage}%` }}
+            transition={{ duration: 1, ease: "easeOut" }}
+            className="h-2 rounded-full"
+            style={{ backgroundColor: color }}
+          ></motion.div>
+        </div>
+      </div>
+    </motion.div>
   );
 };
 
@@ -188,6 +350,7 @@ export const FitnessDashboard = () => {
     userProfile,
     accessToken,
   } = useGoogleFit();
+  
   const [loading, setLoading] = useState(false);
   const [metricsData, setMetricsData] = useState({});
   const [timeRange, setTimeRange] = useState("week");
@@ -196,10 +359,11 @@ export const FitnessDashboard = () => {
   const fetchAllMetrics = async () => {
     setLoading(true);
     setFetchError(null);
+    
     try {
       const now = new Date();
       let startDate;
-
+      
       switch (timeRange) {
         case "month":
           startDate = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
@@ -210,10 +374,7 @@ export const FitnessDashboard = () => {
         default: // week
           startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
       }
-
-      const results = {};
-      const errors = [];
-
+      
       // First verify access to Fitness API
       try {
         await axios.get(`${FITNESS_API_BASE_URL}/dataSources`, {
@@ -228,8 +389,10 @@ export const FitnessDashboard = () => {
         }
         throw err;
       }
-
-      // Then fetch each metric
+      
+      const results = {};
+      const errors = [];
+      
       for (const metric of FITNESS_METRICS) {
         try {
           const data = await fetchFitnessData(
@@ -238,114 +401,142 @@ export const FitnessDashboard = () => {
             startDate,
             now
           );
-
+          
           if (!data?.bucket) {
             console.warn(`No data returned for ${metric.name}`);
             continue;
           }
-
+          
           const processedData = data.bucket
             .map((bucket) => {
               const point = bucket.dataset?.[0]?.point?.[0];
               if (!point) return null;
-
-              const value =
-                point.value?.[0]?.intVal || point.value?.[0]?.fpVal || 0;
+              
+              const value = point.value?.[0]?.intVal || point.value?.[0]?.fpVal || 0;
               return {
                 date: new Date(parseInt(bucket.startTimeMillis)),
                 value: metric.formatter(value),
               };
             })
             .filter(Boolean);
-
+            
           if (processedData.length > 0) {
             results[metric.name] = processedData;
           }
         } catch (err) {
           console.error(`Error fetching ${metric.name}:`, err);
           errors.push(`${metric.name}: ${err.message}`);
-          // Continue with other metrics even if one fails
-          results[metric.name] = { bucket: [] };
+          results[metric.name] = [];
         }
       }
-
+      
       if (errors.length > 0) {
         setFetchError(
           "Some data couldn't be loaded. Please ensure you've granted all required permissions:\n" +
-            "1. Go to Google Account Settings (https://myaccount.google.com/permissions)\n" +
-            "2. Remove FitVerse app permissions\n" +
-            "3. Log out and log in again to re-grant permissions"
+          "1. Go to Google Account Settings (https://myaccount.google.com/permissions)\n" +
+          "2. Remove FitVerse app permissions\n" +
+          "3. Log out and log in again to re-grant permissions"
         );
       }
-
+      
       if (Object.keys(results).length === 0) {
-        setFetchError(
-          "No fitness data available for the selected time range. Please make sure you have data recorded in Google Fit."
-        );
+        setFetchError("No fitness data available for the selected time range.");
       } else {
         setMetricsData(results);
       }
     } catch (err) {
       console.error("Error fetching fitness data:", err);
-      setFetchError(
-        err.message ||
-          "Failed to fetch fitness data. Please try logging in again."
-      );
+      setFetchError(err.message || "Failed to fetch fitness data.");
     } finally {
       setLoading(false);
     }
   };
-
+  
   useEffect(() => {
     if (isAuthenticated) {
       fetchAllMetrics();
     }
   }, [isAuthenticated, timeRange]);
-
-  // Calculate total/average metrics for summary cards
+  
+  // Calculate summary metrics
   const calculateSummaryMetrics = () => {
     const summaries = {};
-
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
     FITNESS_METRICS.forEach((metric) => {
       const data = metricsData[metric.name];
       if (data && data.length > 0) {
-        let total = 0;
-        data.forEach((item) => {
-          total += item.value;
+        // Filter data up to yesterday
+        const filteredData = data.filter(item => {
+          const itemDate = new Date(item.date);
+          itemDate.setHours(0, 0, 0, 0);
+          return itemDate < today;
         });
-
-        if (metric.name === "Steps" || metric.name === "Calories") {
-          summaries[metric.name] = total;
+        
+        if (filteredData.length > 0) {
+          let total = 0;
+          filteredData.forEach((item) => {
+            total += item.value;
+          });
+          
+          if (metric.name === "Steps" || metric.name === "Calories") {
+            summaries[metric.name] = total;
+          } else {
+            // For active minutes, show daily average
+            summaries[metric.name] = Math.round(total / filteredData.length);
+          }
         } else {
-          // For active minutes, show daily average
-          summaries[metric.name] = Math.round(total / data.length);
+          summaries[metric.name] = 0;
         }
       } else {
         summaries[metric.name] = 0;
       }
     });
-
+    
     return summaries;
   };
-
+  
+  // Calculate yesterday's data for daily goals
+  const calculateYesterdayData = () => {
+    const yesterdayData = {};
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    yesterday.setHours(0, 0, 0, 0);
+    
+    FITNESS_METRICS.forEach((metric) => {
+      const data = metricsData[metric.name];
+      if (data && data.length > 0) {
+        // Find all data points for yesterday
+        const yesterdayMetrics = data.filter(item => {
+          const itemDate = new Date(item.date);
+          itemDate.setHours(0, 0, 0, 0);
+          return itemDate.getTime() === yesterday.getTime();
+        });
+        
+        // Sum up all values for yesterday
+        yesterdayData[metric.name] = yesterdayMetrics.reduce((sum, item) => sum + item.value, 0);
+      } else {
+        yesterdayData[metric.name] = 0;
+      }
+    });
+    
+    return yesterdayData;
+  };
+  
   const summaryMetrics = calculateSummaryMetrics();
+  const yesterdayData = calculateYesterdayData();
 
   if (error) {
     return (
-      <div className="p-4 bg-red-100 border-l-4 border-red-600 text-red-700 rounded">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="p-4 bg-red-50 border-l-4 border-red-600 text-red-700 rounded-lg"
+      >
         <div className="flex">
           <div className="flex-shrink-0">
-            <svg
-              className="h-5 w-5 text-red-600"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-            >
-              <path
-                fillRule="evenodd"
-                d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                clipRule="evenodd"
-              />
-            </svg>
+            <AlertCircle className="h-5 w-5 text-red-600" />
           </div>
           <div className="ml-3">
             <h3 className="text-lg font-medium text-red-800">
@@ -362,7 +553,7 @@ export const FitnessDashboard = () => {
             </div>
           </div>
         </div>
-      </div>
+      </motion.div>
     );
   }
 
@@ -373,11 +564,20 @@ export const FitnessDashboard = () => {
         <header className="py-10">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">
+              <motion.h1
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                className="text-3xl font-bold text-gray-900"
+              >
                 Fitness Dashboard
-              </h1>
+              </motion.h1>
               {userProfile && (
-                <div className="mt-2 flex items-center text-gray-600">
+                <motion.div
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.2 }}
+                  className="mt-2 flex items-center text-gray-600"
+                >
                   {userProfile.imageUrl && (
                     <img
                       src={userProfile.imageUrl}
@@ -386,13 +586,15 @@ export const FitnessDashboard = () => {
                     />
                   )}
                   <p>Welcome, {userProfile.name}</p>
-                </div>
+                </motion.div>
               )}
             </div>
-
-            {/* <div className="mt-4 md:mt-0 flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
+            
+            <div className="mt-4 md:mt-0 flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
               {isAuthenticated ? (
-                <button
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                   onClick={signOut}
                   className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors flex items-center justify-center space-x-2"
                 >
@@ -410,9 +612,11 @@ export const FitnessDashboard = () => {
                     />
                   </svg>
                   <span>Disconnect</span>
-                </button>
+                </motion.button>
               ) : (
-                <button
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                   onClick={signIn}
                   className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors flex items-center justify-center space-x-2"
                 >
@@ -430,107 +634,117 @@ export const FitnessDashboard = () => {
                     />
                   </svg>
                   <span>Connect Google Fit</span>
-                </button>
+                </motion.button>
               )}
-            </div> */}
+            </div>
           </div>
         </header>
-
+        
         {/* Main Content */}
         <main>
           {!isAuthenticated ? (
-            <div className="bg-white rounded-xl shadow-md p-8 text-center">
-              <div className="mx-auto h-24 w-24 mb-6 bg-blue-100 rounded-full flex items-center justify-center">
-                <svg
-                  className="h-12 w-12 text-blue-600"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-white rounded-xl shadow-lg p-8 text-center relative overflow-hidden"
+            >
+              <div className="absolute top-0 right-0 w-64 h-64 bg-blue-100 rounded-full transform translate-x-32 -translate-y-32"></div>
+              
+              <div className="relative z-10">
+                <div className="mx-auto h-24 w-24 mb-6 bg-blue-100 rounded-full flex items-center justify-center">
+                  <svg
+                    className="h-12 w-12 text-blue-600"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+                    />
+                  </svg>
+                </div>
+                <h2 className="text-2xl font-bold text-gray-800 mb-2">
+                  Connect to Google Fit
+                </h2>
+                <p className="text-gray-600 mb-6 max-w-md mx-auto">
+                  Connect your Google Fit account to view your fitness metrics and track your progress over time.
+                </p>
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={signIn}
+                  className="px-8 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors inline-flex items-center"
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
-                  />
-                </svg>
+                  <svg
+                    className="h-5 w-5 mr-2"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                  >
+                    <path d="M12.545,10.239v3.821h5.445c-0.712,2.315-2.647,3.972-5.445,3.972c-3.332,0-6.033-2.701-6.033-6.032s2.701-6.032,6.033-6.032c1.498,0,2.866,0.549,3.921,1.453l2.814-2.814C17.503,2.988,15.139,2,12.545,2C7.021,2,2.543,6.477,2.543,12s4.478,10,10.002,10c8.396,0,10.249-7.85,9.426-11.748L12.545,10.239z" />
+                  </svg>
+                  Connect with Google Fit
+                </motion.button>
               </div>
-              <h2 className="text-2xl font-bold text-gray-800 mb-2">
-                Connect to Google Fit
-              </h2>
-              <p className="text-gray-600 mb-6 max-w-md mx-auto">
-                Connect your Google Fit account to view your fitness metrics and
-                track your progress over time.
-              </p>
-              <button
-                onClick={signIn}
-                className="px-8 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors inline-flex items-center"
-              >
-                <svg
-                  className="h-5 w-5 mr-2"
-                  viewBox="0 0 24 24"
-                  fill="currentColor"
-                >
-                  <path d="M12.545,10.239v3.821h5.445c-0.712,2.315-2.647,3.972-5.445,3.972c-3.332,0-6.033-2.701-6.033-6.032s2.701-6.032,6.033-6.032c1.498,0,2.866,0.549,3.921,1.453l2.814-2.814C17.503,2.988,15.139,2,12.545,2C7.021,2,2.543,6.477,2.543,12s4.478,10,10.002,10c8.396,0,10.249-7.85,9.426-11.748L12.545,10.239z" />
-                </svg>
-                Connect with Google Fit
-              </button>
-            </div>
+            </motion.div>
           ) : (
             <>
               {loading ? (
                 <div className="flex justify-center items-center py-20">
-                  <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-blue-500"></div>
+                  <motion.div
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                    className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full"
+                  ></motion.div>
                 </div>
               ) : (
                 <div className="space-y-8">
                   {/* Error display */}
-                  {fetchError && (
-                    <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-md">
-                      <div className="flex">
-                        <div className="flex-shrink-0">
-                          <svg
-                            className="h-5 w-5 text-yellow-400"
-                            viewBox="0 0 20 20"
-                            fill="currentColor"
-                          >
-                            <path
-                              fillRule="evenodd"
-                              d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
-                              clipRule="evenodd"
-                            />
-                          </svg>
-                        </div>
-                        <div className="ml-3">
-                          <h3 className="text-sm font-medium text-yellow-800">
-                            Attention needed
-                          </h3>
-                          <div className="mt-2 text-sm text-yellow-700">
-                            <p className="whitespace-pre-line">{fetchError}</p>
-                            {fetchError.includes("permissions") && (
-                              <div className="mt-3 flex flex-wrap gap-3">
-                                <a
-                                  href="https://myaccount.google.com/permissions"
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-yellow-700 bg-yellow-100 hover:bg-yellow-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500"
-                                >
-                                  Open Google Account Settings
-                                </a>
-                                <button
-                                  onClick={signOut}
-                                  className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-yellow-600 hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500"
-                                >
-                                  Sign Out and Retry
-                                </button>
-                              </div>
-                            )}
+                  <AnimatePresence>
+                    {fetchError && (
+                      <motion.div
+                        initial={{ opacity: 0, y: -20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -20 }}
+                        className="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-md"
+                      >
+                        <div className="flex">
+                          <div className="flex-shrink-0">
+                            <AlertCircle className="h-5 w-5 text-yellow-400" />
+                          </div>
+                          <div className="ml-3">
+                            <h3 className="text-sm font-medium text-yellow-800">
+                              Attention needed
+                            </h3>
+                            <div className="mt-2 text-sm text-yellow-700">
+                              <p className="whitespace-pre-line">{fetchError}</p>
+                              {fetchError.includes("permissions") && (
+                                <div className="mt-3 flex flex-wrap gap-3">
+                                  <a
+                                    href="https://myaccount.google.com/permissions"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-yellow-700 bg-yellow-100 hover:bg-yellow-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500"
+                                  >
+                                    Open Google Account Settings
+                                  </a>
+                                  <button
+                                    onClick={signOut}
+                                    className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-yellow-600 hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500"
+                                  >
+                                    Sign Out and Retry
+                                  </button>
+                                </div>
+                              )}
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    </div>
-                  )}
-
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                  
                   {/* Summary Cards */}
                   <div>
                     <h2 className="text-xl font-semibold text-gray-800 mb-4">
@@ -556,48 +770,56 @@ export const FitnessDashboard = () => {
                               ? `Total ${metric.description.toLowerCase()} for this ${timeRange}`
                               : `Average ${metric.description.toLowerCase()} per day`
                           }
+                          goal={metric.goal}
+                          progress={summaryMetrics[metric.name] || 0}
                         />
                       ))}
                     </div>
                   </div>
-
-                  {/* Activity Charts */}
-                  <div className="mt-8">
-                    <h2 className="text-xl font-semibold text-gray-800 mb-4">
-                      Activity Trends
-                    </h2>
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                      {FITNESS_METRICS.map((metric) => (
-                        <MetricChart
-                          key={metric.name}
-                          data={metricsData[metric.name] || []}
-                          metric={metric}
-                          timeRange={timeRange}
-                        />
-                      ))}
+                  
+                  {/* Activity Overview */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div className="md:col-span-2">
+                      <h2 className="text-xl font-semibold text-gray-800 mb-4">
+                        Activity Overview
+                      </h2>
+                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <ActivityStreak data={metricsData} />
+                        <WeeklyProgress data={metricsData} />
+                      </div>
+                    </div>
+                    
+                    <div>
+                      <h2 className="text-xl font-semibold text-gray-800 mb-4">
+                        Yesterday's Goals
+                      </h2>
+                      <div className="bg-white rounded-xl shadow-lg p-4 space-y-4">
+                        {FITNESS_METRICS.map((metric) => (
+                          <AchievementCard
+                            key={metric.name}
+                            title={`Daily ${metric.name}`}
+                            progress={yesterdayData[metric.name] || 0}
+                            goal={metric.goal}
+                            icon={metric.icon}
+                            color={metric.color}
+                          />
+                        ))}
+                      </div>
                     </div>
                   </div>
-
+                  
                   {/* Refresh Button */}
                   <div className="flex justify-center mt-8">
-                    <button
+                    <motion.button
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
                       onClick={fetchAllMetrics}
                       disabled={loading}
                       className="px-6 py-2 bg-gray-800 text-white rounded-md hover:bg-gray-900 transition-colors flex items-center space-x-2"
                     >
-                      <svg
-                        className="h-5 w-5"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
-                      >
-                        <path
-                          fillRule="evenodd"
-                          d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
+                      <RefreshCw className="h-5 w-5" />
                       <span>Refresh Data</span>
-                    </button>
+                    </motion.button>
                   </div>
                 </div>
               )}
@@ -608,3 +830,5 @@ export const FitnessDashboard = () => {
     </div>
   );
 };
+
+export default FitnessDashboard;

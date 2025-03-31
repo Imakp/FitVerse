@@ -9,6 +9,7 @@ import {
 } from "react-icons/fa";
 import { MdDashboard } from "react-icons/md";
 import { IoMdFitness } from "react-icons/io";
+import { BiRun } from "react-icons/bi";
 import { useAuth } from "../context/AuthContext";
 import axios from "axios";
 import { ToastContainer } from "react-toastify";
@@ -106,6 +107,11 @@ export default function Navbar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
       path: "dashboard",
       label: "Dashboard",
       icon: <MdDashboard className="text-blue-500" />,
+    },
+    {
+      path: "activity",
+      label: "Activity",
+      icon: <BiRun className="text-green-500" />,
     },
     {
       path: "challenges",
