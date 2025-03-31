@@ -25,7 +25,6 @@ const LandingPage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-gray-50 to-gray-100 font-sans text-gray-800 relative">
-      {/* Dotted pattern background */}
       <div
         className="fixed inset-0 opacity-[0.15] pointer-events-none"
         style={{
@@ -35,14 +34,12 @@ const LandingPage = () => {
         }}
       ></div>
 
-      {/* Subtle animated background elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-32 -left-32 w-64 h-64 bg-emerald-200 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob"></div>
         <div className="absolute top-96 -right-32 w-64 h-64 bg-teal-200 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-2000"></div>
         <div className="absolute bottom-32 left-1/2 w-64 h-64 bg-green-200 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-4000"></div>
       </div>
 
-      {/* Navigation */}
       <nav className="relative z-10 px-6 py-6 flex justify-between items-center">
         <div className="flex items-center">
           <span className="text-2xl font-bold text-blue-600">FitVerse</span>
@@ -61,10 +58,10 @@ const LandingPage = () => {
             Testimonials
           </a>
           <Link
-            to="/login" // Updated link to point to the login page
-            className="bg-gradient-to-br from-purple-500 to-blue-600 text-white px-6 py-2 rounded-full font-medium transition-colors"
+            to="/login"
+            className="px-5 py-2 bg-blue-600 text-white rounded-md text-sm font-medium hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
           >
-            Login
+            Login / Sign Up
           </Link>
         </div>
         <button className="md:hidden text-gray-600">
@@ -85,7 +82,6 @@ const LandingPage = () => {
         </button>
       </nav>
 
-      {/* Hero Section */}
       <section className="relative z-10 px-6 pt-16 pb-24 md:pt-24 md:pb-32 max-w-7xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
           <motion.div
@@ -102,12 +98,10 @@ const LandingPage = () => {
               and earn exciting rewards. Your dedication deserves recognition!
             </p>
             <Link to="/login">
-              {" "}
-              {/* Updated link to point to the login page */}
               <motion.button
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.98 }}
-                className="bg-gradient-to-br from-purple-500 to-blue-600 text-white px-8 py-4 rounded-xl text-lg font-medium shadow-lg transition-colors inline-flex items-center"
+                className="px-8 py-3 bg-blue-600 text-white rounded-lg text-lg font-semibold shadow-md hover:bg-blue-700 transition-colors inline-flex items-center focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
               >
                 Start Earning Rewards <ArrowRight className="ml-2 h-5 w-5" />
               </motion.button>
@@ -125,7 +119,7 @@ const LandingPage = () => {
               <div
                 className="relative bg-gray-800 rounded-t-xl rounded-b-sm shadow-2xl overflow-hidden border-t border-l border-r border-gray-700"
                 style={{
-                  paddingBottom: "56.25%", // 16:9 aspect ratio
+                  paddingBottom: "56.25%",
                 }}
               >
                 <img
@@ -144,7 +138,6 @@ const LandingPage = () => {
               ></div>
             </div>
 
-            {/* Floating elements animation */}
             <motion.div
               animate={{
                 y: [0, -8, 0],
@@ -179,7 +172,6 @@ const LandingPage = () => {
         </div>
       </section>
 
-      {/* Features Section */}
       <section id="features" className="relative z-10 px-6 py-24 bg-white">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
@@ -219,12 +211,12 @@ const LandingPage = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="bg-gray-50 p-8 rounded-xl hover:shadow-lg transition-shadow"
+                className="bg-white p-6 rounded-xl shadow-lg border border-gray-100 hover:shadow-xl transition-shadow"
               >
-                <div className="bg-blue-100 rounded-full w-16 h-16 flex items-center justify-center mb-6">
-                  {feature.icon}
+                <div className="bg-blue-100 text-blue-600 rounded-lg w-12 h-12 flex items-center justify-center mb-5">
+                  {React.cloneElement(feature.icon, { size: 24 })}{" "}
                 </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-3">
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">
                   {feature.title}
                 </h3>
                 <p className="text-gray-600">{feature.description}</p>
@@ -234,7 +226,6 @@ const LandingPage = () => {
         </div>
       </section>
 
-      {/* Testimonials Section */}
       <section id="testimonials" className="relative z-10 px-6 py-24 bg-white">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
@@ -253,9 +244,9 @@ const LandingPage = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5 }}
-              className="bg-white p-8 rounded-xl shadow-lg border border-gray-100"
+              className="bg-white p-6 rounded-xl shadow-lg border border-gray-100"
             >
-              <div className="flex items-center mb-6">
+              <div className="flex items-center mb-4">
                 <img
                   src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
                   alt="Sarah Johnson"
@@ -290,9 +281,9 @@ const LandingPage = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: 0.1 }}
-              className="bg-white p-8 rounded-xl shadow-lg border border-gray-100"
+              className="bg-white p-6 rounded-xl shadow-lg border border-gray-100"
             >
-              <div className="flex items-center mb-6">
+              <div className="flex items-center mb-4">
                 <img
                   src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
                   alt="Michael Chen"
@@ -327,9 +318,9 @@ const LandingPage = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: 0.2 }}
-              className="bg-white p-8 rounded-xl shadow-lg border border-gray-100"
+              className="bg-white p-6 rounded-xl shadow-lg border border-gray-100" // Adjusted padding
             >
-              <div className="flex items-center mb-6">
+              <div className="flex items-center mb-4">
                 <img
                   src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
                   alt="Emma Rodriguez"
@@ -364,7 +355,6 @@ const LandingPage = () => {
         </div>
       </section>
 
-      {/* Footer */}
       <footer className="relative z-10 px-6 py-12 bg-gray-900 text-gray-400">
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
@@ -419,7 +409,6 @@ const LandingPage = () => {
         </div>
       </footer>
 
-      {/* Add animation keyframes for the blobs */}
       <style jsx>{`
         @keyframes blob {
           0% {

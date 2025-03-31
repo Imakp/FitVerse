@@ -1,4 +1,3 @@
-// components/RewardsList.js
 import React, { useState } from "react";
 import RewardCard from "./RewardCard";
 import { useAuth } from "../../context/AuthContext";
@@ -9,12 +8,10 @@ const RewardsList = ({ rewards: initialRewards }) => {
   const { user } = useAuth();
 
   const handleRedeem = async (redeemedRewardId) => {
-    // Update the user's balance in the Navbar
     try {
       const response = await axios.get(
         `http://localhost:3000/api/users/balance/${user._id}`
       );
-      // Dispatch a custom event that the Navbar will listen to
       window.dispatchEvent(
         new CustomEvent("balanceUpdated", {
           detail: { balance: response.data.balance },

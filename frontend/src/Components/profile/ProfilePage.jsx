@@ -1,152 +1,348 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { useGoogleFit } from "../../hooks/useGoogleFit";
 import Sidebar from "../layout/Sidebar";
 import {
-  FaUser,
-  FaCog,
-  FaQuestionCircle,
-  FaEdit,
-  FaSave,
-  FaGoogle,
-  FaTrash,
-} from "react-icons/fa";
-import Setting from "../settings/Setting";
+  User,
+  Settings as SettingsIcon, // Renamed to avoid conflict
+  HelpCircle,
+  Edit,
+  Save,
+  Unlink, // More appropriate for disconnect
+  Trash2,
+  Coins, // For balance
+  Loader2, // For loading state
+} from "lucide-react"; // Use lucide-react
+import Setting from "../settings/Setting"; // Keep these imports
 import Help from "../help/Help";
+import { motion } from "framer-motion"; // Import motion
+import axios from "axios"; // Import axios if needed for balance fetching or profile update
+import { toast } from "react-toastify"; // Import toast for notifications
 
+// Update categories with Lucide icons
 const categories = [
-  { name: "Profile", icon: <FaUser /> },
-  { name: "Settings", icon: <FaCog /> },
-  { name: "Help", icon: <FaQuestionCircle /> },
+  { name: "Profile", icon: <User size={20} /> },
+  { name: "Settings", icon: <SettingsIcon size={20} /> },
+  { name: "Help", icon: <HelpCircle size={20} /> },
 ];
 
 const MyProfile = () => {
-  const { user } = useAuth();
+  const { user, setUser } = useAuth(); // Get setUser to update context if needed
   const { isAuthenticated: isFitAuthenticated, signOut: signOutFit } =
     useGoogleFit();
   const [selectedCategory, setSelectedCategory] = useState("Profile");
   const [isEditing, setIsEditing] = useState(false);
+  const [isLoading, setIsLoading] = useState(false); // Loading state for save/delete
+  const [balance, setBalance] = useState(0); // State for balance
 
+  // Initialize profileData based on user
   const [profileData, setProfileData] = useState({
     name: user?.name || "",
     email: user?.email || "",
-    balance: user?.wallet?.balance || 0,
+    // Balance will be fetched separately
   });
+
+  // Fetch balance when component mounts or user changes
+  useEffect(() => {
+    if (user?._id) {
+      axios
+        .get(`http://localhost:3000/api/users/balance/${user._id}`)
+        .then(({ data }) => setBalance(data.balance))
+        .catch((err) => {
+          console.error("Failed to fetch balance:", err);
+          toast.error("Could not load your coin balance.");
+        });
+    }
+  }, [user?._id]);
+
+  // Update profileData if user context changes externally
+  useEffect(() => {
+    if (user) {
+      setProfileData({
+        name: user.name || "",
+        email: user.email || "",
+      });
+    }
+  }, [user]);
 
   const handleChange = (e) => {
     setProfileData({ ...profileData, [e.target.name]: e.target.value });
   };
 
-  const handleEditClick = () => {
+  const handleEditToggle = () => {
     setIsEditing(!isEditing);
+    // Reset form to user context data if canceling edit
+    if (isEditing && user) {
+      setProfileData({ name: user.name || "", email: user.email || "" });
+    }
   };
 
-  const handleSaveClick = () => {
-    setIsEditing(false);
-    console.log("Profile Updated:", profileData);
+  const handleSaveClick = async () => {
+    if (!user?._id) return;
+    setIsLoading(true);
+    try {
+      // --- TODO: Implement Backend API Call ---
+      // Example:
+      // const response = await axios.patch(`/api/users/${user._id}`, { name: profileData.name });
+      // if (response.data.success) {
+      //   // Optionally update user context if API returns updated user
+      //   // setUser(response.data.user);
+      //   toast.success("Profile updated successfully!");
+      //   setIsEditing(false);
+      // } else {
+      //   throw new Error(response.data.message || "Failed to update profile");
+      // }
+      console.log("Profile Update Payload:", { name: profileData.name }); // Placeholder
+      toast.success("Profile updated successfully! (Frontend Only)"); // Placeholder
+      // Update user context locally if needed (example)
+      // setUser(prevUser => ({ ...prevUser, name: profileData.name }));
+      setIsEditing(false);
+      // --- End TODO ---
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      toast.error(error.message || "Failed to update profile.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
+  const handleDeleteAccount = async () => {
+    if (!user?._id) return;
+    // Confirmation dialog
+    if (
+      window.confirm(
+        "Are you sure you want to delete your account? This action cannot be undone."
+      )
+    ) {
+      setIsLoading(true);
+      try {
+        // --- TODO: Implement Backend API Call for Deletion ---
+        // Example:
+        // await axios.delete(`/api/users/${user._id}`);
+        // toast.success("Account deleted successfully.");
+        // logout(); // Log the user out after deletion
+        // navigate('/'); // Redirect to landing or login
+        console.log("Account Deletion Requested for user:", user._id); // Placeholder
+        toast.warn("Account deletion feature not implemented yet."); // Placeholder
+        // --- End TODO ---
+      } catch (error) {
+        console.error("Error deleting account:", error);
+        toast.error("Failed to delete account.");
+      } finally {
+        setIsLoading(false);
+      }
+    }
+  };
+
+  const handleDisconnectFit = async () => {
+    try {
+      await signOutFit();
+      toast.success("Google Fit disconnected successfully.");
+    } catch (error) {
+      console.error("Error disconnecting Google Fit:", error);
+      toast.error("Failed to disconnect Google Fit.");
+    }
+  };
+
+  // Loading state for initial user data
   if (!user) {
     return (
-      <div className="flex justify-center items-center min-h-screen bg-gray-100">
-        <p className="text-gray-500 text-lg">Loading...</p>
+      <div className="flex justify-center items-center min-h-screen bg-gray-50">
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+          className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full"
+        ></motion.div>
       </div>
     );
   }
 
   return (
     <div className="flex bg-gray-50 min-h-screen">
+      {/* Consistent Sidebar */}
       <Sidebar
         categories={categories}
         selectedCategory={selectedCategory}
         onSelect={setSelectedCategory}
       />
 
-      <div className="flex-1 p-6">
-        {selectedCategory === "Profile" && (
-          <div className="max-w-md mx-auto bg-white p-6 rounded-lg shadow-md border border-gray-200">
-            <h2 className="text-2xl font-bold mb-4 flex items-center justify-center gap-2 text-gray-900">
-              <FaUser className="text-blue-500" /> My Profile
-            </h2>
-            <div className="flex flex-col items-center gap-4">
-              <img
-                src={user.profilePicture || "/default-avatar.png"}
-                alt={`${profileData.name || "User"}'s Profile`}
-                className="w-24 h-24 rounded-full border-2 border-gray-300 shadow-md object-cover"
-              />
-              <div className="w-full space-y-3">
-                <div>
-                  <label className="block text-gray-700 font-medium">
-                    Name:
-                  </label>
-                  <input
-                    name="name"
-                    className={`w-full p-2 border rounded-md ${
-                      isEditing ? "bg-white border-gray-400" : "bg-gray-100"
-                    }`}
-                    value={profileData.name}
-                    onChange={handleChange}
-                    disabled={!isEditing}
+      {/* Main Content Area */}
+      <div className="flex-1 p-6 md:p-8 lg:p-10">
+        {" "}
+        {/* Adjusted padding */}
+        <motion.div
+          key={selectedCategory} // Animate when category changes
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
+        >
+          {/* Profile Section */}
+          {selectedCategory === "Profile" && (
+            <div className="max-w-2xl mx-auto bg-white p-6 md:p-8 rounded-xl shadow-lg border border-gray-100">
+              {" "}
+              {/* Standard card style */}
+              <h2 className="text-2xl font-semibold mb-6 text-gray-800 border-b pb-3">
+                My Profile
+              </h2>
+              <div className="flex flex-col md:flex-row items-center gap-6 md:gap-8">
+                {/* Profile Picture */}
+                <div className="relative flex-shrink-0">
+                  <img
+                    src={user.profilePicture || "/default-profile.png"} // Use default if none
+                    alt={`${profileData.name || "User"}'s Profile`}
+                    className="w-28 h-28 rounded-full border-4 border-gray-200 shadow-md object-cover"
                   />
+                  {/* Optional: Edit icon for profile picture */}
+                  {/* <button className="absolute bottom-0 right-0 bg-blue-600 text-white p-1.5 rounded-full shadow hover:bg-blue-700 transition">
+                    <Edit size={14} />
+                  </button> */}
                 </div>
-                <div>
-                  <label className="block text-gray-700 font-medium">
-                    Total Coins:
-                  </label>
-                  <input
-                    name="balance"
-                    className="w-full p-2 border rounded-md bg-gray-100"
-                    value={profileData.balance}
-                    disabled
-                  />
-                </div>
-                <div>
-                  <label className="block text-gray-700 font-medium">
-                    Your Email:
-                  </label>
-                  <input
-                    name="email"
-                    className="w-full p-2 border rounded-md bg-gray-200"
-                    value={profileData.email}
-                    disabled
-                  />
+
+                {/* Profile Details Form */}
+                <div className="w-full space-y-4">
+                  {/* Name Field */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Name
+                    </label>
+                    <input
+                      name="name"
+                      type="text"
+                      className={`w-full px-3 py-2 border rounded-md text-sm transition-colors duration-150 ${
+                        isEditing
+                          ? "bg-white border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+                          : "bg-gray-100 border-gray-200 text-gray-700 cursor-default"
+                      }`}
+                      value={profileData.name}
+                      onChange={handleChange}
+                      disabled={!isEditing}
+                    />
+                  </div>
+
+                  {/* Email Field (Read-only) */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Email
+                    </label>
+                    <input
+                      name="email"
+                      type="email"
+                      className="w-full px-3 py-2 border rounded-md text-sm bg-gray-100 border-gray-200 text-gray-500 cursor-default"
+                      value={profileData.email}
+                      disabled
+                    />
+                  </div>
+
+                  {/* Balance Display */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Coin Balance
+                    </label>
+                    <div className="flex items-center w-full px-3 py-2 border rounded-md bg-gray-100 border-gray-200">
+                      <Coins
+                        size={16}
+                        className="text-yellow-500 mr-2 flex-shrink-0"
+                      />
+                      <span className="text-sm text-gray-700 font-medium">
+                        {balance.toLocaleString()} Coins
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className="flex flex-col sm:flex-row gap-3 pt-3">
+                    {isEditing ? (
+                      <>
+                        <motion.button
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          className="flex-1 flex items-center justify-center gap-2 bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition text-sm font-medium focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+                          onClick={handleSaveClick}
+                          disabled={isLoading}
+                        >
+                          {isLoading ? (
+                            <Loader2 size={16} className="animate-spin" />
+                          ) : (
+                            <Save size={16} />
+                          )}
+                          Save Changes
+                        </motion.button>
+                        <motion.button
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          className="flex-1 flex items-center justify-center gap-2 bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600 transition text-sm font-medium focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2"
+                          onClick={handleEditToggle}
+                          disabled={isLoading}
+                        >
+                          Cancel
+                        </motion.button>
+                      </>
+                    ) : (
+                      <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        className="flex-1 flex items-center justify-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                        onClick={handleEditToggle}
+                      >
+                        <Edit size={16} /> Edit Profile
+                      </motion.button>
+                    )}
+                  </div>
                 </div>
               </div>
-              <div className="w-full flex flex-col space-y-2 mt-4">
-                {isEditing ? (
-                  <button
-                    className="flex items-center justify-center gap-2 bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition shadow-md text-sm font-semibold"
-                    onClick={handleSaveClick}
-                  >
-                    <FaSave /> Save Profile
-                  </button>
-                ) : (
-                  <button
-                    className="flex items-center justify-center gap-2 bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition shadow-md text-sm font-semibold"
-                    onClick={handleEditClick}
-                  >
-                    <FaEdit /> Edit Profile
-                  </button>
-                )}
+              {/* Connections and Account Actions */}
+              <div className="w-full mt-8 pt-6 border-t border-gray-200 space-y-3">
+                <h3 className="text-md font-semibold text-gray-700 mb-2">
+                  Account Actions
+                </h3>
                 {isFitAuthenticated && (
-                  <button
-                    onClick={signOutFit}
-                    className="flex items-center justify-center gap-2 bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition shadow-md text-sm font-semibold"
+                  <motion.button
+                    whileHover={{ scale: 1.03 }}
+                    whileTap={{ scale: 0.97 }}
+                    onClick={handleDisconnectFit}
+                    className="w-full flex items-center justify-center gap-2 bg-gray-100 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-200 border border-gray-300 transition text-sm font-medium focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-1"
                   >
-                    <FaGoogle /> Disconnect Google Fit
-                  </button>
+                    <Unlink size={16} /> Disconnect Google Fit
+                  </motion.button>
                 )}
-                <button className="flex items-center justify-center gap-2 bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition shadow-md text-sm font-semibold">
-                  <FaTrash /> Delete Account
-                </button>
+                <motion.button
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.97 }}
+                  onClick={handleDeleteAccount}
+                  disabled={isLoading}
+                  className="w-full flex items-center justify-center gap-2 bg-red-50 text-red-600 px-4 py-2 rounded-md hover:bg-red-100 border border-red-200 transition text-sm font-medium focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-1"
+                >
+                  {isLoading ? (
+                    <Loader2 size={16} className="animate-spin" />
+                  ) : (
+                    <Trash2 size={16} />
+                  )}
+                  Delete Account
+                </motion.button>
               </div>
             </div>
-          </div>
-        )}
+          )}
 
-        {selectedCategory === "Settings" && <Setting />}
+          {/* Settings Section */}
+          {selectedCategory === "Settings" && (
+            <div className="bg-white p-6 md:p-8 rounded-xl shadow-lg border border-gray-100">
+              <h2 className="text-2xl font-semibold mb-6 text-gray-800 border-b pb-3">
+                Settings
+              </h2>
+              <Setting />
+            </div>
+          )}
 
-        {selectedCategory === "Help" && <Help />}
+          {/* Help Section */}
+          {selectedCategory === "Help" && (
+            <div className="bg-white p-6 md:p-8 rounded-xl shadow-lg border border-gray-100">
+              <h2 className="text-2xl font-semibold mb-6 text-gray-800 border-b pb-3">
+                Help & Support
+              </h2>
+              <Help />
+            </div>
+          )}
+        </motion.div>
       </div>
     </div>
   );

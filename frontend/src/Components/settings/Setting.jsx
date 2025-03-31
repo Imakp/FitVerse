@@ -1,117 +1,166 @@
 import React from "react";
-import { FaBell, FaLock, FaCheckCircle } from "react-icons/fa";
+import { Bell, Lock, Save } from "lucide-react";
+import { motion } from "framer-motion";
+
+const useSettingState = (propValue, defaultVal) => {
+  const [state, setState] = React.useState(propValue ?? defaultVal);
+
+  React.useEffect(() => {
+    if (propValue !== undefined) {
+      setState(propValue);
+    }
+  }, [propValue]);
+  return [state, setState];
+};
 
 const Setting = ({
-  notifications,
-  setNotifications,
-  goalUpdates,
-  setGoalUpdates,
-  featureUpdates,
-  setFeatureUpdates,
-  profileVisibility,
-  setProfileVisibility,
-  workoutVisibility,
-  setWorkoutVisibility,
-  shareData,
-  setShareData,
-  analyticsCookies,
-  setAnalyticsCookies,
+  notifications: propNotifications,
+  setNotifications: propSetNotifications,
+  goalUpdates: propGoalUpdates,
+  setGoalUpdates: propSetGoalUpdates,
+  featureUpdates: propFeatureUpdates,
+  setFeatureUpdates: propSetFeatureUpdates,
+  profileVisibility: propProfileVisibility,
+  setProfileVisibility: propSetProfileVisibility,
+  workoutVisibility: propWorkoutVisibility,
+  setWorkoutVisibility: propSetWorkoutVisibility,
+  shareData: propShareData,
+  setShareData: propSetShareData,
+  analyticsCookies: propAnalyticsCookies,
+  setAnalyticsCookies: propSetAnalyticsCookies,
 }) => {
-  return (
-    <div className="p-8 bg-gradient-to-br from-white to-gray-100 shadow-2xl rounded-xl max-w-5xl mx-auto border border-gray-300 flex flex-col gap-8">
-      <h2 className="text-3xl font-extrabold flex items-center gap-3 text-gray-900">
-        <FaCheckCircle className="text-green-500" /> Settings
-      </h2>
+  const [notifications, setNotifications] = useSettingState(
+    propNotifications,
+    true
+  );
+  const [goalUpdates, setGoalUpdates] = useSettingState(propGoalUpdates, true);
+  const [featureUpdates, setFeatureUpdates] = useSettingState(
+    propFeatureUpdates,
+    false
+  );
+  const [profileVisibility, setProfileVisibility] = useSettingState(
+    propProfileVisibility,
+    "Everyone"
+  );
+  const [workoutVisibility, setWorkoutVisibility] = useSettingState(
+    propWorkoutVisibility,
+    "Friends Only"
+  );
+  const [shareData, setShareData] = useSettingState(propShareData, false);
+  const [analyticsCookies, setAnalyticsCookies] = useSettingState(
+    propAnalyticsCookies,
+    true
+  );
 
-      <div className="flex flex-col md:flex-row gap-8">
-        {/* Notifications Section */}
-        <div className="flex-1 bg-white p-6 rounded-lg shadow-lg border border-gray-200">
-          <h3 className="text-xl font-semibold flex items-center gap-2 text-gray-900 mb-4">
-            <FaBell className="text-blue-500" /> Notifications
+  const handleSaveSettings = () => {
+    console.log("Saving settings:", {
+      notifications,
+      goalUpdates,
+      featureUpdates,
+      profileVisibility,
+      workoutVisibility,
+      shareData,
+      analyticsCookies,
+    });
+
+    propSetNotifications?.(notifications);
+    propSetGoalUpdates?.(goalUpdates);
+
+    alert("Settings saved (Placeholder)");
+  };
+
+  return (
+    <div className="flex flex-col gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        <div className="space-y-4">
+          <h3 className="text-lg font-semibold flex items-center gap-2 text-gray-800 mb-3 border-b pb-2">
+            <Bell className="text-blue-600" size={20} /> Notifications
           </h3>
-          <div className="space-y-4">
-            <SettingToggle
-              label="Workout Reminders"
-              value={notifications}
-              onChange={setNotifications}
-            />
-            <SettingToggle
-              label="Goal Updates"
-              value={goalUpdates}
-              onChange={setGoalUpdates}
-            />
-            <SettingToggle
-              label="New Features"
-              value={featureUpdates}
-              onChange={setFeatureUpdates}
-            />
-          </div>
+          <SettingToggle
+            label="Workout Reminders"
+            value={notifications}
+            onChange={setNotifications}
+          />
+          <SettingToggle
+            label="Goal Updates & Milestones"
+            value={goalUpdates}
+            onChange={setGoalUpdates}
+          />
+          <SettingToggle
+            label="New Feature Announcements"
+            value={featureUpdates}
+            onChange={setFeatureUpdates}
+          />
         </div>
 
-        {/* Privacy Section */}
-        <div className="flex-1 bg-white p-6 rounded-lg shadow-lg border border-gray-200">
-          <h3 className="text-xl font-semibold flex items-center gap-2 text-gray-900 mb-4">
-            <FaLock className="text-red-500" /> Privacy
+        <div className="space-y-4">
+          <h3 className="text-lg font-semibold flex items-center gap-2 text-gray-800 mb-3 border-b pb-2">
+            <Lock className="text-red-600" size={20} /> Privacy
           </h3>
-          <div className="space-y-4">
-            <SettingSelect
-              label="Who can see your profile?"
-              value={profileVisibility}
-              onChange={setProfileVisibility}
-              options={["Everyone", "Friends Only"]}
-            />
-            <SettingSelect
-              label="Who can see your workouts?"
-              value={workoutVisibility}
-              onChange={setWorkoutVisibility}
-              options={["Everyone", "Friends Only"]}
-            />
-            <SettingToggle
-              label="Share workout data with partners"
-              value={shareData}
-              onChange={setShareData}
-            />
-            <SettingToggle
-              label="Analytics Cookies"
-              value={analyticsCookies}
-              onChange={setAnalyticsCookies}
-            />
-          </div>
+          <SettingSelect
+            label="Profile Visibility"
+            value={profileVisibility}
+            onChange={setProfileVisibility}
+            options={["Everyone", "Friends Only", "Only Me"]}
+          />
+          <SettingSelect
+            label="Workout Visibility"
+            value={workoutVisibility}
+            onChange={setWorkoutVisibility}
+            options={["Everyone", "Friends Only", "Only Me"]}
+          />
+          <SettingToggle
+            label="Share Anonymized Data"
+            value={shareData}
+            onChange={setShareData}
+          />
+          <SettingToggle
+            label="Allow Analytics Cookies"
+            value={analyticsCookies}
+            onChange={setAnalyticsCookies}
+          />
         </div>
       </div>
 
-      <button className="mt-6 w-full bg-gradient-to-r from-green-400 to-green-600 text-white px-6 py-3 rounded-lg hover:from-green-500 hover:to-green-700 transition-all shadow-lg text-lg font-semibold">
-        Save Settings
-      </button>
+      <motion.button
+        whileHover={{ scale: 1.03 }}
+        whileTap={{ scale: 0.97 }}
+        className="mt-6 w-full flex items-center justify-center gap-2 bg-blue-600 text-white px-5 py-2.5 rounded-md hover:bg-blue-700 transition-colors shadow text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+        onClick={handleSaveSettings}
+      >
+        <Save size={18} /> Save Settings
+      </motion.button>
     </div>
   );
 };
 
 const SettingToggle = ({ label, value, onChange }) => (
-  <div className="flex justify-between items-center py-3 border-b last:border-none">
-    <span className="text-gray-800 font-medium">{label}</span>
+  <div className="flex justify-between items-center py-2">
+    <span className="text-sm text-gray-700">{label}</span>
     <button
+      type="button"
       onClick={() => onChange(!value)}
-      className={`w-14 h-7 flex items-center rounded-full p-1 transition-all duration-300 shadow-md ${
-        value ? "bg-green-500" : "bg-gray-300"
+      className={`relative inline-flex items-center h-6 rounded-full w-11 transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 ${
+        value ? "bg-blue-600" : "bg-gray-300"
       }`}
+      aria-pressed={value}
     >
-      <div
-        className={`w-6 h-6 bg-white rounded-full shadow transform ${
-          value ? "translate-x-7" : "translate-x-0"
-        } transition-all duration-300`}
+      <span className="sr-only">Use setting</span>
+      <span
+        aria-hidden="true"
+        className={`inline-block w-4 h-4 transform bg-white rounded-full transition-transform duration-200 ease-in-out shadow ${
+          value ? "translate-x-6" : "translate-x-1"
+        }`}
       />
     </button>
   </div>
 );
 
 const SettingSelect = ({ label, value, onChange, options }) => (
-  <div className="mt-2">
-    <label className="block text-sm font-medium text-gray-800 mb-2">
-      {label}
-    </label>
+  <div className="space-y-1">
+    <label className="block text-sm font-medium text-gray-700">{label}</label>
     <select
-      className="w-full p-3 border rounded-lg shadow-sm focus:ring focus:ring-green-300 bg-white text-gray-900"
+      className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition duration-150 ease-in-out bg-white" // Standard form styling
       value={value}
       onChange={(e) => onChange(e.target.value)}
     >
