@@ -130,19 +130,31 @@ export default function Challenge() {
         { headers: { "Content-Type": "application/json" } }
       );
 
-      await axios.post(
+      // Capture the response from add-coins API
+      const addCoinsResponse = await axios.post(
         `http://localhost:3000/api/users/add-coins`,
         { userId: user._id, amount: reward },
         { headers: { "Content-Type": "application/json" } }
       );
 
-      window.dispatchEvent(
-        new CustomEvent("balanceUpdated", {
-          detail: { balance: balance + reward },
-        })
-      );
-
-      console.log(`Challenge ${challengeId} redeemed successfully.`);
+      if (addCoinsResponse.data && addCoinsResponse.data.success) {
+        window.dispatchEvent(
+          new CustomEvent("balanceUpdated", {
+            detail: { balance: addCoinsResponse.data.newBalance },
+          })
+        );
+        console.log(
+          `Challenge ${challengeId} redeemed successfully. New balance: ${addCoinsResponse.data.newBalance}`
+        );
+      } else {
+        console.error(
+          "Failed to add coins according to API response:",
+          addCoinsResponse.data
+        );
+        throw new Error(
+          addCoinsResponse.data?.message || "Failed to update balance on server"
+        );
+      }
     } catch (error) {
       console.error(
         "Error redeeming challenge:",

@@ -5,17 +5,14 @@ const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [balance, setBalance] = useState(0);
   const [loading, setLoading] = useState(true);
 
-  // Backend URL
   const BACKEND_URL = "http://localhost:3000";
-
-  // Redirect user to backend for OAuth authentication
   const login = () => {
     window.location.href = `${BACKEND_URL}/auth/google`;
   };
 
-  // Logout user by calling backend logout endpoint
   const logout = async () => {
     try {
       await axios.get(`${BACKEND_URL}/auth/logout`, { withCredentials: true });
@@ -25,26 +22,68 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // Fetch user session from backend
   const fetchUser = async () => {
     try {
       const { data } = await axios.get(`${BACKEND_URL}/auth/user`, {
         withCredentials: true,
       });
       setUser(data);
+      if (data?._id) {
+        fetchBalance(data._id);
+      }
     } catch (error) {
       setUser(null);
+      setBalance(0);
     } finally {
       setLoading(false);
     }
   };
 
+  const fetchBalance = async (userId) => {
+    if (!userId) return;
+    try {
+      const { data } = await axios.get(
+        `${BACKEND_URL}/api/users/balance/${userId}`
+      );
+      if (data.success) {
+        setBalance(data.balance);
+      } else {
+        console.error("Failed to fetch balance:", data.message);
+        setBalance(0);
+      }
+    } catch (error) {
+      console.error("Error fetching balance:", error);
+      setBalance(0);
+    }
+  };
+
   useEffect(() => {
     fetchUser();
+
+    const handleBalanceUpdate = (event) => {
+      if (event.detail && typeof event.detail.balance === "number") {
+        setBalance(event.detail.balance);
+      }
+    };
+    window.addEventListener("balanceUpdated", handleBalanceUpdate);
+
+    return () => {
+      window.removeEventListener("balanceUpdated", handleBalanceUpdate);
+    };
   }, []);
 
+  useEffect(() => {
+    if (user?._id) {
+      fetchBalance(user._id);
+    } else {
+      setBalance(0);
+    }
+  }, [user?._id]);
+
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout }}>
+    <AuthContext.Provider
+      value={{ user, balance, loading, login, logout, setBalance }}
+    >
       {children}
     </AuthContext.Provider>
   );

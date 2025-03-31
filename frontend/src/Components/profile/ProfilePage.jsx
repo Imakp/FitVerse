@@ -4,22 +4,21 @@ import { useGoogleFit } from "../../hooks/useGoogleFit";
 import Sidebar from "../layout/Sidebar";
 import {
   User,
-  Settings as SettingsIcon, // Renamed to avoid conflict
+  Settings as SettingsIcon,
   HelpCircle,
   Edit,
   Save,
-  Unlink, // More appropriate for disconnect
+  Unlink,
   Trash2,
-  Coins, // For balance
-  Loader2, // For loading state
-} from "lucide-react"; // Use lucide-react
-import Setting from "../settings/Setting"; // Keep these imports
+  Coins,
+  Loader2,
+} from "lucide-react";
+import Setting from "../settings/Setting";
 import Help from "../help/Help";
-import { motion } from "framer-motion"; // Import motion
-import axios from "axios"; // Import axios if needed for balance fetching or profile update
-import { toast } from "react-toastify"; // Import toast for notifications
+import { motion } from "framer-motion";
+import axios from "axios";
+import { toast } from "react-toastify";
 
-// Update categories with Lucide icons
 const categories = [
   { name: "Profile", icon: <User size={20} /> },
   { name: "Settings", icon: <SettingsIcon size={20} /> },
@@ -27,22 +26,19 @@ const categories = [
 ];
 
 const MyProfile = () => {
-  const { user, setUser } = useAuth(); // Get setUser to update context if needed
+  const { user, setUser } = useAuth();
   const { isAuthenticated: isFitAuthenticated, signOut: signOutFit } =
     useGoogleFit();
   const [selectedCategory, setSelectedCategory] = useState("Profile");
   const [isEditing, setIsEditing] = useState(false);
-  const [isLoading, setIsLoading] = useState(false); // Loading state for save/delete
-  const [balance, setBalance] = useState(0); // State for balance
+  const [isLoading, setIsLoading] = useState(false);
+  const [balance, setBalance] = useState(0);
 
-  // Initialize profileData based on user
   const [profileData, setProfileData] = useState({
     name: user?.name || "",
     email: user?.email || "",
-    // Balance will be fetched separately
   });
 
-  // Fetch balance when component mounts or user changes
   useEffect(() => {
     if (user?._id) {
       axios
@@ -55,7 +51,22 @@ const MyProfile = () => {
     }
   }, [user?._id]);
 
-  // Update profileData if user context changes externally
+  useEffect(() => {
+    if (!user) return;
+
+    const handleBalanceUpdate = (event) => {
+      if (event.detail && typeof event.detail.balance === "number") {
+        setBalance(event.detail.balance);
+      }
+    };
+
+    window.addEventListener("balanceUpdated", handleBalanceUpdate);
+
+    return () => {
+      window.removeEventListener("balanceUpdated", handleBalanceUpdate);
+    };
+  }, [user]);
+
   useEffect(() => {
     if (user) {
       setProfileData({
@@ -71,7 +82,7 @@ const MyProfile = () => {
 
   const handleEditToggle = () => {
     setIsEditing(!isEditing);
-    // Reset form to user context data if canceling edit
+
     if (isEditing && user) {
       setProfileData({ name: user.name || "", email: user.email || "" });
     }
@@ -81,23 +92,10 @@ const MyProfile = () => {
     if (!user?._id) return;
     setIsLoading(true);
     try {
-      // --- TODO: Implement Backend API Call ---
-      // Example:
-      // const response = await axios.patch(`/api/users/${user._id}`, { name: profileData.name });
-      // if (response.data.success) {
-      //   // Optionally update user context if API returns updated user
-      //   // setUser(response.data.user);
-      //   toast.success("Profile updated successfully!");
-      //   setIsEditing(false);
-      // } else {
-      //   throw new Error(response.data.message || "Failed to update profile");
-      // }
-      console.log("Profile Update Payload:", { name: profileData.name }); // Placeholder
-      toast.success("Profile updated successfully! (Frontend Only)"); // Placeholder
-      // Update user context locally if needed (example)
-      // setUser(prevUser => ({ ...prevUser, name: profileData.name }));
+      console.log("Profile Update Payload:", { name: profileData.name });
+      toast.success("Profile updated successfully! (Frontend Only)");
+
       setIsEditing(false);
-      // --- End TODO ---
     } catch (error) {
       console.error("Error updating profile:", error);
       toast.error(error.message || "Failed to update profile.");
@@ -116,15 +114,8 @@ const MyProfile = () => {
     ) {
       setIsLoading(true);
       try {
-        // --- TODO: Implement Backend API Call for Deletion ---
-        // Example:
-        // await axios.delete(`/api/users/${user._id}`);
-        // toast.success("Account deleted successfully.");
-        // logout(); // Log the user out after deletion
-        // navigate('/'); // Redirect to landing or login
-        console.log("Account Deletion Requested for user:", user._id); // Placeholder
-        toast.warn("Account deletion feature not implemented yet."); // Placeholder
-        // --- End TODO ---
+        console.log("Account Deletion Requested for user:", user._id);
+        toast.warn("Account deletion feature not implemented yet.");
       } catch (error) {
         console.error("Error deleting account:", error);
         toast.error("Failed to delete account.");
@@ -144,7 +135,6 @@ const MyProfile = () => {
     }
   };
 
-  // Loading state for initial user data
   if (!user) {
     return (
       <div className="flex justify-center items-center min-h-screen bg-gray-50">
@@ -159,48 +149,34 @@ const MyProfile = () => {
 
   return (
     <div className="flex bg-gray-50 min-h-screen">
-      {/* Consistent Sidebar */}
       <Sidebar
         categories={categories}
         selectedCategory={selectedCategory}
         onSelect={setSelectedCategory}
       />
 
-      {/* Main Content Area */}
       <div className="flex-1 p-6 md:p-8 lg:p-10">
-        {" "}
-        {/* Adjusted padding */}
         <motion.div
-          key={selectedCategory} // Animate when category changes
+          key={selectedCategory}
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}
         >
-          {/* Profile Section */}
           {selectedCategory === "Profile" && (
             <div className="max-w-2xl mx-auto bg-white p-6 md:p-8 rounded-xl shadow-lg border border-gray-100">
-              {" "}
-              {/* Standard card style */}
               <h2 className="text-2xl font-semibold mb-6 text-gray-800 border-b pb-3">
                 My Profile
               </h2>
               <div className="flex flex-col md:flex-row items-center gap-6 md:gap-8">
-                {/* Profile Picture */}
                 <div className="relative flex-shrink-0">
                   <img
-                    src={user.profilePicture || "/default-profile.png"} // Use default if none
+                    src={user.profilePicture || "/default-profile.png"}
                     alt={`${profileData.name || "User"}'s Profile`}
                     className="w-28 h-28 rounded-full border-4 border-gray-200 shadow-md object-cover"
                   />
-                  {/* Optional: Edit icon for profile picture */}
-                  {/* <button className="absolute bottom-0 right-0 bg-blue-600 text-white p-1.5 rounded-full shadow hover:bg-blue-700 transition">
-                    <Edit size={14} />
-                  </button> */}
                 </div>
 
-                {/* Profile Details Form */}
                 <div className="w-full space-y-4">
-                  {/* Name Field */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Name
@@ -219,7 +195,6 @@ const MyProfile = () => {
                     />
                   </div>
 
-                  {/* Email Field (Read-only) */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Email
@@ -233,7 +208,6 @@ const MyProfile = () => {
                     />
                   </div>
 
-                  {/* Balance Display */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       Coin Balance
@@ -249,7 +223,6 @@ const MyProfile = () => {
                     </div>
                   </div>
 
-                  {/* Action Buttons */}
                   <div className="flex flex-col sm:flex-row gap-3 pt-3">
                     {isEditing ? (
                       <>
@@ -290,7 +263,6 @@ const MyProfile = () => {
                   </div>
                 </div>
               </div>
-              {/* Connections and Account Actions */}
               <div className="w-full mt-8 pt-6 border-t border-gray-200 space-y-3">
                 <h3 className="text-md font-semibold text-gray-700 mb-2">
                   Account Actions
@@ -323,7 +295,6 @@ const MyProfile = () => {
             </div>
           )}
 
-          {/* Settings Section */}
           {selectedCategory === "Settings" && (
             <div className="bg-white p-6 md:p-8 rounded-xl shadow-lg border border-gray-100">
               <h2 className="text-2xl font-semibold mb-6 text-gray-800 border-b pb-3">
@@ -333,7 +304,6 @@ const MyProfile = () => {
             </div>
           )}
 
-          {/* Help Section */}
           {selectedCategory === "Help" && (
             <div className="bg-white p-6 md:p-8 rounded-xl shadow-lg border border-gray-100">
               <h2 className="text-2xl font-semibold mb-6 text-gray-800 border-b pb-3">

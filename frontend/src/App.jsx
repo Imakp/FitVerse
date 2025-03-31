@@ -1,4 +1,3 @@
-// App.jsx
 import { useEffect, useState } from "react";
 import { Route, Routes, Navigate, useNavigate } from "react-router-dom";
 import Navbar from "./Components/layout/Navbar.jsx";
@@ -8,7 +7,6 @@ import ProfilePage from "./Components/profile/ProfilePage.jsx";
 import LoginPage from "./Components/auth/LoginPage.jsx";
 import { FitnessDashboard } from "./Components/dashboard/FitnessDashboard.jsx";
 import { useAuth } from "./context/AuthContext";
-import Leaderboard from "./Components/leaderboard/Leaderboard.jsx";
 import LandingPage from "./Components/landing/LandingPage.jsx";
 import ChallengePage from "./Components/challenges/ChallengePage.jsx";
 
@@ -35,9 +33,7 @@ const AuthWrapper = () => {
       />
       <div className="transition-all duration-300">
         <Routes>
-          {/* Landing page is now the default route */}
           <Route path="/" element={<LandingPage />} />
-          {/* Login page route */}
           <Route path="/login" element={<LoginPage />} />
           <Route
             path="/dashboard"
@@ -76,14 +72,6 @@ const AuthWrapper = () => {
             element={
               <ProtectedRoute>
                 <ProfilePage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/leaderboard"
-            element={
-              <ProtectedRoute>
-                <Leaderboard />
               </ProtectedRoute>
             }
           />

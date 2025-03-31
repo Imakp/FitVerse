@@ -8,10 +8,12 @@ import { Coins, Gift, Check, Loader2 } from "lucide-react";
 
 const RewardCard = ({ reward, onRedeem }) => {
   const { title, description, coins, _id: rewardId } = reward;
-  const { user } = useAuth();
+  const { user, balance } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [isRedeemed, setIsRedeemed] = useState(false);
+
+  const canAfford = balance >= coins;
 
   const handleRedeemClick = async () => {
     if (!user?._id) {
@@ -75,12 +77,14 @@ const RewardCard = ({ reward, onRedeem }) => {
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onClick={handleRedeemClick}
-          disabled={isLoading || isRedeemed}
+          disabled={isLoading || isRedeemed || !canAfford}
           className={`w-full flex items-center justify-center space-x-2 text-white font-medium rounded-md text-sm px-4 py-2.5 text-center transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-offset-2 ${
             isRedeemed
               ? "bg-green-500 cursor-default focus:ring-green-400"
-              : isLoading
+              : !canAfford
               ? "bg-gray-400 cursor-not-allowed focus:ring-gray-400"
+              : isLoading
+              ? "bg-yellow-500 cursor-wait focus:ring-yellow-400"
               : "bg-blue-600 hover:bg-blue-700 focus:ring-blue-500"
           }`}
         >
@@ -92,7 +96,13 @@ const RewardCard = ({ reward, onRedeem }) => {
             <Gift size={18} />
           )}
           <span>
-            {isLoading ? "Redeeming..." : isRedeemed ? "Redeemed" : "Redeem"}
+            {isLoading
+              ? "Redeeming..."
+              : isRedeemed
+              ? "Redeemed"
+              : !canAfford
+              ? "Insufficient Coins"
+              : "Redeem"}
           </span>
         </motion.button>
       </div>
