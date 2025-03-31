@@ -30,8 +30,6 @@ import {
   RefreshCw,
 } from "lucide-react";
 
-// Import the same FITNESS_METRICS constant from the original file
-// or redefine it here to ensure consistency
 const FITNESS_METRICS = [
   {
     name: "Steps",
