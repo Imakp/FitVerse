@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
-import Sidebar from "../leaderboard/Sidebar";
+import Sidebar from "../layout/Sidebar";
 import {
   FaUser,
   FaCog,

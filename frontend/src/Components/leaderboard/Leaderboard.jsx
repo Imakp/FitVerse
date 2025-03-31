@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Sidebar from "./Sidebar";
+import Sidebar from "../layout/Sidebar";
 import { FiGlobe, FiUsers } from "react-icons/fi";
 
 const leaderboardDataMap = {
