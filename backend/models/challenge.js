@@ -5,7 +5,11 @@ const ChallengeSchema = new mongoose.Schema({
   description: { type: String, required: true },
   metric: { type: String, required: true, index: true }, // e.g., "stepCount", "activeMinutes"
   target: { type: Number, required: true },
-  redeemed: { type: Boolean, default: false, index: true },
+  redeemedBy: [{ 
+    type: mongoose.Schema.Types.ObjectId, 
+    ref: 'User',
+    index: true 
+  }],
   unit: { type: String, required: true }, // e.g., "steps", "minutes"
   reward: { type: Number, required: true },
 }, { timestamps: true });
