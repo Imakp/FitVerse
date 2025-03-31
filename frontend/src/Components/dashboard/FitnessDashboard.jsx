@@ -89,7 +89,7 @@ const MetricCard = ({
       style={{ borderColor: color }}
     >
       <div
-        className="absolute top-0 right-0 w-32 h-32 bg-opacity-10 rounded-full transform translate-x-16 -translate-y-16"
+        className="absolute top-0 right-0 w-32 h-32 bg-opacity-10 rounded-full transform translate-x-16 -translate-y-16 z-0"
         style={{ backgroundColor: color }}
       ></div>
 
@@ -236,13 +236,11 @@ const WeeklyProgress = ({ data }) => {
     );
   }
 
-  // Get yesterday's date as the end date
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   const yesterday = new Date(today);
   yesterday.setDate(yesterday.getDate() - 1);
 
-  // Calculate start of week (7 days before yesterday)
   const startOfWeek = new Date(yesterday);
   startOfWeek.setDate(yesterday.getDate() - 6);
   startOfWeek.setHours(0, 0, 0, 0);
@@ -262,7 +260,6 @@ const WeeklyProgress = ({ data }) => {
         }),
       }));
 
-    // Sort data by date to ensure correct order
     weekData.sort((a, b) => new Date(a.date) - new Date(b.date));
 
     return {
@@ -419,12 +416,21 @@ export const FitnessDashboard = () => {
           startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
       }
 
-      // First verify access to Fitness API
       try {
         await axios.get(`${FITNESS_API_BASE_URL}/dataSources`, {
           headers: { Authorization: `Bearer ${accessToken}` },
         });
       } catch (err) {
+        if (err.response?.status === 401) {
+          console.warn(
+            "Google Fit access token is invalid (401). Signing out from Fit."
+          );
+          signOut();
+          setFetchError(
+            "Your Google Fit session has expired. Please connect again."
+          );
+          return;
+        }
         if (err.response?.status === 403) {
           setFetchError(
             "Please ensure you have granted access to Google Fit data. Go to your Google Account settings, remove the app's permissions, and try logging in again."
@@ -491,7 +497,9 @@ export const FitnessDashboard = () => {
       }
     } catch (err) {
       console.error("Error fetching fitness data:", err);
-      setFetchError(err.message || "Failed to fetch fitness data.");
+      if (err.message !== "Session expired. Please sign in again.") {
+        setFetchError(err.message || "Failed to fetch fitness data.");
+      }
     } finally {
       setLoading(false);
     }

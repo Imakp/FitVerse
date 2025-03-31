@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useAuth } from "../../context/AuthContext";
+import { useGoogleFit } from "../../hooks/useGoogleFit";
 import Sidebar from "../layout/Sidebar";
 import {
   FaUser,
@@ -21,6 +22,8 @@ const categories = [
 
 const MyProfile = () => {
   const { user } = useAuth();
+  const { isAuthenticated: isFitAuthenticated, signOut: signOutFit } =
+    useGoogleFit();
   const [selectedCategory, setSelectedCategory] = useState("Profile");
   const [isEditing, setIsEditing] = useState(false);
 
@@ -125,9 +128,14 @@ const MyProfile = () => {
                     <FaEdit /> Edit Profile
                   </button>
                 )}
-                <button className="flex items-center justify-center gap-2 bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition shadow-md text-sm font-semibold">
-                  <FaGoogle /> Disconnect Google Fit
-                </button>
+                {isFitAuthenticated && (
+                  <button
+                    onClick={signOutFit}
+                    className="flex items-center justify-center gap-2 bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition shadow-md text-sm font-semibold"
+                  >
+                    <FaGoogle /> Disconnect Google Fit
+                  </button>
+                )}
                 <button className="flex items-center justify-center gap-2 bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition shadow-md text-sm font-semibold">
                   <FaTrash /> Delete Account
                 </button>
