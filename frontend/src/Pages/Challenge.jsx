@@ -1,4 +1,10 @@
-import React, { useEffect, useState, useCallback, useMemo } from "react";
+import React, {
+  useEffect,
+  useState,
+  useCallback,
+  useMemo,
+  useRef,
+} from "react";
 import axios from "axios";
 import { useGoogleFit } from "../hooks/useGoogleFit";
 import { useAuth } from "../context/AuthContext";
@@ -16,6 +22,9 @@ export default function Challenge() {
   const [redeemedChallenges, setRedeemedChallenges] = useState({});
   const [challenges, setChallenges] = useState([]);
 
+  const fetchRef = useRef(false); // Prevents duplicate calls
+
+  // Memoized function to process Google Fit data
   const processFitnessData = useCallback((data, metricKey) => {
     return (
       data?.bucket?.reduce(
@@ -36,8 +45,10 @@ export default function Challenge() {
     );
   }, []);
 
+  // Fetch fitness data only once
   useEffect(() => {
-    if (!isAuthenticated) return;
+    if (!isAuthenticated || fetchRef.current) return;
+    fetchRef.current = true; // Prevent multiple fetches
 
     const getFitnessData = async () => {
       try {
@@ -47,12 +58,18 @@ export default function Challenge() {
           fetchFitnessData("com.google.calories.expended"),
         ]);
 
-        setFitnessData({
+        const newFitnessData = {
           stepCount: processFitnessData(stepData, "intVal"),
           activeMinutes: Math.round(
             processFitnessData(activeMinutesData, "intVal") / 7
           ),
           caloriesBurned: Math.round(processFitnessData(calorieData, "fpVal")),
+        };
+
+        setFitnessData((prev) => {
+          return JSON.stringify(prev) === JSON.stringify(newFitnessData)
+            ? prev
+            : newFitnessData;
         });
       } catch (err) {
         console.error("Error fetching fitness data:", err);
@@ -62,6 +79,7 @@ export default function Challenge() {
     getFitnessData();
   }, [isAuthenticated, fetchFitnessData, processFitnessData]);
 
+  // Fetch user balance only when the user ID changes
   useEffect(() => {
     if (user?._id) {
       axios
@@ -69,8 +87,9 @@ export default function Challenge() {
         .then(({ data }) => setBalance(data.balance))
         .catch((err) => console.error("Failed to fetch balance:", err));
     }
-  }, [user]);
+  }, [user?._id]);
 
+  // Fetch challenges once
   useEffect(() => {
     axios
       .get("http://localhost:3000/api/challenges")
@@ -78,26 +97,31 @@ export default function Challenge() {
       .catch((err) => console.error("Failed to fetch challenges:", err));
   }, []);
 
-  const addCoins = useCallback(
-    async (challengeId, reward) => {
-      if (!user?._id || redeemedChallenges[challengeId]) return;
+  // Redeem rewards function
+  const addCoins = async (challengeId, reward) => {
+    try {
+      console.log(`Updating challenge: ${challengeId}`); // Debugging
 
-      try {
-        const { data } = await axios.post(
-          "http://localhost:3000/api/transactions/reward",
-          { userId: user._id, challengeId, amount: reward }
-        );
+      const { data } = await axios.patch(
+        `http://localhost:3000/api/challenges/${challengeId}`,
+        { redeemed: true },
+        { headers: { "Content-Type": "application/json" } }
+      );
 
-        setBalance(data.balance);
-        if (data.redeemed) {
-          setRedeemedChallenges((prev) => ({ ...prev, [challengeId]: true }));
-        }
-      } catch (error) {
-        console.error("Error adding coins:", error);
-      }
-    },
-    [user, redeemedChallenges]
-  );
+      console.log("Response:", data);
+
+      setChallenges((prevChallenges) =>
+        prevChallenges.map((ch) =>
+          ch._id === challengeId ? { ...ch, redeemed: true } : ch
+        )
+      );
+    } catch (error) {
+      console.error(
+        "Error adding coins:",
+        error.response?.data || error.message
+      );
+    }
+  };
 
   return (
     <div className="bg-gray-50 py-8">
@@ -108,7 +132,8 @@ export default function Challenge() {
           {challenges.map((challenge) => {
             const progress = fitnessData[challenge.metric];
             const isCompleted = progress >= challenge.target;
-            const isRedeemed = redeemedChallenges[challenge._id];
+            const isRedeemed =
+              redeemedChallenges[challenge._id] || challenge.redeemed;
 
             return (
               <div

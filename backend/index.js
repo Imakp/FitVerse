@@ -9,7 +9,7 @@ const cors = require("cors");
 const userRoutes = require("./routes/userRoutes");
 const transactionRoutes = require("./routes/transactionsRoutes");
 const rewardRoutes = require("./routes/rewardRoutes");
-const challengeRoutes = require("./routes/challenge");
+const challengeRoutes = require("./routes/challengeRoutes");
 const fitnessRoutes = require("./routes/fitnessRoutes"); 
 
 dotenv.config();
@@ -25,7 +25,7 @@ app.use(express.json()); // Required to parse JSON request body
 app.use(
   cors({
     origin: "http://localhost:5173", // Replace with process.env.CLIENT_URL in production
-    methods: 'GET,POST,PUT,DELETE,OPTIONS',
+    methods: 'GET,POST,PUT,DELETE,OPTIONS,PATCH',
     credentials: true, // Allow cookies
   })
 );

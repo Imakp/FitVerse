@@ -11,6 +11,7 @@ import {
   FaTrash,
 } from "react-icons/fa";
 import Setting from "../Components/Setting";
+import Help from "../Components/Help";
 
 const categories = [
   { name: "Profile", icon: <FaUser /> },
@@ -137,22 +138,7 @@ const MyProfile = () => {
 
         {selectedCategory === "Settings" && <Setting />}
 
-        {selectedCategory === "Help" && (
-          <div className="max-w-md mx-auto bg-white p-6 rounded-lg shadow-md border border-gray-200">
-            <h2 className="text-2xl font-bold mb-4 flex items-center gap-2 text-gray-900">
-              <FaQuestionCircle className="text-yellow-500" /> Help & Support
-            </h2>
-            <p className="text-gray-600 text-center text-sm">
-              For any queries, contact{" "}
-              <a
-                href="mailto:support@fitverse.com"
-                className="text-blue-500 underline"
-              >
-                support@fitverse.com
-              </a>
-            </p>
-          </div>
-        )}
+        {selectedCategory === "Help" && <Help />}
       </div>
     </div>
   );
