@@ -10,11 +10,11 @@ import {
 import { MdDashboard } from "react-icons/md";
 import { IoMdFitness } from "react-icons/io";
 import { BiRun } from "react-icons/bi";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../../context/AuthContext";
 import axios from "axios";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { spendCoins } from "../api/rewardsApi";
+import { spendCoins } from "../../api/rewardsApi";
 
 export default function Navbar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);

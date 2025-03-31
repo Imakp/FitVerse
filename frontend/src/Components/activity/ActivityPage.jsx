@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useGoogleFit } from "../hooks/useGoogleFit";
+import { useGoogleFit } from "../../hooks/useGoogleFit";
 import {
   LineChart,
   Line,

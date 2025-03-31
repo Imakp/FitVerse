@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import RewardsList from "../components/rewards/RewardsList";
-import { fetchRewards } from "../api/rewardsApi";
+import RewardsList from "./RewardsList";
+import { fetchRewards } from "../../api/rewardsApi";
 
 const RewardsPage = () => {
   const [rewards, setRewards] = useState([]);

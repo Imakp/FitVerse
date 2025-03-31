@@ -6,8 +6,8 @@ import React, {
   useRef,
 } from "react";
 import axios from "axios";
-import { useGoogleFit } from "../hooks/useGoogleFit";
-import { useAuth } from "../context/AuthContext";
+import { useGoogleFit } from "../../hooks/useGoogleFit";
+import { useAuth } from "../../context/AuthContext";
 
 export default function Challenge() {
   const { isAuthenticated, fetchFitnessData } = useGoogleFit();

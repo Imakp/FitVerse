@@ -8,9 +8,9 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-import StepCountTooltip from "./StepCountTooltip";
-import StatsCard from "../common/StatsCard";
-import { calculateStats } from "../../utils/fitnessDataUtils";
+import StepCountTooltip from "./StepCountTooltip.jsx"; // Updated path (added extension for consistency)
+import StatsCard from "../common/StatsCard.jsx"; // Updated path (added extension for consistency)
+import { calculateStats } from "../../utils/fitnessDataUtils"; // Assuming this path is correct relative to src
 
 /**
  * Component for displaying step count data in a graph

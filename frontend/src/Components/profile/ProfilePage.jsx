@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { useAuth } from "../context/AuthContext";
-import Sidebar from "../Components/Sidebar";
+import { useAuth } from "../../context/AuthContext";
+import Sidebar from "../leaderboard/Sidebar";
 import {
   FaUser,
   FaCog,
@@ -10,8 +10,8 @@ import {
   FaGoogle,
   FaTrash,
 } from "react-icons/fa";
-import Setting from "../Components/Setting";
-import Help from "../Components/Help";
+import Setting from "../settings/Setting";
+import Help from "../help/Help";
 
 const categories = [
   { name: "Profile", icon: <FaUser /> },

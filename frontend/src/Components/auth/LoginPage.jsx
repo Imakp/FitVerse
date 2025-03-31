@@ -1,6 +1,6 @@
 import React from "react";
 import { Trophy, BarChart3, Gift } from "lucide-react";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../../context/AuthContext";
 
 const Login = () => {
   const { user, login, logout } = useAuth();

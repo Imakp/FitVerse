@@ -1,20 +1,16 @@
 // App.jsx
 import { useEffect, useState } from "react";
 import { Route, Routes, Navigate, useNavigate } from "react-router-dom";
-import Navbar from "./Components/Navbar";
-// import DashBoard from "./Pages/DashBoard.jsx";
-import Rewards from "./Pages/Rewards.jsx";
-import Activity from "./Pages/Activity.jsx";
-// import Challenges from "./Pages/Challenges.jsx";
-import MyProfile from "./Pages/MyProfile.jsx";
-import Login from "./components/Login";
-import { FitnessDashboard } from "./Components/FitnessDashboard.jsx";
+import Navbar from "./Components/layout/Navbar.jsx"; // Updated path
+import RewardsPage from "./Components/rewards/RewardsPage.jsx"; // Updated path and name
+import ActivityPage from "./Components/activity/ActivityPage.jsx"; // Updated path and name
+import ProfilePage from "./Components/profile/ProfilePage.jsx"; // Updated path and name
+import LoginPage from "./Components/auth/LoginPage.jsx"; // Updated path and name
+import { FitnessDashboard } from "./Components/dashboard/FitnessDashboard.jsx"; // Updated path
 import { useAuth } from "./context/AuthContext";
-import Leaderboard from "./Components/Leaderboard.jsx";
-// import Wallet from "./Pages/Wallet.jsx";
-// import FitnessChallenges from "./Pages/Challenges.jsx";
-import LandingPage from "./Pages/LandingPage.jsx";
-import Challenge from "./Pages/Challenge.jsx";
+import Leaderboard from "./Components/leaderboard/Leaderboard.jsx"; // Updated path
+import LandingPage from "./Components/landing/LandingPage.jsx"; // Updated path
+import ChallengePage from "./Components/challenges/ChallengePage.jsx"; // Updated path and name (assuming user moved it)
 
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth();
@@ -46,11 +42,11 @@ const AuthWrapper = () => {
         isMobileMenuOpen={isMobileMenuOpen}
         setIsMobileMenuOpen={setIsMobileMenuOpen}
       />
-      <div className="transition-all duration-300">
-        <Routes>
-          <Route path="/" element={<Login />} />
-          <Route path="/landing" element={<LandingPage />} />
-          <Route
+  <div className="transition-all duration-300">
+    <Routes>
+      <Route path="/" element={<LoginPage />} />
+      <Route path="/landing" element={<LandingPage />} />
+      <Route
             path="/dashboard"
             element={
               <>
@@ -65,7 +61,7 @@ const AuthWrapper = () => {
             path="/rewards"
             element={
               <ProtectedRoute>
-                <Rewards />
+                <RewardsPage />
               </ProtectedRoute>
             }
           />
@@ -73,7 +69,7 @@ const AuthWrapper = () => {
             path="/activity"
             element={
               <ProtectedRoute>
-                <Activity />
+                <ActivityPage />
               </ProtectedRoute>
             }
           />
@@ -81,9 +77,7 @@ const AuthWrapper = () => {
             path="/challenges"
             element={
               <ProtectedRoute>
-                {/* <Challenges /> */}
-                {/* <FitnessChallenges /> */}
-                <Challenge />
+                <ChallengePage />
               </ProtectedRoute>
             }
           />
@@ -91,7 +85,7 @@ const AuthWrapper = () => {
             path="/my-profile"
             element={
               <ProtectedRoute>
-                <MyProfile />
+                <ProfilePage />
               </ProtectedRoute>
             }
           />
