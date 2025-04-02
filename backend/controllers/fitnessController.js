@@ -1,13 +1,9 @@
 const FitnessData = require("../models/FitnessData");
 
-
-
-// Update fitness data (e.g., steps, calories, etc.)
 const updateFitnessData = async (req, res) => {
   try {
     const { userId, stepCount, activeMinutes, caloriesBurned } = req.body;
 
-    // Ensure userId is provided
     if (!userId) {
       return res.status(400).json({ error: "User ID is required" });
     }

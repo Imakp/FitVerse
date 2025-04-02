@@ -1,9 +1,15 @@
 const express = require("express");
-const { rewardUser, spendCoins } = require("../controllers/transactionController");
+const { spendCoins } = require("../controllers/transactionController");
 
 const router = express.Router();
 
-router.post("/reward", rewardUser);
-router.post("/spend", spendCoins);
+const isAuthenticated = (req, res, next) => {
+  if (req.isAuthenticated()) {
+    return next();
+  }
+  res.status(401).json({ message: "Unauthorized: Please log in." });
+};
+
+router.post("/spend", isAuthenticated, spendCoins);
 
 module.exports = router;
