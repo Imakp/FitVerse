@@ -8,7 +8,7 @@ export const AuthProvider = ({ children }) => {
   const [balance, setBalance] = useState(0);
   const [loading, setLoading] = useState(true);
 
-  const BACKEND_URL = "http://localhost:3000";
+  const BACKEND_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
   const login = () => {
     window.location.href = `${BACKEND_URL}/auth/google`;
   };
