@@ -2,7 +2,7 @@ const express = require("express");
 const passport = require("passport");
 
 const router = express.Router();
-const CLIENT_URL = process.env.CLIENT_URL || "http://localhost:5173"; // Default frontend URL
+const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:5173"; // Default frontend URL
 
 //Enable CORS for auth routes
 
@@ -15,12 +15,12 @@ router.get(
 // Google OAuth Callback
 router.get("/google/callback", (req, res, next) => {
   passport.authenticate("google", (err, user, info) => {
-    if (err) return res.redirect(`${CLIENT_URL}/login?error=auth_failed`);
-    if (!user) return res.redirect(`${CLIENT_URL}/login?error=no_user`);
+    if (err) return res.redirect(`${FRONTEND_URL}/login?error=auth_failed`);
+    if (!user) return res.redirect(`${FRONTEND_URL}/login?error=no_user`);
 
     req.logIn(user, (err) => {
-      if (err) return res.redirect(`${CLIENT_URL}/login?error=login_failed`);
-      return res.redirect(`${CLIENT_URL}/dashboard`);
+      if (err) return res.redirect(`${FRONTEND_URL}/login?error=login_failed`);
+      return res.redirect(`${FRONTEND_URL}/dashboard`);
     });
   })(req, res, next);
 });
