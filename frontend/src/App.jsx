@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Route, Routes, Navigate, useNavigate } from "react-router-dom";
+import { Route, Routes, Navigate, useLocation } from "react-router-dom";
 import Navbar from "./Components/Navbar.jsx";
 import RewardsPage from "./Components/RewardsPage.jsx";
 import ActivityPage from "./Components/ActivityPage.jsx";
@@ -22,8 +22,11 @@ const ProtectedRoute = ({ children }) => {
   return children;
 };
 
-const AuthWrapper = () => {
+const MainLayout = ({ children }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { user } = useAuth();
+
+  if (!user) return null;
 
   return (
     <div className="min-h-screen">
@@ -31,60 +34,79 @@ const AuthWrapper = () => {
         isMobileMenuOpen={isMobileMenuOpen}
         setIsMobileMenuOpen={setIsMobileMenuOpen}
       />
-      <div className="transition-all duration-300">
-        <Routes>
-          <Route path="/" element={<LandingPage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route
-            path="/dashboard"
-            element={
-              <>
-                <FitnessDashboard />
-              </>
-            }
-          />
-          <Route
-            path="/rewards"
-            element={
-              <ProtectedRoute>
-                <RewardsPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/activity"
-            element={
-              <ProtectedRoute>
-                <ActivityPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/challenges"
-            element={
-              <ProtectedRoute>
-                <ChallengePage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/my-profile"
-            element={
-              <ProtectedRoute>
-                <ProfilePage />
-              </ProtectedRoute>
-            }
-          />
-        </Routes>
-      </div>
+      <div className="transition-all duration-300 pt-16">{children}</div>
       {isMobileMenuOpen && (
         <div
           className="fixed inset-0 z-30 backdrop-blur-sm bg-black/20"
           aria-hidden="true"
+          onClick={() => setIsMobileMenuOpen(false)} // Close menu on backdrop click
         />
       )}
     </div>
   );
 };
 
-export default AuthWrapper;
+const App = () => {
+  return (
+    <Routes>
+      {/* Public routes */}
+      <Route path="/" element={<LandingPage />} />
+      <Route path="/login" element={<LoginPage />} />
+
+      {/* Authenticated routes wrapped in MainLayout */}
+      <Route
+        path="/dashboard"
+        element={
+          <ProtectedRoute>
+            <MainLayout>
+              <FitnessDashboard />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/rewards"
+        element={
+          <ProtectedRoute>
+            <MainLayout>
+              <RewardsPage />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/activity"
+        element={
+          <ProtectedRoute>
+            <MainLayout>
+              <ActivityPage />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/challenges"
+        element={
+          <ProtectedRoute>
+            <MainLayout>
+              <ChallengePage />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/my-profile"
+        element={
+          <ProtectedRoute>
+            <MainLayout>
+              <ProfilePage />
+            </MainLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route path="*" element={<Navigate to="/dashboard" replace />} />
+    </Routes>
+  );
+};
+
+export default App;
