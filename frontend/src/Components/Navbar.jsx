@@ -63,9 +63,6 @@ export default function Navbar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
     setIsMobileMenuOpen(false);
   }, [location.pathname, setIsMobileMenuOpen]);
 
-  if (location.pathname === "/login") return null;
-  if (!user) return null;
-
   const navItems = [
     {
       path: "dashboard",
@@ -235,13 +232,13 @@ export default function Navbar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
                       <div className="w-12 h-12 rounded-full bg-white shadow-sm border border-blue-200 flex items-center justify-center overflow-hidden">
                         {user?.profilePicture ? (
                           <img
-                          src={user?.profilePicture}
-                          alt="Profile"
-                          className="w-10 h-10 rounded-full"
-                          onError={(e) => {
-                            e.target.src = "/default-profile.png"; // Use a default profile image
-                          }}
-                        />                        
+                            src={user?.profilePicture}
+                            alt="Profile"
+                            className="w-10 h-10 rounded-full"
+                            onError={(e) => {
+                              e.target.src = "/default-profile.png"; // Use a default profile image
+                            }}
+                          />
                         ) : (
                           <FaUserCircle className="text-gray-400 text-3xl" />
                         )}
