@@ -96,9 +96,9 @@ export default function Challenge() {
       try {
         const [balanceRes, challengesRes] = await Promise.all([
           user?._id
-            ? axios.get(`http://localhost:3000/api/users/balance/${user._id}`)
+            ? axios.get(`/api/users/balance/${user._id}`)
             : Promise.resolve({ data: { balance: 0 } }),
-          axios.get("http://localhost:3000/api/challenges", {
+          axios.get("/api/challenges", {
             withCredentials: true,
           }),
         ]);
@@ -134,7 +134,7 @@ export default function Challenge() {
 
     try {
       const challengeResponse = await axios.patch(
-        `http://localhost:3000/api/challenges/${challengeId}`,
+        `/api/challenges/${challengeId}`,
         {},
         {
           headers: { "Content-Type": "application/json" },
@@ -285,15 +285,15 @@ export default function Challenge() {
         </div>
 
         {visibleCount < challenges.length && (
-        <div className="mt-6 flex justify-center">
-          <button
-            onClick={handleSeeMore}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-600 transition duration-200"
-          >
-            Explore More
-          </button>
-        </div>
-      )}
+          <div className="mt-6 flex justify-center">
+            <button
+              onClick={handleSeeMore}
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-600 transition duration-200"
+            >
+              Explore More
+            </button>
+          </div>
+        )}
 
         {challenges.length === 0 && !loading && (
           <motion.div

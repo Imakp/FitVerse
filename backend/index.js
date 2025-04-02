@@ -10,7 +10,7 @@ const userRoutes = require("./routes/userRoutes");
 const transactionRoutes = require("./routes/transactionsRoutes");
 const rewardRoutes = require("./routes/rewardRoutes");
 const challengeRoutes = require("./routes/challengeRoutes");
-const fitnessRoutes = require("./routes/fitnessRoutes"); 
+const fitnessRoutes = require("./routes/fitnessRoutes");
 
 dotenv.config();
 
@@ -20,41 +20,37 @@ const morgan = require("morgan");
 
 connectDB();
 
-app.use(express.json()); // Required to parse JSON request body
+app.use(express.json());
 
 app.use(
   cors({
-    origin: "http://localhost:5173", // Replace with process.env.CLIENT_URL in production
-    methods: 'GET,POST,PUT,DELETE,OPTIONS,PATCH',
-    credentials: true, // Allow cookies
+    origin: process.env.FRONTEND_URL || "http://localhost:5173",
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
   })
 );
 
-// Use morgan middleware to log HTTP requests
 app.use(morgan("dev"));
 
-// Session setup
 app.use(
   session({
-    secret: process.env.SESSION_SECRET || "yourSecretKey",
+    secret: process.env.SESSION_SECRET || "secret_key",
     resave: false,
     saveUninitialized: true,
-    cookie: { secure: false, httpOnly: true }, // Adjust based on deployment
+    cookie: { secure: false, httpOnly: true },
   })
 );
 
-// Initialize Passport
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Routes
 app.use("/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/transactions", transactionRoutes);
 app.use("/api/rewards", rewardRoutes);
 app.use("/api/challenges", challengeRoutes);
 app.use("/api/fitness", fitnessRoutes);
-
 
 app.get("/", (req, res) => {
   res.send("Hello World!");
