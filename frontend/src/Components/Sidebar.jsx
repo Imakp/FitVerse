@@ -16,9 +16,9 @@ export default function Sidebar({ categories, selectedCategory, onSelect }) {
       </button>
 
       <aside
-        className={`fixed sm:sticky top-0 left-0 h-screen sm:h-auto sm:top-16  bg-white shadow-md border-r border-gray-200 p-4 w-60 transition-transform duration-300 ease-in-out ${
+        className={`fixed top-0 left-0 h-screen sm:h-[calc(100vh-3.5rem)] sm:fixed sm:top-14 sm:overflow-y-auto bg-white shadow-md border-r border-gray-200 p-4 w-60 transition-transform duration-300 ease-in-out ${
           isOpen ? "translate-x-0" : "-translate-x-full"
-        } sm:translate-x-0 z-40 sm:rounded-lg sm:mt-4`}
+        } sm:translate-x-0 z-40`}
       >
         <nav className="space-y-1">
           {categories.map((category) => (

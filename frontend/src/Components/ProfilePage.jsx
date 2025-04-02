@@ -124,7 +124,7 @@ const MyProfile = () => {
         onSelect={setSelectedCategory}
       />
 
-      <div className="flex-1 p-6 md:p-8 lg:p-10">
+      <div className="flex-1 p-6 md:p-8 lg:p-10 sm:ml-60">
         <motion.div
           key={selectedCategory}
           initial={{ opacity: 0, y: 10 }}

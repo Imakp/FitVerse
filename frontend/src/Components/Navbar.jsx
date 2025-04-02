@@ -106,7 +106,7 @@ export default function Navbar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
   return (
     <>
       <ToastContainer position="top-right" />
-      <nav className="bg-white backdrop-blur-sm bg-opacity-90 border-b border-gray-200 sticky top-0 z-40 shadow-sm">
+      <nav className="bg-white backdrop-blur-sm bg-opacity-90 border-b border-gray-200 sticky top-0 z-50 shadow-sm">
         <div className="container mx-auto px-4 py-3">
           <div className="flex justify-between items-center">
             {/* Logo */}
