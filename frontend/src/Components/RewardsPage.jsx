@@ -128,15 +128,34 @@ const RewardsList = ({ rewards: initialRewards }) => {
     console.log(`Reward ${rewardId} redeemed, balance refreshed via context.`);
   };
 
+  const [visibleCount, setVisibleCount] = useState(6); 
+
+  const handleSeeMore = () => {
+    setVisibleCount((prevCount) => prevCount + 6); 
+  };
+
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {rewards.map((reward) => (
-        <RewardCard
-          key={reward._id}
-          reward={reward}
-          onRedeemSuccess={handleRewardRedeemed}
-        />
-      ))}
+    <div>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {rewards.slice(0, visibleCount).map((reward) => (
+          <RewardCard
+            key={reward._id}
+            reward={reward}
+            onRedeemSuccess={() => console.log("Reward Redeemed")}
+          />
+        ))}
+      </div>
+
+      {visibleCount < rewards.length && (
+        <div className="mt-6 flex justify-center">
+          <button
+            onClick={handleSeeMore}
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-600 transition duration-200"
+          >
+            Explore More
+          </button>
+        </div>
+      )}
     </div>
   );
 };

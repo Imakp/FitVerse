@@ -117,14 +117,15 @@ const MyProfile = () => {
   }
 
   return (
-    <div className="flex bg-gray-50 min-h-screen">
-      <Sidebar
-        categories={categories}
-        selectedCategory={selectedCategory}
-        onSelect={setSelectedCategory}
-      />
-
-      <div className="flex-1 p-6 md:p-8 lg:p-10">
+    <div className="flex bg-gray-50 ">
+      <div className="sm:w-60">
+        <Sidebar
+          categories={categories}
+          selectedCategory={selectedCategory}
+          onSelect={setSelectedCategory}
+        />
+      </div>
+      <div className="flex-1 p-6 md:p-8 lg:p-10 overflow-auto">
         <motion.div
           key={selectedCategory}
           initial={{ opacity: 0, y: 10 }}

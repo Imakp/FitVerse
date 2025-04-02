@@ -20,6 +20,7 @@ export default function Navbar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
   const mobileMenuRef = useRef(null);
   const navigate = useNavigate();
   const { user, logout, balance } = useAuth();
+  console.log("Profile Picture URL:", user?.profilePicture);
   const location = useLocation();
 
   useEffect(() => {
@@ -107,7 +108,7 @@ export default function Navbar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
     <>
       <ToastContainer position="top-right" />
       <nav className="bg-white backdrop-blur-sm bg-opacity-90 border-b border-gray-200 sticky top-0 z-40 shadow-sm">
-        <div className="container mx-auto px-4 py-3">
+        <div className="max-w-7xl mx-auto px-4 py-3">
           <div className="flex justify-between items-center">
             {/* Logo */}
             <NavLink to="/dashboard" className="flex items-center space-x-2">
@@ -118,7 +119,7 @@ export default function Navbar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
               </h1>
             </NavLink>
             <div className="hidden md:flex items-center space-x-4 lg:space-x-8">
-              <ul className="flex space-x-3 lg:space-x-6">
+              <ul className="flex space-x-3 lg:space-x-6 text-lg">
                 {navItems.map(({ path, label, icon }) => (
                   <li key={path}>
                     <NavLink
@@ -155,7 +156,9 @@ export default function Navbar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
                         src={user?.profilePicture}
                         alt="Profile"
                         className="w-10 h-10 rounded-full"
-                        onError={(e) => (e.target.src = "/default-profile.png")}
+                        onError={(e) => {
+                          e.target.src = "/default-profile.png"; // Use a default profile image
+                        }}
                       />
                     </div>
                   </button>
@@ -232,10 +235,13 @@ export default function Navbar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
                       <div className="w-12 h-12 rounded-full bg-white shadow-sm border border-blue-200 flex items-center justify-center overflow-hidden">
                         {user?.profilePicture ? (
                           <img
-                            src={user.profilePicture}
-                            alt="Profile"
-                            className="w-full h-full object-cover"
-                          />
+                          src={user?.profilePicture}
+                          alt="Profile"
+                          className="w-10 h-10 rounded-full"
+                          onError={(e) => {
+                            e.target.src = "/default-profile.png"; // Use a default profile image
+                          }}
+                        />                        
                         ) : (
                           <FaUserCircle className="text-gray-400 text-3xl" />
                         )}

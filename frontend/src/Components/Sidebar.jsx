@@ -9,16 +9,16 @@ export default function Sidebar({ categories, selectedCategory, onSelect }) {
     <>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="sm:hidden fixed top-4 left-4 z-50 p-2 rounded-md text-gray-600 bg-white/80 backdrop-blur-sm border border-gray-200 shadow-sm hover:bg-gray-100 focus:outline-none transition-colors duration-150"
+        className="sm:hidden fixed top-3 left-2 z-50 p-2 rounded-lg text-gray-700 bg-white shadow-md border border-gray-300 hover:bg-gray-100 transition duration-200"
         aria-label="Toggle sidebar"
       >
-        <Menu size={22} />
+        <Menu size={24} />
       </button>
 
       <aside
-        className={`fixed sm:sticky top-0 left-0 h-screen sm:h-auto sm:top-16  bg-white shadow-md border-r border-gray-200 p-4 w-60 transition-transform duration-300 ease-in-out ${
+        className={`fixed h-screen z-40 bg-white shadow-md border-r border-gray-200 p-4 w-60 transition-transform duration-300 ease-in-out ${
           isOpen ? "translate-x-0" : "-translate-x-full"
-        } sm:translate-x-0 z-40 sm:rounded-lg sm:mt-4`}
+        } sm:translate-x-0`}
       >
         <nav className="space-y-1">
           {categories.map((category) => (
