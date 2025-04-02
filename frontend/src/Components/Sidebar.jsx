@@ -9,7 +9,7 @@ export default function Sidebar({ categories, selectedCategory, onSelect }) {
     <>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="sm:hidden fixed top-3 left-2 z-50 p-2 rounded-lg text-gray-700 bg-white shadow-md border border-gray-300 hover:bg-gray-100 transition duration-200"
+        className="sm:hidden fixed m-4 z-50 p-2 rounded-lg text-gray-700 bg-white shadow-md border border-gray-300 hover:bg-gray-100 transition duration-200"
         aria-label="Toggle sidebar"
       >
         <Menu size={24} />

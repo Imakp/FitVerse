@@ -7,13 +7,18 @@ import React, {
 } from "react";
 import axios from "axios";
 import { useGoogleFit } from "../hooks/useGoogleFit";
-import { useAuth } from "../context/AuthContext"; 
+import { useAuth } from "../context/AuthContext";
 import { motion } from "framer-motion";
 import { Target, CheckCircle, Award, Coins, Clock } from "lucide-react";
 
 export default function Challenge() {
   const { isAuthenticated, fetchFitnessData } = useGoogleFit();
-  const { user, refreshBalance } = useAuth(); 
+  const { user, refreshBalance } = useAuth();
+  const [visibleCount, setVisibleCount] = useState(6);
+
+  const handleSeeMore = () => {
+    setVisibleCount((prevCount) => prevCount + 6);
+  };
 
   const [fitnessData, setFitnessData] = useState({
     stepCount: 0,
@@ -187,7 +192,7 @@ export default function Challenge() {
         </motion.header>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {challenges.map((challenge) => {
+          {challenges.slice(0, visibleCount).map((challenge) => {
             const progress = fitnessData[challenge.metric] || 0;
             const isCompleted = progress >= challenge.target;
             const isRedeemed = challenge.isRedeemed;
@@ -278,6 +283,17 @@ export default function Challenge() {
             );
           })}
         </div>
+
+        {visibleCount < challenges.length && (
+        <div className="mt-6 flex justify-center">
+          <button
+            onClick={handleSeeMore}
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-600 transition duration-200"
+          >
+            Explore More
+          </button>
+        </div>
+      )}
 
         {challenges.length === 0 && !loading && (
           <motion.div
