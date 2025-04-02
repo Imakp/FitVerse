@@ -12,13 +12,18 @@ export const fetchRewards = async () => {
   }
 };
 
-export const spendCoins = async (userId, amount, reference) => {
+export const spendCoins = async (amount, reference) => {
   try {
-    const response = await axios.post(`${BASE_URL}/transactions/spend`, {
-      userId,
-      amount,
-      reference,
-    });
+    const response = await axios.post(
+      `${BASE_URL}/transactions/spend`,
+      {
+        amount,
+        reference,
+      },
+      {
+        withCredentials: true,
+      }
+    );
     return response.data;
   } catch (error) {
     console.error("Error spending coins:", error);

@@ -57,6 +57,16 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const refreshBalance = async () => {
+    if (user?._id) {
+      await fetchBalance(user._id);
+      console.log("Balance refreshed via AuthContext");
+    } else {
+      console.log("Cannot refresh balance: user not available.");
+      setBalance(0);
+    }
+  };
+
   useEffect(() => {
     fetchUser();
 
@@ -82,7 +92,15 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider
-      value={{ user, balance, loading, login, logout, setBalance }}
+      value={{
+        user,
+        balance,
+        loading,
+        login,
+        logout,
+        setBalance,
+        refreshBalance,
+      }}
     >
       {children}
     </AuthContext.Provider>

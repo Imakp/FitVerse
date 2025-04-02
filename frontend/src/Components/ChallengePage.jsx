@@ -7,13 +7,13 @@ import React, {
 } from "react";
 import axios from "axios";
 import { useGoogleFit } from "../hooks/useGoogleFit";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../context/AuthContext"; 
 import { motion } from "framer-motion";
 import { Target, CheckCircle, Award, Coins, Clock } from "lucide-react";
 
 export default function Challenge() {
   const { isAuthenticated, fetchFitnessData } = useGoogleFit();
-  const { user } = useAuth();
+  const { user, refreshBalance } = useAuth(); 
 
   const [fitnessData, setFitnessData] = useState({
     stepCount: 0,
@@ -145,14 +145,7 @@ export default function Challenge() {
             ch._id === challengeId ? { ...ch, isRedeemed: true } : ch
           )
         );
-
-        setBalance(challengeResponse.data.newBalance);
-
-        window.dispatchEvent(
-          new CustomEvent("balanceUpdated", {
-            detail: { balance: challengeResponse.data.newBalance },
-          })
-        );
+        await refreshBalance();
       } else {
         console.error(
           "Challenge redemption response format unexpected:",

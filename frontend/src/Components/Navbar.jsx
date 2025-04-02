@@ -11,55 +11,16 @@ import { MdDashboard } from "react-icons/md";
 import { IoMdFitness } from "react-icons/io";
 import { BiRun } from "react-icons/bi";
 import { useAuth } from "../context/AuthContext";
-import axios from "axios";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { spendCoins } from "../api/rewardsApi";
 
 export default function Navbar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
   const mobileMenuRef = useRef(null);
   const navigate = useNavigate();
-  const { user, logout } = useAuth();
+  const { user, logout, balance } = useAuth();
   const location = useLocation();
-
-  const [balance, setBalance] = useState(null);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    if (!user || !user._id || location.pathname === "/login") {
-      if (!user || location.pathname === "/login") setBalance(null);
-      return;
-    }
-    const fetchBalance = async () => {
-      console.log(user);
-
-      try {
-        const response = await axios.get(
-          `http://localhost:3000/api/users/balance/${user._id}`
-        );
-        setBalance(response.data.balance);
-      } catch {
-        setError("Failed to fetch balance");
-      }
-    };
-
-    fetchBalance();
-  }, [user, location.pathname, spendCoins]);
-
-  useEffect(() => {
-    if (!user || location.pathname === "/login") return;
-
-    const handleBalanceUpdate = (event) => {
-      setBalance(event.detail.balance);
-    };
-
-    window.addEventListener("balanceUpdated", handleBalanceUpdate);
-    return () => {
-      window.removeEventListener("balanceUpdated", handleBalanceUpdate);
-    };
-  }, [user, location.pathname]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -125,26 +86,19 @@ export default function Navbar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
       label: "Rewards",
       icon: <FaTrophy className="text-amber-500" />,
     },
-    // {
-    //   path: "wallet",
-    //   label: "Wallet",
-    //   icon: <FaWallet className="text-green-500" />,
-    // },
   ];
 
   const activeClassName = "text-blue-600 font-semibold";
   const inactiveClassName =
     "text-gray-700 hover:text-blue-500 transition-colors duration-200";
 
-  // Function to toggle mobile menu and ensure dropdown is closed
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
     if (!isMobileMenuOpen) {
-      setIsDropdownOpen(false); // Close dropdown when opening mobile menu
+      setIsDropdownOpen(false);
     }
   };
 
-  // Helper function to check if path is active
   const isPathActive = (path) => {
     return location.pathname === `/${path}`;
   };
@@ -163,9 +117,7 @@ export default function Navbar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
                 <span className="text-blue-600">Verse</span>
               </h1>
             </NavLink>
-            {/* Desktop Navigation */}
             <div className="hidden md:flex items-center space-x-4 lg:space-x-8">
-              {/* Navbar Links */}
               <ul className="flex space-x-3 lg:space-x-6">
                 {navItems.map(({ path, label, icon }) => (
                   <li key={path}>
@@ -184,15 +136,12 @@ export default function Navbar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
                 ))}
               </ul>
 
-              {/* Balance & Profile */}
               <div className="flex items-center space-x-4">
-                {/* Wallet Balance */}
                 <div className="bg-gradient-to-r from-green-50 to-emerald-50 flex items-center px-4 py-2 rounded-full border border-green-100 text-green-600 font-medium">
                   <span className="mr-2">💰</span>
                   <span>{balance ?? 0} Coins</span>
                 </div>
 
-                {/* Profile Dropdown */}
                 <div className="relative" ref={dropdownRef}>
                   <button
                     onClick={(e) => {
@@ -248,15 +197,12 @@ export default function Navbar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
                 </div>
               </div>
             </div>
-            {/* Mobile: Balance & Menu Button */}
             <div className="flex md:hidden items-center space-x-3">
-              {/* Mobile Wallet Balance (Compact) */}
               <div className="bg-green-50 flex items-center px-3 py-1.5 rounded-full text-green-600 text-sm font-medium border border-green-100">
                 <span className="mr-1">💰</span>
                 <span>{balance ?? 0}</span>
               </div>
 
-              {/* Mobile Menu Button */}
               <button
                 className="mobile-menu-button p-2 rounded-full text-gray-700 hover:bg-gray-100 focus:outline-none transition-all duration-200"
                 onClick={toggleMobileMenu}
@@ -267,22 +213,18 @@ export default function Navbar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
           </div>
         </div>
 
-        {/* Modern Mobile Menu - Floating Card */}
         {isMobileMenuOpen && (
           <>
-            {/* Overlay with blur effect */}
             <div
               className="fixed inset-0 bg-black/30 backdrop-blur-sm z-40 transition-opacity duration-300"
               onClick={() => setIsMobileMenuOpen(false)}
             />
 
-            {/* Floating Menu Card */}
             <div
               ref={mobileMenuRef}
               className="fixed inset-x-4 top-20 bg-white rounded-2xl shadow-xl z-50 transform transition-all duration-300 ease-out overflow-hidden"
               style={{ maxHeight: "calc(100vh - 6rem)" }}
             >
-              {/* User Profile Section */}
               <div className="p-4 bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-blue-100">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-3">
@@ -320,7 +262,6 @@ export default function Navbar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
                 </div>
               </div>
 
-              {/* Navigation Cards */}
               <div className="p-3 overflow-auto">
                 <div className="grid grid-cols-2 gap-3">
                   {navItems.map(({ path, label, icon }) => {
@@ -349,7 +290,6 @@ export default function Navbar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
                   })}
                 </div>
 
-                {/* User Actions */}
                 <div className="mt-4 space-y-2">
                   <NavLink
                     to="/my-profile"

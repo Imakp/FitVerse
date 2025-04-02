@@ -6,9 +6,10 @@ import { motion } from "framer-motion";
 import { Coins, Gift, Check, Loader2 } from "lucide-react";
 import axios from "axios";
 
-const RewardCard = ({ reward, onRedeem }) => {
+const RewardCard = ({ reward, onRedeemSuccess }) => {
+  // Rename prop for clarity
   const { title, description, coins, _id: rewardId } = reward;
-  const { user, balance } = useAuth();
+  const { user, balance, refreshBalance } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [isRedeemed, setIsRedeemed] = useState(false);
@@ -25,12 +26,11 @@ const RewardCard = ({ reward, onRedeem }) => {
 
     try {
       const result = await spendCoins(
-        user._id,
-        coins,
-        `Redeemed reward: ${title}`
+        coins, // amount
+        `Redeemed reward: ${title}` // reference
       );
 
-      if (!result) {
+      if (!result || !result.success) {
         throw new Error(
           result?.message || "Failed to redeem reward. Insufficient balance?"
         );
@@ -39,8 +39,10 @@ const RewardCard = ({ reward, onRedeem }) => {
       setIsRedeemed(true);
       toast.success("Reward redeemed successfully!");
 
-      if (onRedeem) {
-        onRedeem(rewardId);
+      await refreshBalance();
+
+      if (onRedeemSuccess) {
+        onRedeemSuccess(rewardId);
       }
     } catch (err) {
       const errorMessage =
@@ -118,37 +120,22 @@ const RewardsList = ({ rewards: initialRewards }) => {
     setRewards(initialRewards);
   }, [initialRewards]);
 
-  const handleRedeem = async (redeemedRewardId) => {
-    if (!user?._id) {
-      console.error("User not available for balance update.");
-      return;
-    }
-    try {
-      const response = await axios.get(
-        `http://localhost:3000/api/users/balance/${user._id}`
-      );
-      window.dispatchEvent(
-        new CustomEvent("balanceUpdated", {
-          detail: { balance: response.data.balance },
-        })
-      );
-    } catch (error) {
-      console.error(
-        "Failed to update balance display after redemption:",
-        error
-      );
-      toast.error("Could not refresh balance. Please refresh the page.");
-    }
-  };
-
   if (!rewards || !rewards.length) {
     return <div className="text-center py-12"></div>;
   }
 
+  const handleRewardRedeemed = (rewardId) => {
+    console.log(`Reward ${rewardId} redeemed, balance refreshed via context.`);
+  };
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {rewards.map((reward) => (
-        <RewardCard key={reward._id} reward={reward} onRedeem={handleRedeem} />
+        <RewardCard
+          key={reward._id}
+          reward={reward}
+          onRedeemSuccess={handleRewardRedeemed}
+        />
       ))}
     </div>
   );

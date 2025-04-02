@@ -16,7 +16,6 @@ import {
 import Setting from "./Setting";
 import Help from "./Help";
 import { motion } from "framer-motion";
-import axios from "axios";
 import { toast } from "react-toastify";
 
 const categories = [
@@ -26,46 +25,17 @@ const categories = [
 ];
 
 const MyProfile = () => {
-  const { user, setUser } = useAuth();
+  const { user, setUser, balance } = useAuth();
   const { isAuthenticated: isFitAuthenticated, signOut: signOutFit } =
     useGoogleFit();
   const [selectedCategory, setSelectedCategory] = useState("Profile");
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [balance, setBalance] = useState(0);
 
   const [profileData, setProfileData] = useState({
     name: user?.name || "",
     email: user?.email || "",
   });
-
-  useEffect(() => {
-    if (user?._id) {
-      axios
-        .get(`http://localhost:3000/api/users/balance/${user._id}`)
-        .then(({ data }) => setBalance(data.balance))
-        .catch((err) => {
-          console.error("Failed to fetch balance:", err);
-          toast.error("Could not load your coin balance.");
-        });
-    }
-  }, [user?._id]);
-
-  useEffect(() => {
-    if (!user) return;
-
-    const handleBalanceUpdate = (event) => {
-      if (event.detail && typeof event.detail.balance === "number") {
-        setBalance(event.detail.balance);
-      }
-    };
-
-    window.addEventListener("balanceUpdated", handleBalanceUpdate);
-
-    return () => {
-      window.removeEventListener("balanceUpdated", handleBalanceUpdate);
-    };
-  }, [user]);
 
   useEffect(() => {
     if (user) {
@@ -106,7 +76,6 @@ const MyProfile = () => {
 
   const handleDeleteAccount = async () => {
     if (!user?._id) return;
-    // Confirmation dialog
     if (
       window.confirm(
         "Are you sure you want to delete your account? This action cannot be undone."
