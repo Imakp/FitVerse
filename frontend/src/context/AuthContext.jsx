@@ -7,10 +7,9 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [balance, setBalance] = useState(0);
   const [loading, setLoading] = useState(true);
-  const [authError, setAuthError] = useState(null);
 
-  const BACKEND_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
-
+  const BACKEND_URL =
+    import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
   const login = () => {
     window.location.href = `${BACKEND_URL}/auth/google`;
   };
@@ -19,8 +18,6 @@ export const AuthProvider = ({ children }) => {
     try {
       await axios.get(`${BACKEND_URL}/auth/logout`, { withCredentials: true });
       setUser(null);
-      setBalance(0);
-      console.log("Logged out successfully");
     } catch (error) {
       console.error("Logout failed:", error);
     }
@@ -28,33 +25,16 @@ export const AuthProvider = ({ children }) => {
 
   const fetchUser = async () => {
     try {
-      console.log("Fetching user from:", `${BACKEND_URL}/auth/user`);
       const { data } = await axios.get(`${BACKEND_URL}/auth/user`, {
         withCredentials: true,
       });
-      console.log("User data received:", data);
-
-      if (data && typeof data === "object") {
-        setUser(data);
-        setAuthError(null);
-        if (data._id) {
-          fetchBalance(data._id);
-        }
-      } else {
-        console.error("Invalid user data format:", data);
-        setUser(null);
-        setAuthError("Invalid user data format");
+      setUser(data);
+      if (data?._id) {
+        fetchBalance(data._id);
       }
     } catch (error) {
-      console.error(
-        "Error fetching user:",
-        error.response?.data || error.message || error
-      );
       setUser(null);
       setBalance(0);
-      setAuthError(
-        error.response?.data?.message || "Failed to fetch user data"
-      );
     } finally {
       setLoading(false);
     }
@@ -63,22 +43,17 @@ export const AuthProvider = ({ children }) => {
   const fetchBalance = async (userId) => {
     if (!userId) return;
     try {
-      console.log("Fetching balance for user:", userId);
       const { data } = await axios.get(
         `${BACKEND_URL}/api/users/balance/${userId}`
       );
       if (data.success) {
         setBalance(data.balance);
-        console.log("Balance fetched successfully:", data.balance);
       } else {
         console.error("Failed to fetch balance:", data.message);
         setBalance(0);
       }
     } catch (error) {
-      console.error(
-        "Error fetching balance:",
-        error.response?.data || error.message || error
-      );
+      console.error("Error fetching balance:", error);
       setBalance(0);
     }
   };
@@ -93,28 +68,7 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // Check for authentication on initial load
   useEffect(() => {
-    // Check if we're handling a redirect from auth
-    const urlParams = new URLSearchParams(window.location.search);
-    const authSuccess = urlParams.get("auth_success");
-    const authError = urlParams.get("auth_error");
-
-    if (authSuccess) {
-      console.log("Auth success detected in URL");
-      // Clear the query parameters
-      window.history.replaceState({}, document.title, window.location.pathname);
-    }
-
-    if (authError) {
-      console.error("Auth error detected in URL:", authError);
-      setAuthError(authError);
-      setLoading(false);
-      // Clear the query parameters
-      window.history.replaceState({}, document.title, window.location.pathname);
-      return;
-    }
-
     fetchUser();
 
     const handleBalanceUpdate = (event) => {
@@ -143,7 +97,6 @@ export const AuthProvider = ({ children }) => {
         user,
         balance,
         loading,
-        authError,
         login,
         logout,
         setBalance,

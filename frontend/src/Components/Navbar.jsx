@@ -19,12 +19,9 @@ export default function Navbar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
   const dropdownRef = useRef(null);
   const mobileMenuRef = useRef(null);
   const navigate = useNavigate();
-  const { user, logout, balance, loading } = useAuth();
+  const { user, logout, balance } = useAuth();
+  console.log("Profile Picture URL:", user?.profilePicture);
   const location = useLocation();
-
-  const hiddenNavbarPaths = ["/login", "/"];
-
-  const shouldHideNavbar = hiddenNavbarPaths.includes(location.pathname);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -62,29 +59,11 @@ export default function Navbar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
   }, [isMobileMenuOpen, setIsMobileMenuOpen]);
 
   useEffect(() => {
+    if (location.pathname === "/login") return;
     setIsMobileMenuOpen(false);
   }, [location.pathname, setIsMobileMenuOpen]);
 
-  if (shouldHideNavbar) return null;
-
-  if (loading)
-    return (
-      <nav className="bg-white backdrop-blur-sm bg-opacity-90 border-b border-gray-200 sticky top-0 z-40 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 py-3">
-          <div className="flex justify-between items-center">
-            <NavLink to="/dashboard" className="flex items-center space-x-2">
-              <IoMdFitness className="text-3xl text-blue-600" />
-              <h1 className="text-3xl font-bold">
-                <span className="text-gray-800">Fit</span>
-                <span className="text-blue-600">Verse</span>
-              </h1>
-            </NavLink>
-            <div className="animate-pulse bg-gray-200 h-8 w-24 rounded-full"></div>
-          </div>
-        </div>
-      </nav>
-    );
-
+  if (location.pathname === "/login") return null;
   if (!user) return null;
 
   const navItems = [
@@ -260,7 +239,7 @@ export default function Navbar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
                             alt="Profile"
                             className="w-10 h-10 rounded-full"
                             onError={(e) => {
-                              e.target.src = "/default-profile.png";
+                              e.target.src = "/default-profile.png"; // Use a default profile image
                             }}
                           />
                         ) : (
