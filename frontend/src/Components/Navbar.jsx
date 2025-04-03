@@ -63,6 +63,9 @@ export default function Navbar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
     setIsMobileMenuOpen(false);
   }, [location.pathname, setIsMobileMenuOpen]);
 
+  if (location.pathname === "/login") return null;
+  if (!user) return null;
+
   const navItems = [
     {
       path: "dashboard",
