@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { Route, Routes, Navigate, useLocation } from "react-router-dom";
+import { useState } from "react";
+import { Route, Routes, Navigate, Outlet } from "react-router-dom";
 import Navbar from "./Components/Navbar.jsx";
 import RewardsPage from "./Components/RewardsPage.jsx";
 import ActivityPage from "./Components/ActivityPage.jsx";
@@ -22,11 +22,8 @@ const ProtectedRoute = ({ children }) => {
   return children;
 };
 
-const MainLayout = ({ children }) => {
+const MainLayout = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const { user } = useAuth();
-
-  if (!user) return null;
 
   return (
     <div className="min-h-screen">
@@ -34,12 +31,14 @@ const MainLayout = ({ children }) => {
         isMobileMenuOpen={isMobileMenuOpen}
         setIsMobileMenuOpen={setIsMobileMenuOpen}
       />
-      <div className="transition-all duration-300 pt-16">{children}</div>
+      <div className="transition-all duration-300 pt-16">
+        <Outlet />
+      </div>
       {isMobileMenuOpen && (
         <div
           className="fixed inset-0 z-30 backdrop-blur-sm bg-black/20"
           aria-hidden="true"
-          onClick={() => setIsMobileMenuOpen(false)} // Close menu on backdrop click
+          onClick={() => setIsMobileMenuOpen(false)}
         />
       )}
     </div>
@@ -47,64 +46,41 @@ const MainLayout = ({ children }) => {
 };
 
 const App = () => {
+  const { user, loading } = useAuth();
+
   return (
     <Routes>
-      {/* Public routes */}
       <Route path="/" element={<LandingPage />} />
       <Route path="/login" element={<LoginPage />} />
 
-      {/* Authenticated routes wrapped in MainLayout */}
       <Route
-        path="/dashboard"
         element={
           <ProtectedRoute>
-            <MainLayout>
-              <FitnessDashboard />
-            </MainLayout>
+            <MainLayout />
           </ProtectedRoute>
         }
-      />
-      <Route
-        path="/rewards"
-        element={
-          <ProtectedRoute>
-            <MainLayout>
-              <RewardsPage />
-            </MainLayout>
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/activity"
-        element={
-          <ProtectedRoute>
-            <MainLayout>
-              <ActivityPage />
-            </MainLayout>
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/challenges"
-        element={
-          <ProtectedRoute>
-            <MainLayout>
-              <ChallengePage />
-            </MainLayout>
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/my-profile"
-        element={
-          <ProtectedRoute>
-            <MainLayout>
-              <ProfilePage />
-            </MainLayout>
-          </ProtectedRoute>
-        }
-      />
-      <Route path="*" element={<Navigate to="/dashboard" replace />} />
+      >
+        <Route path="/dashboard" element={<FitnessDashboard />} />
+        <Route path="/rewards" element={<RewardsPage />} />
+        <Route path="/activity" element={<ActivityPage />} />
+        <Route path="/challenges" element={<ChallengePage />} />
+        <Route path="/my-profile" element={<ProfilePage />} />
+      </Route>
+
+      {!loading && (
+        <Route
+          path="*"
+          element={
+            user ? (
+              <Navigate to="/dashboard" replace />
+            ) : (
+              <Navigate to="/login" replace />
+            )
+          }
+        />
+      )}
+
+      {loading && <Route path="*" element={<div>Loading...</div>} />}
     </Routes>
   );
 };
