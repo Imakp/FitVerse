@@ -2,9 +2,14 @@ import React from "react";
 import { Trophy, BarChart3, Gift, Activity, LogOut } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { motion } from "framer-motion";
+import { useLocation } from "react-router-dom";
 
 const Login = () => {
-  const { user, login, logout } = useAuth();
+  const { user, login, logout, authError } = useAuth();
+  const location = useLocation();
+
+  const locationAuthError = location.state?.authError;
+  const errorMessage = authError || locationAuthError;
 
   return (
     <div className="flex min-h-screen bg-gray-50 justify-center items-center p-4">
@@ -32,6 +37,13 @@ const Login = () => {
                 rewards.
               </p>
             </div>
+
+            {errorMessage && (
+              <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-md text-red-600 text-sm">
+                <p>Login error: {errorMessage}</p>
+              </div>
+            )}
+
             {user ? (
               <div className="flex flex-col items-center gap-4 rounded-lg bg-gray-100 p-6 text-center border border-gray-200">
                 <img

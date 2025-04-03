@@ -17,8 +17,22 @@ import LandingPage from "./Components/LandingPage.jsx";
 import ChallengePage from "./Components/ChallengePage.jsx";
 
 const ProtectedRoute = ({ children }) => {
-  const { user, loading } = useAuth();
+  const { user, loading, authError } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (authError && !loading) {
+      console.error("Auth error in ProtectedRoute:", authError);
+      navigate("/login", {
+        state: {
+          from: location,
+          authError,
+        },
+        replace: true,
+      });
+    }
+  }, [authError, loading, navigate, location]);
 
   if (loading) {
     return (
