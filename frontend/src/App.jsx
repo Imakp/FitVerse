@@ -1,5 +1,11 @@
 import { useEffect, useState } from "react";
-import { Route, Routes, Navigate, useNavigate } from "react-router-dom";
+import {
+  Route,
+  Routes,
+  Navigate,
+  useNavigate,
+  useLocation,
+} from "react-router-dom";
 import Navbar from "./Components/Navbar.jsx";
 import RewardsPage from "./Components/RewardsPage.jsx";
 import ActivityPage from "./Components/ActivityPage.jsx";
@@ -12,18 +18,49 @@ import ChallengePage from "./Components/ChallengePage.jsx";
 
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useAuth();
+  const location = useLocation();
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
 
   if (!user) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
   return children;
 };
 
+const RedirectIfLoggedIn = ({ children }) => {
+  const { user, loading } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    if (!loading && user) {
+      const from = location.state?.from?.pathname || "/dashboard";
+      navigate(from, { replace: true });
+    }
+  }, [user, loading, navigate, location]);
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
+
+  return !user ? children : null;
+};
+
 const AuthWrapper = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { loading } = useAuth();
 
   return (
     <div className="min-h-screen">
@@ -34,13 +71,21 @@ const AuthWrapper = () => {
       <div className="transition-all duration-300">
         <Routes>
           <Route path="/" element={<LandingPage />} />
-          <Route path="/login" element={<LoginPage />} />
+          <Route
+            path="/login"
+            element={
+              <RedirectIfLoggedIn>
+                <LoginPage />
+              </RedirectIfLoggedIn>
+            }
+          />
+
           <Route
             path="/dashboard"
             element={
-              <>
+              <ProtectedRoute>
                 <FitnessDashboard />
-              </>
+              </ProtectedRoute>
             }
           />
           <Route
@@ -75,6 +120,8 @@ const AuthWrapper = () => {
               </ProtectedRoute>
             }
           />
+
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </div>
       {isMobileMenuOpen && (
