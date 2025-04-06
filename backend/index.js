@@ -12,6 +12,7 @@ const transactionRoutes = require("./routes/transactionsRoutes");
 const rewardRoutes = require("./routes/rewardRoutes");
 const challengeRoutes = require("./routes/challengeRoutes");
 const fitnessRoutes = require("./routes/fitnessRoutes");
+const mongoose = require("mongoose"); // Add mongoose import
 
 dotenv.config();
 
@@ -40,8 +41,8 @@ app.use(
     resave: false,
     saveUninitialized: false,
     store: MongoStore.create({
-      mongoUrl: process.env.MONGODB_URI,
-      ttl: 14 * 24 * 60 * 60, // 14 days
+      client: mongoose.connection.getClient(), // Use existing connection
+      ttl: 14 * 24 * 60 * 60,
     }),
   })
 );
