@@ -17,7 +17,7 @@ const RewardCard = ({ reward, onRedeemSuccess }) => {
   const canAfford = balance >= coins;
 
   const handleRedeemClick = async () => {
-    if (!user?._id) {
+    if (!user?.id) {
       toast.error("Please log in to redeem rewards.");
       return;
     }

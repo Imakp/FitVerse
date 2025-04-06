@@ -95,7 +95,7 @@ export default function Challenge() {
       setLoading(true);
       try {
         const [balanceRes, challengesRes] = await Promise.all([
-          user?._id
+          user?.id
             ? axios.get(`/api/users/balance/${user._id}`)
             : Promise.resolve({ data: { balance: 0 } }),
           axios.get("/api/challenges", {
@@ -107,7 +107,7 @@ export default function Challenge() {
         const challengeData = challengesRes.data.challenges || [];
         const processedChallenges = challengeData.map((challenge) => ({
           ...challenge,
-          isRedeemed: challenge.redeemedBy?.includes(user?._id),
+          isRedeemed: challenge.redeemedBy?.includes(user?.id),
         }));
         setChallenges(processedChallenges);
       } catch (err) {
@@ -124,10 +124,10 @@ export default function Challenge() {
     };
 
     fetchData();
-  }, [user?._id, isAuthenticated]);
+  }, [user?.id, isAuthenticated]);
 
   const addCoins = async (challengeId, reward) => {
-    if (!user?._id) {
+    if (!user?.id) {
       console.error("User not logged in, cannot redeem coins.");
       return;
     }

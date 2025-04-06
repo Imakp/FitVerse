@@ -32,7 +32,8 @@ export const AuthProvider = ({ children }) => {
         },
       });
 
-      if (data?.id) { // Changed from _id to id to match backend changes
+      if (data?.id) {
+        // Changed from _id to id to match backend changes
         setUser({
           ...data,
           id: data.id, // Use consistent ID field
@@ -53,11 +54,11 @@ export const AuthProvider = ({ children }) => {
     try {
       const { data } = await axios.get(
         `${BACKEND_URL}/api/users/balance/${userId}`,
-        { 
+        {
           withCredentials: true,
           headers: {
             "Cache-Control": "no-cache", // Add cache control
-          } 
+          },
         }
       );
       if (data.success) {
@@ -73,7 +74,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const refreshBalance = async () => {
-    if (user?._id) {
+    if (user?.id) {
       await fetchBalance(user._id);
       console.log("Balance refreshed via AuthContext");
     } else {
@@ -98,12 +99,12 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   useEffect(() => {
-    if (user?._id) {
+    if (user?.id) {
       fetchBalance(user._id);
     } else {
       setBalance(0);
     }
-  }, [user?._id]);
+  }, [user?.id]);
 
   return (
     <AuthContext.Provider

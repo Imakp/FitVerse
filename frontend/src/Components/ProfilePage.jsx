@@ -59,7 +59,7 @@ const MyProfile = () => {
   };
 
   const handleSaveClick = async () => {
-    if (!user?._id) return;
+    if (!user?.id) return;
     setIsLoading(true);
     try {
       console.log("Profile Update Payload:", { name: profileData.name });
@@ -75,7 +75,7 @@ const MyProfile = () => {
   };
 
   const handleDeleteAccount = async () => {
-    if (!user?._id) return;
+    if (!user?.id) return;
     if (
       window.confirm(
         "Are you sure you want to delete your account? This action cannot be undone."
