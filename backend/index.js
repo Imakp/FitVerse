@@ -41,9 +41,14 @@ app.use(
     resave: false,
     saveUninitialized: false,
     store: MongoStore.create({
-      client: mongoose.connection.getClient(), // Use existing connection
+      client: mongoose.connection.getClient(),
       ttl: 14 * 24 * 60 * 60,
     }),
+    cookie: {
+      secure: process.env.NODE_ENV === "production", // Enable in production
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      maxAge: 1000 * 60 * 60 * 24 * 7, // 1 week
+    },
   })
 );
 

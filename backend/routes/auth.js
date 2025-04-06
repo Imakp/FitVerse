@@ -2,7 +2,8 @@ const express = require("express");
 const passport = require("passport");
 
 const router = express.Router();
-const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:5173"; // Default frontend URL
+const FRONTEND_URL =
+  process.env.FRONTEND_URL || "https://its-fitverse.vercel.app"; // Updated production URL
 
 //Enable CORS for auth routes
 
