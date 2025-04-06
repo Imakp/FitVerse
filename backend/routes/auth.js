@@ -3,11 +3,8 @@ const passport = require("passport");
 
 const router = express.Router();
 const FRONTEND_URL =
-  process.env.FRONTEND_URL || "https://its-fitverse.vercel.app"; // Updated production URL
+  process.env.FRONTEND_URL || "https://its-fitverse.vercel.app";
 
-//Enable CORS for auth routes
-
-// Google Authentication Route
 router.get(
   "/google",
   passport.authenticate("google", { scope: ["profile", "email"] })
@@ -15,13 +12,49 @@ router.get(
 
 // Google OAuth Callback
 router.get("/google/callback", (req, res, next) => {
+  console.log("Received callback from Google"); // Log entry point
   passport.authenticate("google", (err, user, info) => {
-    if (err) return res.redirect(`${FRONTEND_URL}/login?error=auth_failed`);
-    if (!user) return res.redirect(`${FRONTEND_URL}/login?error=no_user`);
+    console.log("Passport authenticate callback executing..."); // Log passport callback start
+    if (err) {
+      console.error("Passport authentication error:", err);
+      return res.redirect(
+        `${FRONTEND_URL}/login?error=auth_failed&details=${encodeURIComponent(
+          err.message || "Unknown error"
+        )}`
+      );
+    }
+    if (!user) {
+      console.warn("Passport authentication: No user found or returned.", info);
+      const infoMessage = info?.message || "No user returned from strategy";
+      return res.redirect(
+        `${FRONTEND_URL}/login?error=no_user&details=${encodeURIComponent(
+          infoMessage
+        )}`
+      );
+    }
 
-    req.logIn(user, (err) => {
-      if (err) return res.redirect(`${FRONTEND_URL}/login?error=login_failed`);
-      return res.redirect(`${FRONTEND_URL}/dashboard`);
+    console.log("Passport authentication successful, user:", user);
+
+    req.logIn(user, (loginErr) => {
+      if (loginErr) {
+        console.error("req.logIn error:", loginErr);
+        return res.redirect(
+          `${FRONTEND_URL}/login?error=login_failed&details=${encodeURIComponent(
+            loginErr.message || "Session login failed"
+          )}`
+        );
+      }
+      console.log(
+        "req.logIn successful, session established. Redirecting to dashboard."
+      );
+      req.session.save((saveErr) => {
+        if (saveErr) {
+          console.error("Session save error:", saveErr);
+          return res.redirect(`${FRONTEND_URL}/dashboard`);
+        }
+        console.log("Session saved successfully.");
+        return res.redirect(`${FRONTEND_URL}/dashboard`);
+      });
     });
   })(req, res, next);
 });
