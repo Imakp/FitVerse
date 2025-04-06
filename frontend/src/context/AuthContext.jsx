@@ -8,7 +8,8 @@ export const AuthProvider = ({ children }) => {
   const [balance, setBalance] = useState(0);
   const [loading, setLoading] = useState(true);
 
-  const BACKEND_URL = "https://fit-verse-backend.vercel.app" ?? "http://localhost:3000";
+  const BACKEND_URL =
+    "https://fit-verse-backend.vercel.app" ?? "http://localhost:3000";
   const login = () => {
     sessionStorage.setItem("loginRedirectUrl", window.location.pathname);
     window.location.href = `${BACKEND_URL}/auth/google`;
@@ -25,7 +26,6 @@ export const AuthProvider = ({ children }) => {
 
   const fetchUser = async () => {
     try {
-      console.log("Fetching user from:", `${BACKEND_URL}/auth/user`);
       const { data } = await axios.get(`${BACKEND_URL}/auth/user`, {
         withCredentials: true,
         headers: {
@@ -34,24 +34,18 @@ export const AuthProvider = ({ children }) => {
         },
       });
 
-      if (data) {
-        console.log("User data received:", data);
+      if (data?._id) {
+        // Check for MongoDB _id field
         setUser({
           ...data,
-          picture: data.profilePicture,
+          _id: data._id, // Ensure MongoDB _id is preserved
+          profilePicture: data.profilePicture,
         });
-        if (data._id) {
-          fetchBalance(data._id);
-        }
+        fetchBalance(data._id);
       }
     } catch (error) {
-      console.error(
-        "Error fetching user:",
-        error.response?.status,
-        error.response?.data || error.message
-      );
+      console.error("Error fetching user:", error);
       setUser(null);
-      setBalance(0);
     } finally {
       setLoading(false);
     }

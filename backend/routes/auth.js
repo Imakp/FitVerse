@@ -57,15 +57,12 @@ router.get("/google/callback", (req, res, next) => {
 
 // Get User Info (Session-based authentication)
 router.get("/user", (req, res) => {
-  console.log("Auth check request received");
-  console.log("Is authenticated:", req.isAuthenticated());
-  console.log("Session:", req.session);
-
   if (req.isAuthenticated()) {
-    console.log("User is authenticated:", req.user);
-    res.json(req.user);
+    res.json({
+      ...req.user.toObject(), // Convert Mongoose document to plain object
+      _id: req.user._id, // Explicitly include MongoDB _id
+    });
   } else {
-    console.log("User is not authenticated");
     res.status(401).json({ message: "Unauthorized" });
   }
 });
