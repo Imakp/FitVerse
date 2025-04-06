@@ -29,7 +29,7 @@ passport.use(
         }
 
         done(null, {
-          id: user.id,
+          id: user._id,  // Changed from user.id to user._id
           name: user.name,
           email: user.email,
           profilePicture: user.profilePicture,

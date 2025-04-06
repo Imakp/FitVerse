@@ -28,19 +28,17 @@ export const AuthProvider = ({ children }) => {
       const { data } = await axios.get(`${BACKEND_URL}/auth/user`, {
         withCredentials: true,
         headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
+          "Cache-Control": "no-cache", // Add cache control
         },
       });
 
-      if (data?._id) {
-        // Check for MongoDB _id field
+      if (data?.id) { // Changed from _id to id to match backend changes
         setUser({
           ...data,
-          _id: data._id, // Ensure MongoDB _id is preserved
+          id: data.id, // Use consistent ID field
           profilePicture: data.profilePicture,
         });
-        fetchBalance(data._id);
+        fetchBalance(data.id); // Pass ID instead of _id
       }
     } catch (error) {
       console.error("Error fetching user:", error);
@@ -55,7 +53,12 @@ export const AuthProvider = ({ children }) => {
     try {
       const { data } = await axios.get(
         `${BACKEND_URL}/api/users/balance/${userId}`,
-        { withCredentials: true } // Add this
+        { 
+          withCredentials: true,
+          headers: {
+            "Cache-Control": "no-cache", // Add cache control
+          } 
+        }
       );
       if (data.success) {
         setBalance(data.balance);

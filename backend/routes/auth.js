@@ -58,9 +58,11 @@ router.get("/google/callback", (req, res, next) => {
 // Get User Info (Session-based authentication)
 router.get("/user", (req, res) => {
   if (req.isAuthenticated()) {
+    // Convert Mongoose document to plain object including virtuals
+    const userData = req.user.toObject({ virtuals: true });
     res.json({
-      ...req.user.toObject(), // Convert Mongoose document to plain object
-      _id: req.user._id, // Explicitly include MongoDB _id
+      ...userData,
+      id: userData._id  // Ensure _id is aliased as id for client consistency
     });
   } else {
     res.status(401).json({ message: "Unauthorized" });
