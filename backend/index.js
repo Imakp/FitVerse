@@ -5,7 +5,6 @@ const authRoutes = require("./routes/auth"); // OAuth routes
 require("./config/passport"); // Passport config
 const session = require("express-session");
 const MongoStore = require("connect-mongo");
-const path = require("path");
 const passport = require("passport");
 const cors = require("cors");
 const userRoutes = require("./routes/userRoutes");
@@ -19,7 +18,6 @@ dotenv.config();
 const app = express();
 const port = process.env.PORT || 3000;
 const morgan = require("morgan");
-app.use(express.static(path.join(__dirname, "public")));
 
 connectDB();
 
@@ -61,10 +59,6 @@ app.use("/api/fitness", fitnessRoutes);
 app.get("/", (req, res) => {
   res.send("Hello World!");
 });
-
-app.get("/favicon.ico", (req, res) =>
-  res.sendFile(path.join(__dirname, "public", "favicon.ico"))
-);
 
 app.listen(port, () => {
   console.log(`Server listening on port ${port}`);
