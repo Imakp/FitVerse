@@ -2,7 +2,8 @@ const express = require("express");
 const passport = require("passport");
 
 const router = express.Router();
-const FRONTEND_URL = process.env.FRONTEND_URL ?? "https://its-fitverse.vercel.app";
+const FRONTEND_URL =
+  process.env.FRONTEND_URL ?? "https://its-fitverse.vercel.app";
 
 router.get(
   "/google",
@@ -48,8 +49,9 @@ router.get("/google/callback", (req, res, next) => {
         if (saveErr) {
           console.error("Session save error:", saveErr);
         }
-        console.log("Session saved successfully. Redirecting to dashboard.");
-        return res.redirect(`${FRONTEND_URL}/dashboard`);
+        const redirectTo = req.session.returnTo || `${FRONTEND_URL}/dashboard`;
+        delete req.session.returnTo;
+        return res.redirect(redirectTo);
       });
     });
   })(req, res, next);
@@ -62,7 +64,7 @@ router.get("/user", (req, res) => {
     const userData = req.user.toObject({ virtuals: true });
     res.json({
       ...userData,
-      id: userData._id  // Ensure _id is aliased as id for client consistency
+      id: userData._id, // Ensure _id is aliased as id for client consistency
     });
   } else {
     res.status(401).json({ message: "Unauthorized" });
