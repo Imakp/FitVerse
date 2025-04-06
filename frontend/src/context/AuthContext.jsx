@@ -8,8 +8,7 @@ export const AuthProvider = ({ children }) => {
   const [balance, setBalance] = useState(0);
   const [loading, setLoading] = useState(true);
 
-  const BACKEND_URL =
-    "https://fit-verse-backend.vercel.app" || "http://localhost:3000";
+  const BACKEND_URL = "https://fit-verse-backend.vercel.app" ?? "http://localhost:3000";
   const login = () => {
     sessionStorage.setItem("loginRedirectUrl", window.location.pathname);
     window.location.href = `${BACKEND_URL}/auth/google`;
@@ -26,10 +25,17 @@ export const AuthProvider = ({ children }) => {
 
   const fetchUser = async () => {
     try {
+      console.log("Fetching user from:", `${BACKEND_URL}/auth/user`);
       const { data } = await axios.get(`${BACKEND_URL}/auth/user`, {
         withCredentials: true,
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
       });
+
       if (data) {
+        console.log("User data received:", data);
         setUser({
           ...data,
           picture: data.profilePicture,
@@ -39,6 +45,11 @@ export const AuthProvider = ({ children }) => {
         }
       }
     } catch (error) {
+      console.error(
+        "Error fetching user:",
+        error.response?.status,
+        error.response?.data || error.message
+      );
       setUser(null);
       setBalance(0);
     } finally {
@@ -50,7 +61,8 @@ export const AuthProvider = ({ children }) => {
     if (!userId) return;
     try {
       const { data } = await axios.get(
-        `${BACKEND_URL}/api/users/balance/${userId}`
+        `${BACKEND_URL}/api/users/balance/${userId}`,
+        { withCredentials: true } // Add this
       );
       if (data.success) {
         setBalance(data.balance);

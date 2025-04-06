@@ -3,8 +3,7 @@ const GoogleStrategy = require("passport-google-oauth20").Strategy;
 const User = require("../models/user");
 require("dotenv").config();
 
-const backendUrl =
-  process.env.API_URL || "https://fit-verse-backend.vercel.app"; // Updated production URL
+const backendUrl = process.env.API_URL ?? "https://localhost:3000"; // Updated production URL
 
 passport.use(
   new GoogleStrategy(

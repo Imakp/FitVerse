@@ -26,7 +26,7 @@ app.use(express.json());
 
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL || "http://localhost:5173",
+    origin: process.env.FRONTEND_URL ?? "http://localhost:5173",
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
@@ -45,11 +45,10 @@ app.use(
       ttl: 14 * 24 * 60 * 60,
     }),
     cookie: {
-      secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      secure: true,
+      sameSite: "none",
       maxAge: 1000 * 60 * 60 * 24 * 7,
       httpOnly: true,
-      domain: process.env.NODE_ENV === "production" ? ".vercel.app" : undefined,
     },
   })
 );

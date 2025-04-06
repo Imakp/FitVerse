@@ -2,8 +2,7 @@ const express = require("express");
 const passport = require("passport");
 
 const router = express.Router();
-const FRONTEND_URL =
-  process.env.FRONTEND_URL || "https://its-fitverse.vercel.app";
+const FRONTEND_URL = process.env.FRONTEND_URL ?? "https://localhost:5173";
 
 router.get(
   "/google",
@@ -58,9 +57,15 @@ router.get("/google/callback", (req, res, next) => {
 
 // Get User Info (Session-based authentication)
 router.get("/user", (req, res) => {
+  console.log("Auth check request received");
+  console.log("Is authenticated:", req.isAuthenticated());
+  console.log("Session:", req.session);
+
   if (req.isAuthenticated()) {
+    console.log("User is authenticated:", req.user);
     res.json(req.user);
   } else {
+    console.log("User is not authenticated");
     res.status(401).json({ message: "Unauthorized" });
   }
 });
