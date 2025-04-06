@@ -8,8 +8,7 @@ export const AuthProvider = ({ children }) => {
   const [balance, setBalance] = useState(0);
   const [loading, setLoading] = useState(true);
 
-  const BACKEND_URL =
-    "https://fit-verse-backend.vercel.app" ?? "http://localhost:3000";
+  const BACKEND_URL = "https://fit-verse-backend.vercel.app";
   const login = () => {
     sessionStorage.setItem("loginRedirectUrl", window.location.pathname);
     window.location.href = `${BACKEND_URL}/auth/google`;

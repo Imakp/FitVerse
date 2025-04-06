@@ -3,7 +3,7 @@ const GoogleStrategy = require("passport-google-oauth20").Strategy;
 const User = require("../models/user");
 require("dotenv").config();
 
-const backendUrl = process.env.API_URL ?? "https://localhost:3000"; // Updated production URL
+const backendUrl = process.env.API_URL ?? "https://localhost:3000";
 
 passport.use(
   new GoogleStrategy(
@@ -49,6 +49,11 @@ passport.serializeUser((user, done) => {
 
 // Deserialize user
 passport.deserializeUser(async (id, done) => {
-  const user = await User.findById(id);
-  done(null, user);
+  try {
+    const user = await User.findById(id);
+    if (!user) return done(new Error("User not found"), null);
+    done(null, user);
+  } catch (err) {
+    done(err, null);
+  }
 });

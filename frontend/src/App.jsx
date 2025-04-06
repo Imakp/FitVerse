@@ -9,6 +9,7 @@ import { FitnessDashboard } from "./Components/FitnessDashboard.jsx";
 import LandingPage from "./Components/LandingPage.jsx";
 import ChallengePage from "./Components/ChallengePage.jsx";
 import ProtectedRoute from "./ProtectedRoute.jsx";
+import { AuthProvider } from "./context/AuthContext";
 
 const AuthWrapper = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -41,4 +42,10 @@ const AuthWrapper = () => {
   );
 };
 
-export default AuthWrapper;
+const App = () => (
+  <AuthProvider>
+    <AuthWrapper />
+  </AuthProvider>
+);
+
+export default App;

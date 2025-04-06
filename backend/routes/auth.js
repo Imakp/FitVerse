@@ -2,7 +2,7 @@ const express = require("express");
 const passport = require("passport");
 
 const router = express.Router();
-const FRONTEND_URL = process.env.FRONTEND_URL ?? "https://localhost:5173";
+const FRONTEND_URL = process.env.FRONTEND_URL ?? "https://its-fitverse.vercel.app";
 
 router.get(
   "/google",
