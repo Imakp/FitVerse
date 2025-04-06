@@ -45,9 +45,11 @@ app.use(
       ttl: 14 * 24 * 60 * 60,
     }),
     cookie: {
-      secure: process.env.NODE_ENV === "production", // Enable in production
+      secure: process.env.NODE_ENV === "production",
       sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-      maxAge: 1000 * 60 * 60 * 24 * 7, // 1 week
+      maxAge: 1000 * 60 * 60 * 24 * 7,
+      httpOnly: true,
+      domain: process.env.NODE_ENV === "production" ? ".vercel.app" : undefined,
     },
   })
 );

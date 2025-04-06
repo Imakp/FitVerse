@@ -10,11 +10,10 @@ router.get(
   passport.authenticate("google", { scope: ["profile", "email"] })
 );
 
-// Google OAuth Callback
 router.get("/google/callback", (req, res, next) => {
-  console.log("Received callback from Google"); // Log entry point
+  console.log("Received callback from Google");
   passport.authenticate("google", (err, user, info) => {
-    console.log("Passport authenticate callback executing..."); // Log passport callback start
+    console.log("Passport authenticate callback executing...");
     if (err) {
       console.error("Passport authentication error:", err);
       return res.redirect(
@@ -35,7 +34,7 @@ router.get("/google/callback", (req, res, next) => {
 
     console.log("Passport authentication successful, user:", user);
 
-    req.logIn(user, (loginErr) => {
+    req.login(user, (loginErr) => {
       if (loginErr) {
         console.error("req.logIn error:", loginErr);
         return res.redirect(
@@ -44,15 +43,13 @@ router.get("/google/callback", (req, res, next) => {
           )}`
         );
       }
-      console.log(
-        "req.logIn successful, session established. Redirecting to dashboard."
-      );
+
+      req.session.userId = user._id;
       req.session.save((saveErr) => {
         if (saveErr) {
           console.error("Session save error:", saveErr);
-          return res.redirect(`${FRONTEND_URL}/dashboard`);
         }
-        console.log("Session saved successfully.");
+        console.log("Session saved successfully. Redirecting to dashboard.");
         return res.redirect(`${FRONTEND_URL}/dashboard`);
       });
     });

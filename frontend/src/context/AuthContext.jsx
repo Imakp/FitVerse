@@ -9,8 +9,9 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   const BACKEND_URL =
-    import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
+    "https://fit-verse-backend.vercel.app" || "http://localhost:3000";
   const login = () => {
+    sessionStorage.setItem("loginRedirectUrl", window.location.pathname);
     window.location.href = `${BACKEND_URL}/auth/google`;
   };
 
