@@ -13,6 +13,7 @@ import {
 
 const LandingPage = () => {
   const [scrollY, setScrollY] = useState(0);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -22,6 +23,10 @@ const LandingPage = () => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  const toggleMobileMenu = () => {
+    setMobileMenuOpen(!mobileMenuOpen);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-gray-50 to-gray-100 font-sans text-gray-800 relative">
@@ -40,46 +45,91 @@ const LandingPage = () => {
         <div className="absolute bottom-32 left-1/2 w-64 h-64 bg-green-200 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-4000"></div>
       </div>
 
-      <nav className="relative z-10 px-6 py-6 flex justify-between items-center">
-        <div className="flex items-center">
-          <span className="text-2xl font-bold text-blue-600">FitVerse</span>
+      <nav className="relative z-10 px-6 py-6">
+        <div className="flex justify-between items-center">
+          <div className="flex items-center">
+            <span className="text-2xl font-bold text-blue-600">FitVerse</span>
+          </div>
+          <div className="hidden md:flex space-x-8 items-center">
+            <a
+              href="#features"
+              className="text-gray-600 hover:text-blue-600 transition-colors"
+            >
+              Features
+            </a>
+            <a
+              href="#testimonials"
+              className="text-gray-600 hover:text-blue-600 transition-colors"
+            >
+              Testimonials
+            </a>
+            <Link
+              to="/login"
+              className="px-5 py-2 bg-blue-600 text-white rounded-md text-sm font-medium hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+            >
+              Login / Sign Up
+            </Link>
+          </div>
+          <button
+            className="md:hidden text-gray-600 focus:outline-none"
+            onClick={toggleMobileMenu}
+            aria-label="Toggle mobile menu"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d={
+                  mobileMenuOpen
+                    ? "M6 18L18 6M6 6l12 12"
+                    : "M4 6h16M4 12h16M4 18h16"
+                }
+              />
+            </svg>
+          </button>
         </div>
-        <div className="hidden md:flex space-x-8 items-center">
-          <a
-            href="#features"
-            className="text-gray-600 hover:text-blue-600 transition-colors"
+
+        {/* Mobile Menu */}
+        {mobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.3 }}
+            className="md:hidden mt-4 bg-white shadow-lg rounded-lg py-4 px-2"
           >
-            Features
-          </a>
-          <a
-            href="#testimonials"
-            className="text-gray-600 hover:text-blue-600 transition-colors"
-          >
-            Testimonials
-          </a>
-          <Link
-            to="/login"
-            className="px-5 py-2 bg-blue-600 text-white rounded-md text-sm font-medium hover:bg-blue-700 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-          >
-            Login / Sign Up
-          </Link>
-        </div>
-        <button className="md:hidden text-gray-600">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-6 w-6"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M4 6h16M4 12h16M4 18h16"
-            />
-          </svg>
-        </button>
+            <div className="flex flex-col space-y-4">
+              <a
+                href="#features"
+                className="text-gray-600 hover:text-blue-600 transition-colors px-4 py-2"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Features
+              </a>
+              <a
+                href="#testimonials"
+                className="text-gray-600 hover:text-blue-600 transition-colors px-4 py-2"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Testimonials
+              </a>
+              <Link
+                to="/login"
+                className="px-4 py-2 bg-blue-600 text-white rounded-md text-sm font-medium hover:bg-blue-700 transition-colors mx-4"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Login / Sign Up
+              </Link>
+            </div>
+          </motion.div>
+        )}
       </nav>
 
       <section className="relative z-10 px-6 pt-16 pb-24 md:pt-24 md:pb-32 max-w-7xl mx-auto">

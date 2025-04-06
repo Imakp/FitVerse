@@ -28,9 +28,14 @@ export const AuthProvider = ({ children }) => {
       const { data } = await axios.get(`${BACKEND_URL}/auth/user`, {
         withCredentials: true,
       });
-      setUser(data);
-      if (data?._id) {
-        fetchBalance(data._id);
+      if (data) {
+        setUser({
+          ...data,
+          picture: data.profilePicture,
+        });
+        if (data._id) {
+          fetchBalance(data._id);
+        }
       }
     } catch (error) {
       setUser(null);

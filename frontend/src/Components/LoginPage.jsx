@@ -2,11 +2,12 @@ import React from "react";
 import { Trophy, BarChart3, Gift, Activity, LogOut } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { motion } from "framer-motion";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const Login = () => {
   const { user, login, logout, authError } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
 
   const locationAuthError = location.state?.authError;
   const errorMessage = authError || locationAuthError;
@@ -47,15 +48,25 @@ const Login = () => {
             {user ? (
               <div className="flex flex-col items-center gap-4 rounded-lg bg-gray-100 p-6 text-center border border-gray-200">
                 <img
-                  src={user.picture}
+                  src={user.profilePicture}
                   alt="Profile"
                   className="h-20 w-20 rounded-full border-2 border-blue-500 object-cover shadow-sm"
                 />
                 <h2 className="text-xl font-semibold text-gray-800">
                   {user.name}
                 </h2>
-
                 <p className="text-sm text-gray-600">{user.email}</p>
+
+                {/* Add a Go to Dashboard button */}
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => navigate("/dashboard")}
+                  className="w-full flex items-center justify-center space-x-2 rounded-md bg-blue-600 px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                >
+                  <Activity size={18} />
+                  <span>Go to Dashboard</span>
+                </motion.button>
 
                 <motion.button
                   whileHover={{ scale: 1.05 }}

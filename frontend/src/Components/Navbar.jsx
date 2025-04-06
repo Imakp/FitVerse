@@ -59,11 +59,13 @@ export default function Navbar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
   }, [isMobileMenuOpen, setIsMobileMenuOpen]);
 
   useEffect(() => {
-    if (location.pathname === "/login") return;
     setIsMobileMenuOpen(false);
   }, [location.pathname, setIsMobileMenuOpen]);
 
-  if (location.pathname === "/login") return null;
+  // Don't show navbar on login page or landing page
+  if (location.pathname === "/login" || location.pathname === "/") return null;
+
+  // Don't show navbar if user is not authenticated
   if (!user) return null;
 
   const navItems = [
@@ -176,7 +178,7 @@ export default function Navbar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
                       <ul>
                         <li>
                           <NavLink
-                            to="/my-profile"
+                            to="/profile"
                             className="block px-4 py-3 text-gray-700 hover:bg-gray-50 transition-colors duration-150"
                             onClick={() => setIsDropdownOpen(false)}
                           >
@@ -298,7 +300,7 @@ export default function Navbar({ isMobileMenuOpen, setIsMobileMenuOpen }) {
 
                 <div className="mt-4 space-y-2">
                   <NavLink
-                    to="/my-profile"
+                    to="/profile"
                     className="flex items-center justify-center space-x-2 w-full py-3 px-4 bg-white border border-gray-200 rounded-xl text-gray-700 font-medium hover:bg-gray-50 transition-colors"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >

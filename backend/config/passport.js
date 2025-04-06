@@ -22,12 +22,18 @@ passport.use(
             oauthId: profile.id,
             name: profile.displayName,
             email: profile.emails[0].value,
-            profilePicture: profile.photos[0].value,
+            profilePicture: profile.photos[0].value.replace(/sz=50$/, "sz=200"),
           });
           await user.save();
         }
 
-        done(null, user);
+        done(null, {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          profilePicture: user.profilePicture,
+          _id: user._id,
+        });
       } catch (err) {
         done(err, null);
       }
