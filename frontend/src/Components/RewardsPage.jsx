@@ -17,7 +17,7 @@ const RewardCard = ({ reward, onRedeemSuccess }) => {
   const canAfford = balance >= coins;
 
   const handleRedeemClick = async () => {
-    if (!user?.id) {
+    if (!user?._id) {
       toast.error("Please log in to redeem rewards.");
       return;
     }
@@ -128,10 +128,10 @@ const RewardsList = ({ rewards: initialRewards }) => {
     console.log(`Reward ${rewardId} redeemed, balance refreshed via context.`);
   };
 
-  const [visibleCount, setVisibleCount] = useState(6);
+  const [visibleCount, setVisibleCount] = useState(6); 
 
   const handleSeeMore = () => {
-    setVisibleCount((prevCount) => prevCount + 6);
+    setVisibleCount((prevCount) => prevCount + 6); 
   };
 
   return (

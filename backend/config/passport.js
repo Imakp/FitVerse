@@ -3,7 +3,7 @@ const GoogleStrategy = require("passport-google-oauth20").Strategy;
 const User = require("../models/user");
 require("dotenv").config();
 
-const backendUrl = process.env.API_URL ?? "https://localhost:3000";
+const backendUrl = process.env.API_URL || "http://localhost:3000";
 
 passport.use(
   new GoogleStrategy(
@@ -11,7 +11,6 @@ passport.use(
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
       callbackURL: `${backendUrl}/auth/google/callback`,
-      proxy: true,
     },
     async (accessToken, refreshToken, profile, done) => {
       try {
@@ -28,12 +27,12 @@ passport.use(
           await user.save();
         }
 
-        // Consistent id field to avoid confusion
         done(null, {
-          id: user._id.toString(), // Convert to string and use consistent naming
+          id: user.id,
           name: user.name,
           email: user.email,
           profilePicture: user.profilePicture,
+          _id: user._id,
         });
       } catch (err) {
         done(err, null);
@@ -44,23 +43,11 @@ passport.use(
 
 // Serialize user
 passport.serializeUser((user, done) => {
-  done(null, user.id); // Use the consistent id field
+  done(null, user.id);
 });
 
 // Deserialize user
 passport.deserializeUser(async (id, done) => {
-  try {
-    const user = await User.findById(id);
-    if (!user) return done(new Error("User not found"), null);
-
-    // Return user with consistent id field
-    done(null, {
-      id: user._id.toString(),
-      name: user.name,
-      email: user.email,
-      profilePicture: user.profilePicture,
-    });
-  } catch (err) {
-    done(err, null);
-  }
+  const user = await User.findById(id);
+  done(null, user);
 });

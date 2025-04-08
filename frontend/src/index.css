@@ -5,17 +5,17 @@
 /* Remove scrollbar from everywhere */
 * {
   scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* Internet Explorer 10+ */
+  -ms-overflow-style: none;  /* Internet Explorer 10+ */
 }
 
 *::-webkit-scrollbar {
   display: none; /* Safari and Chrome */
 }
 
-* {
-  font-family: "Geist", "sans-serif";
+*{
+  font-family: 'Geist', 'sans-serif';
 }
 
-html {
+html{
   scroll-behavior: smooth;
 }

@@ -59,7 +59,7 @@ const MyProfile = () => {
   };
 
   const handleSaveClick = async () => {
-    if (!user?.id) return;
+    if (!user?._id) return;
     setIsLoading(true);
     try {
       console.log("Profile Update Payload:", { name: profileData.name });
@@ -75,7 +75,7 @@ const MyProfile = () => {
   };
 
   const handleDeleteAccount = async () => {
-    if (!user?.id) return;
+    if (!user?._id) return;
     if (
       window.confirm(
         "Are you sure you want to delete your account? This action cannot be undone."
@@ -83,7 +83,7 @@ const MyProfile = () => {
     ) {
       setIsLoading(true);
       try {
-        console.log("Account Deletion Requested for user:", user.id);
+        console.log("Account Deletion Requested for user:", user._id);
         toast.warn("Account deletion feature not implemented yet.");
       } catch (error) {
         console.error("Error deleting account:", error);

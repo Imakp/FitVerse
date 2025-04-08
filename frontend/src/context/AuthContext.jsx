@@ -7,11 +7,10 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [balance, setBalance] = useState(0);
   const [loading, setLoading] = useState(true);
-  const [authError, setAuthError] = useState(null);
 
-  const BACKEND_URL = "https://fit-verse-backend.vercel.app";
+  const BACKEND_URL =
+    import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
   const login = () => {
-    sessionStorage.setItem("loginRedirectUrl", window.location.pathname);
     window.location.href = `${BACKEND_URL}/auth/google`;
   };
 
@@ -19,10 +18,8 @@ export const AuthProvider = ({ children }) => {
     try {
       await axios.get(`${BACKEND_URL}/auth/logout`, { withCredentials: true });
       setUser(null);
-      sessionStorage.removeItem("loginRedirectUrl");
     } catch (error) {
       console.error("Logout failed:", error);
-      setAuthError("Logout failed. Please try again.");
     }
   };
 
@@ -30,24 +27,19 @@ export const AuthProvider = ({ children }) => {
     try {
       const { data } = await axios.get(`${BACKEND_URL}/auth/user`, {
         withCredentials: true,
-        headers: {
-          "Cache-Control": "no-cache", // Add cache control
-        },
       });
-
-      if (data?.id) {
+      if (data) {
         setUser({
           ...data,
-          id: data.id, // Consistent ID field
-          profilePicture: data.profilePicture,
+          picture: data.profilePicture,
         });
-        fetchBalance(data.id);
-        setAuthError(null);
+        if (data._id) {
+          fetchBalance(data._id);
+        }
       }
     } catch (error) {
-      console.error("Error fetching user:", error);
       setUser(null);
-      setAuthError("Authentication failed. Please try logging in again.");
+      setBalance(0);
     } finally {
       setLoading(false);
     }
@@ -57,13 +49,7 @@ export const AuthProvider = ({ children }) => {
     if (!userId) return;
     try {
       const { data } = await axios.get(
-        `${BACKEND_URL}/api/users/balance/${userId}`,
-        {
-          withCredentials: true,
-          headers: {
-            "Cache-Control": "no-cache",
-          },
-        }
+        `${BACKEND_URL}/api/users/balance/${userId}`
       );
       if (data.success) {
         setBalance(data.balance);
@@ -78,8 +64,8 @@ export const AuthProvider = ({ children }) => {
   };
 
   const refreshBalance = async () => {
-    if (user?.id) {
-      await fetchBalance(user.id); // Changed from user._id to user.id
+    if (user?._id) {
+      await fetchBalance(user._id);
       console.log("Balance refreshed via AuthContext");
     } else {
       console.log("Cannot refresh balance: user not available.");
@@ -103,12 +89,12 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   useEffect(() => {
-    if (user?.id) {
-      fetchBalance(user.id); // Changed from user._id to user.id
+    if (user?._id) {
+      fetchBalance(user._id);
     } else {
       setBalance(0);
     }
-  }, [user?.id]);
+  }, [user?._id]);
 
   return (
     <AuthContext.Provider
@@ -120,7 +106,6 @@ export const AuthProvider = ({ children }) => {
         logout,
         setBalance,
         refreshBalance,
-        authError,
       }}
     >
       {children}
