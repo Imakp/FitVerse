@@ -28,12 +28,12 @@ passport.use(
           await user.save();
         }
 
+        // Consistent id field to avoid confusion
         done(null, {
-          id: user._id,  // Changed from user.id to user._id
+          id: user._id.toString(), // Convert to string and use consistent naming
           name: user.name,
           email: user.email,
           profilePicture: user.profilePicture,
-          _id: user._id,
         });
       } catch (err) {
         done(err, null);
@@ -44,7 +44,7 @@ passport.use(
 
 // Serialize user
 passport.serializeUser((user, done) => {
-  done(null, user._id);
+  done(null, user.id); // Use the consistent id field
 });
 
 // Deserialize user
@@ -52,7 +52,14 @@ passport.deserializeUser(async (id, done) => {
   try {
     const user = await User.findById(id);
     if (!user) return done(new Error("User not found"), null);
-    done(null, user);
+
+    // Return user with consistent id field
+    done(null, {
+      id: user._id.toString(),
+      name: user.name,
+      email: user.email,
+      profilePicture: user.profilePicture,
+    });
   } catch (err) {
     done(err, null);
   }

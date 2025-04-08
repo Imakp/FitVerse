@@ -96,7 +96,7 @@ export default function Challenge() {
       try {
         const [balanceRes, challengesRes] = await Promise.all([
           user?.id
-            ? axios.get(`/api/users/balance/${user._id}`)
+            ? axios.get(`/api/users/balance/${user.id}`)
             : Promise.resolve({ data: { balance: 0 } }),
           axios.get("/api/challenges", {
             withCredentials: true,

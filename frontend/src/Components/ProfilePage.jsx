@@ -83,7 +83,7 @@ const MyProfile = () => {
     ) {
       setIsLoading(true);
       try {
-        console.log("Account Deletion Requested for user:", user._id);
+        console.log("Account Deletion Requested for user:", user.id);
         toast.warn("Account deletion feature not implemented yet.");
       } catch (error) {
         console.error("Error deleting account:", error);

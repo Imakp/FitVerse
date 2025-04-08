@@ -7,6 +7,7 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [balance, setBalance] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [authError, setAuthError] = useState(null);
 
   const BACKEND_URL = "https://fit-verse-backend.vercel.app";
   const login = () => {
@@ -18,8 +19,10 @@ export const AuthProvider = ({ children }) => {
     try {
       await axios.get(`${BACKEND_URL}/auth/logout`, { withCredentials: true });
       setUser(null);
+      sessionStorage.removeItem("loginRedirectUrl");
     } catch (error) {
       console.error("Logout failed:", error);
+      setAuthError("Logout failed. Please try again.");
     }
   };
 
@@ -33,17 +36,18 @@ export const AuthProvider = ({ children }) => {
       });
 
       if (data?.id) {
-        // Changed from _id to id to match backend changes
         setUser({
           ...data,
-          id: data.id, // Use consistent ID field
+          id: data.id, // Consistent ID field
           profilePicture: data.profilePicture,
         });
-        fetchBalance(data.id); // Pass ID instead of _id
+        fetchBalance(data.id);
+        setAuthError(null);
       }
     } catch (error) {
       console.error("Error fetching user:", error);
       setUser(null);
+      setAuthError("Authentication failed. Please try logging in again.");
     } finally {
       setLoading(false);
     }
@@ -57,7 +61,7 @@ export const AuthProvider = ({ children }) => {
         {
           withCredentials: true,
           headers: {
-            "Cache-Control": "no-cache", // Add cache control
+            "Cache-Control": "no-cache",
           },
         }
       );
@@ -75,7 +79,7 @@ export const AuthProvider = ({ children }) => {
 
   const refreshBalance = async () => {
     if (user?.id) {
-      await fetchBalance(user._id);
+      await fetchBalance(user.id); // Changed from user._id to user.id
       console.log("Balance refreshed via AuthContext");
     } else {
       console.log("Cannot refresh balance: user not available.");
@@ -100,7 +104,7 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     if (user?.id) {
-      fetchBalance(user._id);
+      fetchBalance(user.id); // Changed from user._id to user.id
     } else {
       setBalance(0);
     }
@@ -116,6 +120,7 @@ export const AuthProvider = ({ children }) => {
         logout,
         setBalance,
         refreshBalance,
+        authError,
       }}
     >
       {children}

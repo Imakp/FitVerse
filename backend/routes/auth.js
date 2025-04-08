@@ -1,87 +1,46 @@
-const express = require("express");
+const router = require("express").Router();
 const passport = require("passport");
 
-const router = express.Router();
-const FRONTEND_URL =
-  process.env.FRONTEND_URL ?? "https://its-fitverse.vercel.app";
-
-router.get(
-  "/google",
-  passport.authenticate("google", { scope: ["profile", "email"] })
-);
-
-router.get("/google/callback", (req, res, next) => {
-  console.log("Received callback from Google");
-  passport.authenticate("google", (err, user, info) => {
-    console.log("Passport authenticate callback executing...");
-    if (err) {
-      console.error("Passport authentication error:", err);
-      return res.redirect(
-        `${FRONTEND_URL}/login?error=auth_failed&details=${encodeURIComponent(
-          err.message || "Unknown error"
-        )}`
-      );
-    }
-    if (!user) {
-      console.warn("Passport authentication: No user found or returned.", info);
-      const infoMessage = info?.message || "No user returned from strategy";
-      return res.redirect(
-        `${FRONTEND_URL}/login?error=no_user&details=${encodeURIComponent(
-          infoMessage
-        )}`
-      );
-    }
-
-    console.log("Passport authentication successful, user:", user);
-
-    req.login(user, (loginErr) => {
-      if (loginErr) {
-        console.error("req.logIn error:", loginErr);
-        return res.redirect(
-          `${FRONTEND_URL}/login?error=login_failed&details=${encodeURIComponent(
-            loginErr.message || "Session login failed"
-          )}`
-        );
-      }
-
-      req.session.userId = user._id;
-      req.session.save((saveErr) => {
-        if (saveErr) {
-          console.error("Session save error:", saveErr);
-        }
-        const redirectTo = req.session.returnTo || `${FRONTEND_URL}/dashboard`;
-        delete req.session.returnTo;
-        return res.redirect(redirectTo);
-      });
-    });
-  })(req, res, next);
-});
-
-// Get User Info (Session-based authentication)
+// Route to get the current authenticated user
 router.get("/user", (req, res) => {
-  if (req.isAuthenticated()) {
-    // Convert Mongoose document to plain object including virtuals
-    const userData = req.user.toObject({ virtuals: true });
-    res.json({
-      ...userData,
-      id: userData._id, // Ensure _id is aliased as id for client consistency
-    });
+  if (req.isAuthenticated() && req.user) {
+    res.status(200).json(req.user);
   } else {
-    res.status(401).json({ message: "Unauthorized" });
+    res.status(401).json({ message: "Not authenticated" });
   }
 });
 
-// Fix CORS issue during logout
-router.get("/logout", (req, res, next) => {
-  req.logout((err) => {
-    if (err) return next(err);
+// Google OAuth login route
+router.get(
+  "/google",
+  passport.authenticate("google", {
+    scope: ["profile", "email"],
+  })
+);
 
-    req.session.destroy((error) => {
-      if (error) return res.status(500).json({ message: "Logout failed" });
+// Google OAuth callback route
+router.get(
+  "/google/callback",
+  passport.authenticate("google", {
+    failureRedirect: `${process.env.FRONTEND_URL}/login?error=auth_failed`,
+  }),
+  (req, res) => {
+    // Get the redirect URL from session or use default
+    const redirectUrl = req.session.loginRedirectUrl || "/dashboard";
+    delete req.session.loginRedirectUrl;
 
-      res.clearCookie("connect.sid", { path: "/" });
-      res.status(200).json({ message: "Logged out successfully" }); // ✅ Send JSON response
-    });
+    // Redirect to the frontend
+    res.redirect(`${process.env.FRONTEND_URL}${redirectUrl}`);
+  }
+);
+
+// Logout route
+router.get("/logout", (req, res) => {
+  req.logout(function (err) {
+    if (err) {
+      return next(err);
+    }
+    res.status(200).json({ message: "Logged out successfully" });
   });
 });
 
