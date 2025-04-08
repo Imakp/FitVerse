@@ -56,8 +56,7 @@ const redeemChallenge = async (req, res) => {
     const updatedChallenge = await Challenge.findByIdAndUpdate(
       id,
       { $push: { redeemedBy: authenticatedUserId } },
-      { $push: { redeemedBy: authenticatedUserId } },
-      { new: true } // Return the updated document
+      { new: true } 
     );
 
     if (!updatedChallenge) {
