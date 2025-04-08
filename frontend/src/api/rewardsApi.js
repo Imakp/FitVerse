@@ -4,7 +4,9 @@ const BASE_URL = "/api";
 
 export const fetchRewards = async () => {
   try {
-    const response = await axios.get(`${BASE_URL}/rewards/all`);
+    const response = await axios.get(`${BASE_URL}/rewards/all`, {
+      withCredentials: true,
+    });
     return response.data;
   } catch (error) {
     console.error("Error fetching rewards:", error);

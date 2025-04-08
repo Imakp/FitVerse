@@ -6,7 +6,14 @@ const {
 
 const router = express.Router();
 
-router.post("/", createReward);
-router.get("/all", getAllRewards);
+const isAuthenticated = (req, res, next) => {
+  if (req.isAuthenticated()) {
+    return next();
+  }
+  res.status(401).json({ message: "Unauthorized: Please log in." });
+};
+
+router.post("/", createReward); 
+router.get("/all", isAuthenticated, getAllRewards); 
 
 module.exports = router;
