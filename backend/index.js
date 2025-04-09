@@ -1,9 +1,10 @@
 const express = require("express");
 const dotenv = require("dotenv");
 const connectDB = require("./config/db");
-const authRoutes = require("./routes/auth"); // OAuth routes
-require("./config/passport"); // Passport config
+const authRoutes = require("./routes/auth");
+require("./config/passport");
 const session = require("express-session");
+const MongoStore = require("connect-mongo");
 const passport = require("passport");
 const cors = require("cors");
 const userRoutes = require("./routes/userRoutes");
@@ -25,7 +26,7 @@ app.use(express.json());
 app.use(
   cors({
     origin: process.env.FRONTEND_URL || "http://localhost:5173",
-    methods: ["GET", "POST", "PUT", "DELETE"],
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
   })
@@ -40,11 +41,16 @@ app.use(
     saveUninitialized: false,
     cookie: {
       secure: process.env.NODE_ENV === "production",
-      maxAge: 24 * 60 * 60 * 1000, 
+      maxAge: 24 * 60 * 60 * 1000, // 24 hours
+      httpOnly: true,
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
     },
+    store: new MongoStore({
+      mongoUrl: process.env.MONGO_URI || "mongodb://localhost:27017/fitverse",
+      collection: "sessions",
+    }),
   })
 );
-
 app.use(passport.initialize());
 app.use(passport.session());
 

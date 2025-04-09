@@ -4,8 +4,8 @@ import {
   useState,
   useEffect,
   useCallback,
-} from "react"; // Added useCallback
-import axios from "axios";
+} from "react";
+import axiosInstance from "../api/axiosConfig";
 
 const AuthContext = createContext();
 
@@ -15,69 +15,67 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [authError, setAuthError] = useState(null);
 
-  const BACKEND_URL =
-    import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
+  const exchangeCodeForToken = useCallback(async (code) => {
+    setLoading(true);
+    setAuthError(null);
+    try {
+      const { data } = await axiosInstance.post(
+        `/auth/google`,
+        { code },
+        { withCredentials: true }
+      );
 
-  const exchangeCodeForToken = useCallback(
-    async (code) => {
-      setLoading(true);
-      setAuthError(null);
-      try {
-        const { data } = await axios.post(
-          `${BACKEND_URL}/auth/google`,
-          { code },
-          { withCredentials: true }
-        );
-        setUser({
-          ...data,
-          picture: data.profilePicture,
-        });
-        if (data._id) {
-          fetchBalance(data._id);
-        }
-      } catch (error) {
-        console.error("Authentication failed:", error);
-        setUser(null);
-        setBalance(0);
-        setAuthError(
-          error.response?.data?.message ||
-            "Authentication failed. Please try again."
-        );
-      } finally {
-        setLoading(false);
+      if (data.token) {
+        localStorage.setItem("authToken", data.token);
       }
-    },
-    [BACKEND_URL]
-  );
 
-  const fetchBalance = useCallback(
-    async (userId) => {
-      if (!userId) return;
-      try {
-        const { data } = await axios.get(
-          `${BACKEND_URL}/api/users/balance/${userId}`
-        );
-        if (data.success) {
-          setBalance(data.balance);
-        } else {
-          console.error("Failed to fetch balance:", data.message);
-          setBalance(0);
-        }
-      } catch (error) {
-        console.error("Error fetching balance:", error);
+      setUser({
+        ...data,
+        picture: data.profilePicture,
+      });
+
+      if (data._id) {
+        fetchBalance(data._id);
+      }
+    } catch (error) {
+      console.error("Authentication failed:", error);
+      setUser(null);
+      setBalance(0);
+      localStorage.removeItem("authToken");
+      setAuthError(
+        error.response?.data?.message ||
+          "Authentication failed. Please try again."
+      );
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const fetchBalance = useCallback(async (userId) => {
+    if (!userId) return;
+    try {
+      const { data } = await axiosInstance.get(`/api/users/balance/${userId}`);
+      if (data.success !== false) {
+        setBalance(data.balance);
+      } else {
+        console.error("Failed to fetch balance:", data.message);
         setBalance(0);
       }
-    },
-    [BACKEND_URL]
-  );
+    } catch (error) {
+      console.error("Error fetching balance:", error);
+      setBalance(0);
+    }
+  }, []);
 
   const logout = async () => {
     setLoading(true);
     setUser(null);
     setBalance(0);
     setAuthError(null);
+
     try {
-      await axios.get(`${BACKEND_URL}/auth/logout`, { withCredentials: true });
+      await axiosInstance.get("/auth/logout");
+      localStorage.removeItem("authToken");
     } catch (error) {
       console.error("Logout failed:", error);
     } finally {
@@ -86,12 +84,16 @@ export const AuthProvider = ({ children }) => {
   };
 
   const fetchUser = useCallback(async () => {
+    if (!localStorage.getItem("authToken")) {
+      setLoading(false);
+      return;
+    }
+
     setLoading(true);
     setAuthError(null);
+
     try {
-      const { data } = await axios.get(`${BACKEND_URL}/auth/user`, {
-        withCredentials: true,
-      });
+      const { data } = await axiosInstance.get("/auth/user");
       if (data) {
         setUser({
           ...data,
@@ -103,15 +105,17 @@ export const AuthProvider = ({ children }) => {
       } else {
         setUser(null);
         setBalance(0);
+        localStorage.removeItem("authToken");
       }
     } catch (error) {
       console.error("Fetch user failed:", error);
       setUser(null);
       setBalance(0);
+      localStorage.removeItem("authToken");
     } finally {
       setLoading(false);
     }
-  }, [BACKEND_URL]);
+  }, [fetchBalance]);
 
   const refreshBalance = async () => {
     if (user?._id) {
@@ -137,14 +141,6 @@ export const AuthProvider = ({ children }) => {
       window.removeEventListener("balanceUpdated", handleBalanceUpdate);
     };
   }, [fetchUser]);
-
-  useEffect(() => {
-    if (user?._id) {
-      fetchBalance(user._id);
-    } else {
-      setBalance(0);
-    }
-  }, [user?._id]);
 
   return (
     <AuthContext.Provider

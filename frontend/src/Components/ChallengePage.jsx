@@ -1,15 +1,9 @@
-import React, {
-  useEffect,
-  useState,
-  useCallback,
-  useMemo,
-  useRef,
-} from "react";
-import axios from "axios";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import { useGoogleFit } from "../hooks/useGoogleFit";
 import { useAuth } from "../context/AuthContext";
 import { motion } from "framer-motion";
 import { Target, CheckCircle, Award, Coins, Clock } from "lucide-react";
+import axiosInstance from "../api/axiosConfig";
 
 export default function Challenge() {
   const { isAuthenticated, fetchFitnessData } = useGoogleFit();
@@ -96,11 +90,9 @@ export default function Challenge() {
       try {
         const [balanceRes, challengesRes] = await Promise.all([
           user?._id
-            ? axios.get(`/api/users/balance/${user._id}`)
+            ? axiosInstance.get(`/api/users/balance/${user._id}`)
             : Promise.resolve({ data: { balance: 0 } }),
-          axios.get("/api/challenges", {
-            withCredentials: true,
-          }),
+          axiosInstance.get("/api/challenges"),
         ]);
 
         setBalance(balanceRes.data.balance);
@@ -133,12 +125,11 @@ export default function Challenge() {
     }
 
     try {
-      const challengeResponse = await axios.patch(
+      const challengeResponse = await axiosInstance.patch(
         `/api/challenges/${challengeId}`,
         {},
         {
           headers: { "Content-Type": "application/json" },
-          withCredentials: true,
         }
       );
 

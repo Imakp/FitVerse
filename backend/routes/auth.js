@@ -1,8 +1,9 @@
 const express = require("express");
 const passport = require("passport");
 const { OAuth2Client } = require("google-auth-library");
-const User = require("../models/user"); // Import User model
-require("dotenv").config(); // Ensure environment variables are loaded
+const User = require("../models/user");
+const jwt = require("jsonwebtoken");
+require("dotenv").config();
 
 const router = express.Router();
 
@@ -49,6 +50,16 @@ router.post("/google", async (req, res) => {
       await user.save();
     }
 
+    const token = jwt.sign(
+      {
+        _id: user._id,
+        email: user.email,
+        name: user.name,
+      },
+      process.env.SESSION_SECRET,
+      { expiresIn: "24h" }
+    );
+
     req.logIn(user, (err) => {
       if (err) {
         console.error("Login error after Google auth:", err);
@@ -57,6 +68,7 @@ router.post("/google", async (req, res) => {
           .json({ message: "Login failed after authentication" });
       }
       res.json({
+        token, // Send token to client
         id: user.id,
         _id: user._id,
         name: user.name,
