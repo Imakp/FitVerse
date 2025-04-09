@@ -86,29 +86,29 @@ const CategoryNavbar = ({ activeCategory, setActiveCategory }) => {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: -20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="bg-white rounded-xl shadow-md p-4 mb-6"
-    >
-      <div className="flex items-center space-x-4 overflow-x-auto pb-2 scrollbar-hide">
-        {categories.map((category) => (
-          <motion.button
-            key={category.id}
-            onClick={() => setActiveCategory(category.id)}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all ${
-              activeCategory === category.id
-                ? "bg-blue-600 text-white shadow-lg"
-                : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-            }`}
-          >
-            {category.icon}
-            <span className="font-medium">{category.name}</span>
-          </motion.button>
-        ))}
-      </div>
-    </motion.div>
+    initial={{ opacity: 0, y: -20 }}
+    animate={{ opacity: 1, y: 0 }}
+    className="bg-white rounded-xl shadow-md p-2 md:p-4 mb-6 w-full"
+  >
+    <div className="flex items-center space-x-2 md:space-x-4 overflow-x-auto pb-2 hide-scrollbar">
+      {categories.map((category) => (
+        <motion.button
+          key={category.id}
+          onClick={() => setActiveCategory(category.id)}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          className={`flex items-center space-x-1 md:space-x-2 px-2 py-1 md:px-4 md:py-2 rounded-lg whitespace-nowrap transition-all ${
+            activeCategory === category.id
+              ? "bg-blue-600 text-white shadow-lg"
+              : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+          }`}
+        >
+          <span className="text-base">{category.icon}</span>
+          <span className="text-xs md:text-sm font-medium">{category.name}</span>
+        </motion.button>
+      ))}
+    </div>
+  </motion.div>
   );
 };
 
@@ -237,14 +237,14 @@ const MetricChart = ({ data, metric, timeRange }) => {
 
 const TimeRangeSelector = ({ timeRange, setTimeRange }) => {
   return (
-    <div className="flex items-center space-x-2 bg-gray-100 p-1 rounded-lg">
+    <div className="flex items-center space-x-1 sm:space-x-2 bg-gray-100 p-1 rounded-lg">
       {["week", "month", "year"].map((range) => (
         <motion.button
           key={range}
           onClick={() => setTimeRange(range)}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          className={`px-4 py-2 rounded-md transition-all ${
+          className={`px-2 sm:px-4 py-1 sm:py-2 rounded-md transition-all text-sm sm:text-base ${
             timeRange === range
               ? "bg-white shadow-md text-blue-600 font-medium"
               : "text-gray-600 hover:bg-gray-200"
@@ -413,8 +413,8 @@ export const ActivityPage = () => {
   const totals = calculateTotals();
 
   return (
-    <div className="bg-gray-50 min-h-screen pb-12">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="bg-gray-50 min-h-screen pb-8 sm:pb-12">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8">
         {/* Header */}
         <motion.header
           initial={{ opacity: 0, y: -20 }}
@@ -456,7 +456,7 @@ export const ActivityPage = () => {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={signIn}
-                  className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors flex items-center justify-center space-x-2"
+                  className="px-4 sm:px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors flex items-center justify-center space-x-2 text-sm sm:text-base"
                 >
                   <svg
                     className="h-5 w-5"
@@ -515,7 +515,7 @@ export const ActivityPage = () => {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={signIn}
-                  className="px-8 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors inline-flex items-center"
+                  className="px-6 sm:px-8 py-2 sm:py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors inline-flex items-center text-sm sm:text-base"
                 >
                   <svg
                     className="h-5 w-5 mr-2"
@@ -577,21 +577,23 @@ export const ActivityPage = () => {
                   />
 
                   {/* Time Range Selector */}
-                  <div className="flex justify-between items-center">
-                    <h2 className="text-xl font-semibold text-gray-800">
+                  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-3 sm:space-y-0">
+                    <h2 className="text-lg sm:text-xl font-semibold text-gray-800">
                       Activity Trends
                     </h2>
-                    <div className="flex items-center space-x-4">
-                      <TimeRangeSelector
-                        timeRange={timeRange}
-                        setTimeRange={setTimeRange}
-                      />
+                    <div className="flex flex-col xs:flex-row items-start xs:items-center space-y-2 xs:space-y-0 xs:space-x-3 sm:space-x-4 w-full xs:w-auto">
+                      <div className="w-full xs:w-auto">
+                        <TimeRangeSelector
+                          timeRange={timeRange}
+                          setTimeRange={setTimeRange}
+                        />
+                      </div>
                       <ExportData metricsData={metricsData} />
                     </div>
                   </div>
 
                   {/* Charts */}
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                     <AnimatePresence mode="wait">
                       {filteredMetrics.map((metric) => (
                         <motion.div
@@ -615,7 +617,7 @@ export const ActivityPage = () => {
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="bg-white rounded-xl shadow-lg p-6 relative overflow-hidden"
+                    className="bg-white rounded-xl shadow-lg p-4 sm:p-6 relative overflow-hidden"
                   >
                     <div className="absolute top-0 right-0 w-32 h-32 bg-purple-100 rounded-full transform translate-x-16 -translate-y-16"></div>
 
@@ -686,7 +688,7 @@ export const ActivityPage = () => {
                       whileTap={{ scale: 0.95 }}
                       onClick={fetchAllMetrics}
                       disabled={loading}
-                      className="px-6 py-2 bg-gray-800 text-white rounded-md hover:bg-gray-900 transition-colors flex items-center space-x-2"
+                      className="px-4 sm:px-6 py-2 bg-gray-800 text-white rounded-md hover:bg-gray-900 transition-colors flex items-center space-x-2 text-sm sm:text-base"
                     >
                       <RefreshCw className="h-5 w-5" />
                       <span>Refresh Data</span>
