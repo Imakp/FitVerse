@@ -1,47 +1,23 @@
 const passport = require("passport");
-const GoogleStrategy = require("passport-google-oauth20").Strategy;
 const User = require("../models/user");
 require("dotenv").config();
 
-const backendUrl = process.env.API_URL || "http://localhost:3000";
-
-passport.use(
-  new GoogleStrategy(
-    {
-      clientID: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-      callbackURL: `${backendUrl}/auth/google/callback`,
-    },
-    async (accessToken, refreshToken, profile, done) => {
-      try {
-        let user = await User.findOne({ oauthId: profile.id });
-
-        if (!user) {
-          user = new User({
-            oauthProvider: "google",
-            oauthId: profile.id,
-            name: profile.displayName,
-            email: profile.emails[0].value,
-            profilePicture: profile.photos[0].value,
-          });
-          await user.save();
-        }
-
-        done(null, user);
-      } catch (err) {
-        done(err, null);
-      }
-    }
-  )
-);
-
-// Serialize user
 passport.serializeUser((user, done) => {
-  done(null, user.id);
+  done(null, user._id);
 });
 
-// Deserialize user
 passport.deserializeUser(async (id, done) => {
-  const user = await User.findById(id);
-  done(null, user);
+  console.log(`[Passport Deserialize] Attempting to deserialize user with ID: ${id}`);
+  try {
+    const user = await User.findById(id);
+    if (!user) {
+      console.log(`[Passport Deserialize] No user found for ID: ${id}`);
+      return done(null, null);
+    }
+    console.log(`[Passport Deserialize] User found: ${user.displayName || user._id}`);
+    done(null, user);
+  } catch (err) {
+    console.error(`[Passport Deserialize] Error deserializing user ID ${id}:`, err);
+    done(err, null); 
+  }
 });

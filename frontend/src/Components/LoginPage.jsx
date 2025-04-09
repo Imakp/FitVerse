@@ -1,15 +1,32 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Trophy, BarChart3, Gift, Activity, LogOut } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { motion } from "framer-motion";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useGoogleLogin } from "@react-oauth/google";
 
 const Login = () => {
-  const { user, login, logout, authError } = useAuth();
+  const { user, exchangeCodeForToken, logout, authError, loading } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
 
-  const locationAuthError = location.state?.authError;
-  const errorMessage = authError || locationAuthError;
+  const errorMessage = authError;
+
+  const googleLogin = useGoogleLogin({
+    onSuccess: async ({ code }) => {
+      await exchangeCodeForToken(code);
+    },
+    onError: (error) => {
+      console.error("Google Login Failed:", error);
+    },
+    flow: "auth-code",
+  });
+
+  useEffect(() => {
+    if (user && !loading) {
+      navigate("/dashboard", { replace: true });
+    }
+  }, [user, loading, navigate]);
 
   return (
     <div className="flex min-h-screen bg-gray-50 justify-center items-center p-4">
@@ -38,77 +55,89 @@ const Login = () => {
               </p>
             </div>
 
-            {errorMessage && (
+            {loading && (
+              <div className="mt-4 text-center text-gray-600">Loading...</div>
+            )}
+
+            {errorMessage && !loading && (
               <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-md text-red-600 text-sm">
                 <p>Login error: {errorMessage}</p>
               </div>
             )}
 
-            {user ? (
-              <div className="flex flex-col items-center gap-4 rounded-lg bg-gray-100 p-6 text-center border border-gray-200">
-                <img
-                  src={user.picture}
-                  alt="Profile"
-                  className="h-20 w-20 rounded-full border-2 border-blue-500 object-cover shadow-sm"
-                />
-                <h2 className="text-xl font-semibold text-gray-800">
-                  {user.name}
-                </h2>
+            {/* Conditional rendering for logged-in vs logged-out state */}
+            {
+              user && !loading ? (
+                // Logged-in view
+                <div className="flex flex-col items-center gap-4 rounded-lg bg-gray-100 p-6 text-center border border-gray-200">
+                  <img
+                    src={user.profilePicture}
+                    alt="Profile"
+                    className="h-20 w-20 rounded-full border-2 border-blue-500 object-cover shadow-sm"
+                  />
+                  <h2 className="text-xl font-semibold text-gray-800">
+                    {user.name}
+                  </h2>
+                  <p className="text-sm text-gray-600">{user.email}</p>
 
-                <p className="text-sm text-gray-600">{user.email}</p>
-
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={logout}
-                  className="mt-4 w-full flex items-center justify-center space-x-2 rounded-md bg-red-600 px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
-                >
-                  <LogOut size={18} />
-                  <span>Logout</span>
-                </motion.button>
-              </div>
-            ) : (
-              <>
-                <div className="mb-6">
                   <motion.button
-                    whileHover={{ scale: 1.03 }}
-                    whileTap={{ scale: 0.97 }}
-                    onClick={() => login()}
-                    className="flex w-full items-center justify-center gap-3 rounded-md bg-blue-600 px-5 py-3 text-base font-medium text-white transition-colors hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={logout}
+                    className="mt-4 w-full flex items-center justify-center space-x-2 rounded-md bg-red-600 px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
                   >
-                    <img
-                      src="https://fonts.gstatic.com/s/i/productlogos/googleg/v6/24px.svg"
-                      alt="Google"
-                      className="h-5 w-5"
-                    />
-                    Sign in with Google
+                    <LogOut size={18} />
+                    <span>Logout</span>
                   </motion.button>
                 </div>
+              ) : (
+                // Logged-out view (show only if not user AND not loading)
+                !user &&
+                !loading && (
+                  <>
+                    <div className="mb-6">
+                      <motion.button
+                        whileHover={{ scale: 1.03 }}
+                        whileTap={{ scale: 0.97 }}
+                        onClick={() => googleLogin()}
+                        className="flex w-full items-center justify-center gap-3 rounded-md bg-blue-600 px-5 py-3 text-base font-medium text-white transition-colors hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                        disabled={loading}
+                      >
+                        <img
+                          src="https://fonts.gstatic.com/s/i/productlogos/googleg/v6/24px.svg"
+                          alt="Google"
+                          className="h-5 w-5"
+                        />
+                        Sign in with Google
+                      </motion.button>
+                    </div>
 
-                <div className="mt-6 text-center text-xs text-gray-500">
-                  By signing in, you agree to our{" "}
-                  <a
-                    href="#"
-                    className="font-medium text-blue-600 hover:underline"
-                  >
-                    Terms of Service
-                  </a>
-                  and
-                  <a
-                    href="#"
-                    className="font-medium text-blue-600 hover:underline"
-                  >
-                    Privacy Policy
-                  </a>
-                  .
-                </div>
-              </>
-            )}
+                    <div className="mt-6 text-center text-xs text-gray-500">
+                      By signing in, you agree to our{" "}
+                      <a
+                        href="#"
+                        className="font-medium text-blue-600 hover:underline"
+                      >
+                        Terms of Service
+                      </a>{" "}
+                      and{" "}
+                      <a
+                        href="#"
+                        className="font-medium text-blue-600 hover:underline"
+                      >
+                        Privacy Policy
+                      </a>
+                      .
+                    </div>
+                  </>
+                ) // End of the inner conditional rendering group
+              ) // End of the ternary operator
+            }
           </div>
           <div
-            className="hidden md:flex w-3/5 bg-cover bg-center relative" // Added relative positioning
+            className="hidden md:flex w-3/5 bg-cover bg-center relative"
             style={{
-              backgroundImage: `url('https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=900&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8Zml0bmVzc3xlbnwwfHwwfHx8MA%3D%3D')`,
+              backgroundImage: `url('/api/placeholder/900/600')`,
             }}
           >
             <div className="absolute inset-0 bg-gradient-to-br from-blue-900/70 via-black/60 to-black/70"></div>

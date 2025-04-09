@@ -1,10 +1,8 @@
 const express = require("express");
 const router = express.Router();
-// const User = require("../models/user");
+const { updateFitnessData } = require("../controllers/fitnessController");
+const { isAuthenticated } = require("../middleware/auth");
 
-
-const {updateFitnessData} = require("../controllers/fitnessController")
-
-router.post("/update", updateFitnessData);
+router.post("/update", isAuthenticated, updateFitnessData);
 
 module.exports = router;

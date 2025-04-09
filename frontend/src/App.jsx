@@ -6,21 +6,9 @@ import ActivityPage from "./Components/ActivityPage.jsx";
 import ProfilePage from "./Components/ProfilePage.jsx";
 import LoginPage from "./Components/LoginPage.jsx";
 import { FitnessDashboard } from "./Components/FitnessDashboard.jsx";
-import { useAuth } from "./context/AuthContext";
 import LandingPage from "./Components/LandingPage.jsx";
 import ChallengePage from "./Components/ChallengePage.jsx";
-
-const ProtectedRoute = ({ children }) => {
-  const { user, loading } = useAuth();
-
-  if (loading) return <div>Loading...</div>;
-
-  if (!user) {
-    return <Navigate to="/login" replace />;
-  }
-
-  return children;
-};
+import ProtectedRoute from "./ProtectedRoute.jsx";
 
 const AuthWrapper = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -35,54 +23,20 @@ const AuthWrapper = () => {
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<LoginPage />} />
-          <Route
-            path="/dashboard"
-            element={
-              <>
-                <FitnessDashboard />
-              </>
-            }
-          />
-          <Route
-            path="/rewards"
-            element={
-              <ProtectedRoute>
-                <RewardsPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/activity"
-            element={
-              <ProtectedRoute>
-                <ActivityPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/challenges"
-            element={
-              <ProtectedRoute>
-                <ChallengePage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/my-profile"
-            element={
-              <ProtectedRoute>
-                <ProfilePage />
-              </ProtectedRoute>
-            }
-          />
+
+          {/* Protected Routes */}
+          <Route element={<ProtectedRoute />}>
+            <Route path="/dashboard" element={<FitnessDashboard />} />
+            <Route path="/rewards" element={<RewardsPage />} />
+            <Route path="/activity" element={<ActivityPage />} />
+            <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/challenges" element={<ChallengePage />} />
+          </Route>
+
+          {/* Fallback route */}
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </div>
-      {isMobileMenuOpen && (
-        <div
-          className="fixed inset-0 z-30 backdrop-blur-sm bg-black/20"
-          aria-hidden="true"
-        />
-      )}
     </div>
   );
 };

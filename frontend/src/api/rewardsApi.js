@@ -1,10 +1,10 @@
-import axios from "axios";
+import axiosInstance from "./axiosConfig";
 
 const BASE_URL = "/api";
 
 export const fetchRewards = async () => {
   try {
-    const response = await axios.get(`${BASE_URL}/rewards/all`);
+    const response = await axiosInstance.get(`${BASE_URL}/rewards/all`);
     return response.data;
   } catch (error) {
     console.error("Error fetching rewards:", error);
@@ -14,14 +14,11 @@ export const fetchRewards = async () => {
 
 export const spendCoins = async (amount, reference) => {
   try {
-    const response = await axios.post(
+    const response = await axiosInstance.post(
       `${BASE_URL}/transactions/spend`,
       {
         amount,
         reference,
-      },
-      {
-        withCredentials: true,
       }
     );
     return response.data;
